@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public class Mailbox implements IMailbox, Savable {
 
+    private int ID;
     private UUID ownerUUID;
     private ArrayList<Message> messages = new ArrayList<>();
 
@@ -21,6 +22,16 @@ public class Mailbox implements IMailbox, Savable {
 
     public Mailbox(Map<String, String> data) {
         this.load(data);
+    }
+
+    @Override
+    public int getID() {
+        return ID;
+    }
+
+    @Override
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     @Override

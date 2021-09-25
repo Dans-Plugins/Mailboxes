@@ -12,6 +12,8 @@ public class Message implements IMessage, Savable {
     private String content;
     private Date date;
 
+    private int mailboxID;
+
     public Message(int ID, String type, String sender, String recipient, String content) {
         this.ID = ID;
         this.type = type;
@@ -83,6 +85,16 @@ public class Message implements IMessage, Savable {
     @Override
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    @Override
+    public int getMailboxID() {
+        return mailboxID;
+    }
+
+    @Override
+    public void setMailboxID(int ID) {
+        this.mailboxID = ID;
     }
 
     @Override
