@@ -1,5 +1,6 @@
 package dansplugins.mailboxes;
 
+import dansplugins.mailboxes.commands.ConfigCommand;
 import dansplugins.mailboxes.commands.HelpCommand;
 import dansplugins.mailboxes.utils.ArgumentParser;
 import dansplugins.mailboxes.utils.PermissionChecker;
@@ -22,9 +23,15 @@ public class CommandInterpreter {
             String[] arguments = ArgumentParser.getInstance().dropFirstArgument(args);
 
             if (secondaryLabel.equalsIgnoreCase("help")) {
-                if (!PermissionChecker.getInstance().checkPermission(sender, "Mailboxes.help")) { return false; }
+                if (!PermissionChecker.getInstance().checkPermission(sender, "mailboxes.help")) { return false; }
                 HelpCommand command = new HelpCommand();
                 return command.execute(sender);
+            }
+
+            if (secondaryLabel.equalsIgnoreCase("config")) {
+                if (!PermissionChecker.getInstance().checkPermission(sender, "mailboxes.config")) { return false; }
+                ConfigCommand command = new ConfigCommand();
+                return command.execute(sender, arguments);
             }
 
             sender.sendMessage(ChatColor.RED + "Mailboxes doesn't recognize that command.");

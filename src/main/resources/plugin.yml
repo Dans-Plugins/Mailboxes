@@ -10,3 +10,5 @@ commands:
 permissions:
   mailboxes.help:
     default: true
+  mailboxes.config:
+    default: true
