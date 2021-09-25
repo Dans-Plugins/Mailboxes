@@ -32,6 +32,16 @@ public class Message implements IMessage, Savable {
     }
 
     @Override
+    public String getType() {
+        return type;
+    }
+
+    @Override
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Override
     public String getSender() {
         return sender;
     }
@@ -59,16 +69,6 @@ public class Message implements IMessage, Savable {
     @Override
     public void setContent(String content) {
         this.content = content;
-    }
-
-    @Override
-    public String getType() {
-        return type;
-    }
-
-    @Override
-    public void setType(String type) {
-        this.type = type;
     }
 
     @Override
