@@ -35,7 +35,7 @@ public final class Mailboxes extends JavaPlugin {
     }
 
     public boolean isDebugEnabled() {
-        return ConfigManager.getInstance().getBoolean("debugMode");
+        return true;
     }
 
     private boolean isVersionMismatched() {
