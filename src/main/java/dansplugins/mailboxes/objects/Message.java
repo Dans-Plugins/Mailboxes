@@ -5,71 +5,80 @@ import java.util.Map;
 
 public class Message implements IMessage, Savable {
 
+    private int ID;
+    private String type;
+    private String sender;
+    private String recipient;
+    private String content;
+    private Date date;
+
+    public Message(int ID, String type, String sender, String recipient, String content) {
+        this.ID = ID;
+        this.type = type;
+        this.sender = sender;
+        this.recipient = recipient;
+        this.content = content;
+        this.date = new Date();
+    }
+
     @Override
     public int getID() {
-        // TODO: implement
-        return 0;
+        return ID;
     }
 
     @Override
     public void setID(int ID) {
-        // TODO: implement
-
+        this.ID = ID;
     }
 
     @Override
     public String getSender() {
-        // TODO: implement
-        return null;
+        return sender;
     }
 
     @Override
     public void setSender(String sender) {
-        // TODO: implement
+        this.sender = sender;
     }
 
     @Override
     public String getRecipient() {
-        // TODO: implement
-        return null;
+        return recipient;
     }
 
     @Override
     public void setRecipient(String recipient) {
-        // TODO: implement
+        this.recipient = recipient;
     }
 
     @Override
     public String getContent() {
-        // TODO: implement
-        return null;
+        return content;
     }
 
     @Override
     public void setContent(String content) {
-        // TODO: implement
+        this.content = content;
     }
 
     @Override
     public String getType() {
-        // TODO: implement
-        return null;
+        return type;
     }
 
     @Override
     public void setType(String type) {
-        // TODO: implement
+        this.type = type;
     }
 
     @Override
     public Date getDate() {
-        // TODO: implement
-        return null;
+        return date;
     }
 
     @Override
     public void setDate(Date date) {
-        // TODO: implement
+        this.date = date;
     }
 
     @Override
