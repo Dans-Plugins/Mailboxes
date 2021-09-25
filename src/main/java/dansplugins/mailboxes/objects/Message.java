@@ -21,6 +21,10 @@ public class Message implements IMessage, Savable {
         this.date = new Date();
     }
 
+    public Message(Map<String, String> data) {
+        this.load(data);
+    }
+
     @Override
     public int getID() {
         return ID;

@@ -19,6 +19,10 @@ public class Mailbox implements IMailbox, Savable {
         ownerUUID = player.getUniqueId();
     }
 
+    public Mailbox(Map<String, String> data) {
+        this.load(data);
+    }
+
     @Override
     public UUID getOwnerUUID() {
         return ownerUUID;
