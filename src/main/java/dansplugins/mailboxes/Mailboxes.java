@@ -1,8 +1,11 @@
 package dansplugins.mailboxes;
 
+import dansplugins.mailboxes.managers.ConfigManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 
 public final class Mailboxes extends JavaPlugin {
 
@@ -17,6 +20,18 @@ public final class Mailboxes extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        // create/load config
+        if (!(new File("./plugins/Currencies/config.yml").exists())) {
+            ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
+        }
+        else {
+            // pre load compatibility checks
+            if (isVersionMismatched()) {
+                ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
+            }
+            reloadConfig();
+        }
     }
 
     @Override
@@ -34,7 +49,7 @@ public final class Mailboxes extends JavaPlugin {
     }
 
     public boolean isDebugEnabled() {
-        return true;
+        return ConfigManager.getInstance().getBoolean("debugMode");
     }
 
     private boolean isVersionMismatched() {
