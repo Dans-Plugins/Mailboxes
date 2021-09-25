@@ -7,9 +7,9 @@ Mailboxes is an open source plugin that allows players and plugins to send persi
 This plugin isn't ready to be used yet.
 
 ## Usage
-- [User Guide](https://github.com/dmccoystephenson/Mailboxes/wiki/Guide)
-- [List of Commands](https://github.com/dmccoystephenson/Mailboxes/wiki/Commands)
-- [FAQ](https://github.com/dmccoystephenson/Mailboxes/wiki/FAQ)
+- [User Guide](https://github.com/dmccoystephenson/Mailboxes/wiki/Guide) (coming soon)
+- [List of Commands](https://github.com/dmccoystephenson/Mailboxes/wiki/Commands) (coming soon)
+- [FAQ](https://github.com/dmccoystephenson/Mailboxes/wiki/FAQ) (coming soon)
 
 ## Support
 You can find the support discord server [here](https://discord.gg/xXtuAQ2).
