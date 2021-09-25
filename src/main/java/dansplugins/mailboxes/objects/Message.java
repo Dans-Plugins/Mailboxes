@@ -83,11 +83,12 @@ public class Message implements IMessage, Savable {
 
     @Override
     public Map<String, String> save() {
+        // TODO: implement
         return null;
     }
 
     @Override
     public void load(Map<String, String> data) {
-
+        // TODO: implement
     }
 }
