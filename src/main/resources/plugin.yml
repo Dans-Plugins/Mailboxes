@@ -2,3 +2,11 @@ name: Mailboxes
 version: 0.1
 main: dansplugins.mailbox.Mailbox
 api-version: 1.13
+
+commands:
+  mailboxes:
+  m:
+
+permissions:
+  mailboxes.help:
+    default: true

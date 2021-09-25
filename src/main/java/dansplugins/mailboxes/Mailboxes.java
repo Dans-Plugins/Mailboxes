@@ -1,5 +1,8 @@
 package dansplugins.mailboxes;
 
+import dansplugins.mailboxes.managers.ConfigManager;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Mailboxes extends JavaPlugin {
@@ -22,7 +25,20 @@ public final class Mailboxes extends JavaPlugin {
 
     }
 
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        CommandInterpreter commandInterpreter = new CommandInterpreter();
+        return commandInterpreter.interpretCommand(sender, label, args);
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
     public boolean isDebugEnabled() {
-        return true;
+        return ConfigManager.getInstance().getBoolean("debugMode");
+    }
+
+    private boolean isVersionMismatched() {
+        return !getConfig().getString("version").equalsIgnoreCase(getVersion());
     }
 }
