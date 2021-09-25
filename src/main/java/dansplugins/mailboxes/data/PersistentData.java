@@ -28,17 +28,20 @@ public class PersistentData {
     }
 
     public Mailbox getMailbox(Player player) {
-        // TODO: implement
-        return null;
+        return getMailbox(player.getUniqueId());
     }
 
     public Mailbox getMailbox(UUID playerUUID) {
-        // TODO: implement
+        for (Mailbox mailbox : mailboxes) {
+            if (mailbox.getOwnerUUID().equals(playerUUID)) {
+                return mailbox;
+            }
+        }
         return null;
     }
 
     public void addMailbox(Mailbox mailbox) {
-        if (!mailboxes.contains(mailbox)) {
+        if (getMailbox(mailbox.getOwnerUUID()) == null) {
             mailboxes.add(mailbox);
         }
     }
