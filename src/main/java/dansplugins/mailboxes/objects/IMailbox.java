@@ -7,7 +7,7 @@ public interface IMailbox {
     UUID getOwnerUUID();
     void setOwnerUUID(UUID uuid);
     ArrayList<Message> getMessages();
-    Message getMessage(String ID);
+    Message getMessage(int ID);
     void addMessage(Message message);
     void removeMessage(Message message);
 }
