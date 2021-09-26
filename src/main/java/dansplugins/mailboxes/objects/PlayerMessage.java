@@ -16,4 +16,20 @@ public class PlayerMessage extends Message {
     public PlayerMessage(Map<String, String> data) {
         super(data);
     }
+
+    public UUID getSenderUUID() {
+        return senderUUID;
+    }
+
+    public void setSenderUUID(UUID senderUUID) {
+        this.senderUUID = senderUUID;
+    }
+
+    public UUID getRecipientUUID() {
+        return recipientUUID;
+    }
+
+    public void setRecipientUUID(UUID recipientUUID) {
+        this.recipientUUID = recipientUUID;
+    }
 }

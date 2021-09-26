@@ -37,7 +37,7 @@ public class MessageFactory {
 
     private int getNewID() {
         // TODO: implement
-        return -1;
+        return 1;
     }
 
 }

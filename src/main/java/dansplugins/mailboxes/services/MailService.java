@@ -32,16 +32,16 @@ public class MailService {
         Logger.getInstance().log("Message Recipient: " + message.getRecipient());
 
         if (message instanceof PlayerMessage) {
-            UUID recipientUUID = UUID.fromString(message.getRecipient());
-            Mailbox mailbox = PersistentData.getInstance().getMailbox(recipientUUID);
+            PlayerMessage playerMessage = (PlayerMessage) message;
+            Mailbox mailbox = PersistentData.getInstance().getMailbox(playerMessage.getRecipientUUID());
 
             if (mailbox == null) {
                 // TODO: add message
                 return false;
             }
 
-            mailbox.addMessage(message);
-            Player player = Bukkit.getPlayer(recipientUUID);
+            mailbox.addMessage(playerMessage);
+            Player player = Bukkit.getPlayer(playerMessage.getRecipientUUID());
             try {
                 player.sendMessage(ChatColor.AQUA + "You've received a message. Type /m list to view your messages.");
             } catch(Exception e) {
