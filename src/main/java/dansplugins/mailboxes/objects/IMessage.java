@@ -15,4 +15,6 @@ public interface IMessage {
     void setContent(String content);
     Date getDate();
     void setDate(Date date);
+    int getMailboxID();
+    void setMailboxID(int ID);
 }

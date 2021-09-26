@@ -1,7 +1,12 @@
 package dansplugins.mailboxes.objects;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class Message implements IMessage, Savable {
 
@@ -12,6 +17,8 @@ public class Message implements IMessage, Savable {
     private String content;
     private Date date;
 
+    private int mailboxID;
+
     public Message(int ID, String type, String sender, String recipient, String content) {
         this.ID = ID;
         this.type = type;
@@ -19,6 +26,10 @@ public class Message implements IMessage, Savable {
         this.recipient = recipient;
         this.content = content;
         this.date = new Date();
+    }
+
+    public Message(Map<String, String> data) {
+        this.load(data);
     }
 
     @Override
@@ -82,13 +93,39 @@ public class Message implements IMessage, Savable {
     }
 
     @Override
+    public int getMailboxID() {
+        return mailboxID;
+    }
+
+    @Override
+    public void setMailboxID(int ID) {
+        this.mailboxID = ID;
+    }
+
+    @Override
     public Map<String, String> save() {
-        // TODO: implement
-        return null;
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        Map<String, String> saveMap = new HashMap<>();
+        saveMap.put("ID", gson.toJson(ID));
+        saveMap.put("type", gson.toJson(type));
+        saveMap.put("sender", gson.toJson(sender));
+        saveMap.put("content", gson.toJson(content));
+        saveMap.put("date", gson.toJson(date));
+        saveMap.put("mailboxID", gson.toJson(mailboxID));
+
+        return saveMap;
     }
 
     @Override
     public void load(Map<String, String> data) {
-        // TODO: implement
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        ID = Integer.parseInt(gson.fromJson(data.get("ID"), String.class));
+        type = gson.fromJson(data.get("type"), String.class);
+        sender = gson.fromJson(data.get("sender"), String.class);
+        content = gson.fromJson(data.get("content"), String.class);
+        date = gson.fromJson(data.get("date"), Date.class);
+        mailboxID = Integer.parseInt(gson.fromJson(data.get("mailboxID"), String.class));
     }
 }

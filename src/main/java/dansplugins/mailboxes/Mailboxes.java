@@ -1,6 +1,7 @@
 package dansplugins.mailboxes;
 
 import dansplugins.mailboxes.managers.ConfigManager;
+import dansplugins.mailboxes.managers.StorageManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,7 +16,7 @@ public final class Mailboxes extends JavaPlugin {
         return instance;
     }
 
-    private final String version = "v0.2";
+    private final String version = "v0.3-alpha-1";
 
     @Override
     public void onEnable() {
@@ -32,11 +33,13 @@ public final class Mailboxes extends JavaPlugin {
             }
             reloadConfig();
         }
+
+        StorageManager.getInstance().load();
     }
 
     @Override
     public void onDisable() {
-
+        StorageManager.getInstance().save();
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
