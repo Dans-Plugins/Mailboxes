@@ -1,10 +1,13 @@
 package dansplugins.mailboxes.commands;
 
+import dansplugins.mailboxes.objects.PlayerMessage;
 import dansplugins.mailboxes.services.MailService;
 import dansplugins.mailboxes.factories.MessageFactory;
 import dansplugins.mailboxes.objects.Message;
 import dansplugins.mailboxes.utils.ArgumentParser;
+import dansplugins.mailboxes.utils.Logger;
 import dansplugins.mailboxes.utils.UUIDChecker;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,21 +18,21 @@ public class SendCommand {
 
     public boolean execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            // TODO: add message
+            Logger.getInstance().log("Only players can use this command.");
             return false;
         }
 
         Player player = (Player) sender;
 
         if (args.length == 0) {
-            // TODO: send usage message
+            player.sendMessage(ChatColor.RED + "Usage: /m send 'player name' 'message'");
             return false;
         }
 
         ArrayList<String> singleQuoteArgs = ArgumentParser.getInstance().getArgumentsInsideSingleQuotes(args);
 
         if (singleQuoteArgs.size() < 2) {
-            // TODO: send single quotes requirement
+            player.sendMessage(ChatColor.RED + "Player name and message must be designated between single quotes.");
             return false;
         }
 
@@ -37,13 +40,13 @@ public class SendCommand {
         UUID recipientUUID = UUIDChecker.getInstance().findUUIDBasedOnPlayerName(recipientName);
 
         if (recipientUUID == null) {
-            // TODO: add message
+            player.sendMessage(ChatColor.RED + "That player wasn't found.");
             return false;
         }
 
         String messageContent = singleQuoteArgs.get(1);
 
-        Message message = MessageFactory.getInstance().createPlayerMessage(player.getUniqueId(), recipientUUID, messageContent);
+        PlayerMessage message = MessageFactory.getInstance().createPlayerMessage(player.getUniqueId(), recipientUUID, messageContent);
 
         return MailService.getInstance().sendMessage(message);
     }

@@ -2,6 +2,7 @@ package dansplugins.mailboxes.commands;
 
 import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.objects.Mailbox;
+import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -10,7 +11,7 @@ public class ListCommand {
 
     public boolean execute(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            // TODO: add message
+            Logger.getInstance().log("Only players can use this command");
             return false;
         }
 

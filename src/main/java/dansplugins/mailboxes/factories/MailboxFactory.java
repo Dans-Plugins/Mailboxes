@@ -28,6 +28,6 @@ public class MailboxFactory {
 
     private int getNewID() {
         // TODO: implement
-        return -1;
+        return 1;
     }
 }

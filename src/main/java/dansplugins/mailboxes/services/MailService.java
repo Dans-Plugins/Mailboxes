@@ -36,7 +36,7 @@ public class MailService {
             Mailbox mailbox = PersistentData.getInstance().getMailbox(playerMessage.getRecipientUUID());
 
             if (mailbox == null) {
-                // TODO: add message
+                Logger.getInstance().log("Mailbox was null.");
                 return false;
             }
 
