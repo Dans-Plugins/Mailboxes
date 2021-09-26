@@ -1,5 +1,7 @@
 package dansplugins.mailboxes.objects;
 
+import org.bukkit.entity.Player;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -12,4 +14,5 @@ public interface IMailbox {
     Message getMessage(int ID);
     void addMessage(Message message);
     void removeMessage(Message message);
+    void sendListOfMessagesToPlayer(Player player);
 }

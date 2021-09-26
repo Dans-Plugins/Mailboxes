@@ -1,5 +1,5 @@
 name: Mailboxes
-version: 0.3
+version: 0.4-alpha-1
 main: dansplugins.mailbox.Mailbox
 api-version: 1.13
 
@@ -10,5 +10,7 @@ commands:
 permissions:
   mailboxes.help:
     default: true
-  mailboxes.config:
+  mailboxes.list:
     default: true
+  mailboxes.config:
+    default: op

@@ -2,6 +2,7 @@ package dansplugins.mailboxes;
 
 import dansplugins.mailboxes.commands.ConfigCommand;
 import dansplugins.mailboxes.commands.HelpCommand;
+import dansplugins.mailboxes.commands.ListCommand;
 import dansplugins.mailboxes.utils.ArgumentParser;
 import dansplugins.mailboxes.utils.PermissionChecker;
 import org.bukkit.ChatColor;
@@ -32,6 +33,12 @@ public class CommandInterpreter {
                 if (!PermissionChecker.getInstance().checkPermission(sender, "mailboxes.config")) { return false; }
                 ConfigCommand command = new ConfigCommand();
                 return command.execute(sender, arguments);
+            }
+
+            if (secondaryLabel.equalsIgnoreCase("list")) {
+                if (!PermissionChecker.getInstance().checkPermission(sender, "mailboxes.list")) { return false; }
+                ListCommand command = new ListCommand();
+                return command.execute(sender);
             }
 
             sender.sendMessage(ChatColor.RED + "Mailboxes doesn't recognize that command.");

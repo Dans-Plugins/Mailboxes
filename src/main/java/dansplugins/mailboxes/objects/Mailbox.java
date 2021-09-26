@@ -3,6 +3,7 @@ package dansplugins.mailboxes.objects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Type;
@@ -93,5 +94,17 @@ public class Mailbox implements IMailbox, Savable {
 
         ID = Integer.parseInt(gson.fromJson(data.get("ID"), String.class));
         ownerUUID = UUID.fromString(gson.fromJson(data.get("ownerUUID"), String.class));
+    }
+
+    @Override
+    public void sendListOfMessagesToPlayer(Player player) {
+        if (messages.size() == 0) {
+            player.sendMessage(ChatColor.RED + "You don't have any messages at this time.");
+            return;
+        }
+        player.sendMessage(ChatColor.AQUA + "=== Messages ===");
+        for (Message message : messages) {
+            player.sendMessage(ChatColor.AQUA + "" + message.getID() + " - " + message.getDate().toString() + " - " + message.getSender());
+        }
     }
 }
