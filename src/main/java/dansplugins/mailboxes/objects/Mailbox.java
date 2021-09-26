@@ -1,8 +1,13 @@
 package dansplugins.mailboxes.objects;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -73,12 +78,20 @@ public class Mailbox implements IMailbox, Savable {
 
     @Override
     public Map<String, String> save() {
-        // TODO: implement
-        return null;
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        Map<String, String> saveMap = new HashMap<>();
+        saveMap.put("ID", gson.toJson(ID));
+        saveMap.put("ownerUUID", gson.toJson(ownerUUID));
+
+        return saveMap;
     }
 
     @Override
     public void load(Map<String, String> data) {
-        // TODO: implement
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        ID = Integer.parseInt(gson.fromJson(data.get("ID"), String.class));
+        ownerUUID = UUID.fromString(gson.fromJson(data.get("ownerUUID"), String.class));
     }
 }

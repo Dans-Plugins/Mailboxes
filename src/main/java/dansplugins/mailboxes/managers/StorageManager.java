@@ -42,6 +42,7 @@ public class StorageManager {
 
     public void save() {
         saveMailboxes();
+        saveMessages();
         if (ConfigManager.getInstance().hasBeenAltered()) {
             Mailboxes.getInstance().saveConfig();
         }
@@ -49,24 +50,24 @@ public class StorageManager {
 
     public void load() {
         loadMailboxes();
+        loadMessages();
     }
 
     private void saveMailboxes() {
-        // save each currency object individually
         List<Map<String, String>> Mailboxes = new ArrayList<>();
         for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()){
             Mailboxes.add(mailbox.save());
-            saveMessages(mailbox);
         }
 
         writeOutFiles(Mailboxes, MAILBOXES_FILE_NAME);
     }
 
-    private void saveMessages(Mailbox mailbox) {
-        // save each coinpurse object individually
+    private void saveMessages() {
         List<Map<String, String>> messages = new ArrayList<>();
-        for (Message message : mailbox.getMessages()){
-            messages.add(mailbox.save());
+        for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
+            for (Message message : mailbox.getMessages()){
+                messages.add(message.save());
+            }
         }
 
         writeOutFiles(messages, MESSAGES_FILE_NAME);
@@ -94,18 +95,27 @@ public class StorageManager {
         for (Map<String, String> mailboxData : data){
             Mailbox mailbox = new Mailbox(mailboxData);
             PersistentData.getInstance().addMailbox(mailbox);
-            loadMessages(mailbox);
         }
     }
 
-    private void loadMessages(Mailbox mailbox) {
-        mailbox.getMessages().clear();
-
+    private void loadMessages() {
         ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + MESSAGES_FILE_NAME);
 
+        // load in messages
+        ArrayList<Message> messages = new ArrayList<>();
         for (Map<String, String> messageData : data){
             Message message = new Message(messageData);
-            mailbox.addMessage(message);
+            messages.add(message);
+        }
+
+        // add messages to the correct mailboxes
+        for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
+            mailbox.getMessages().clear();
+            for (Message message : messages) {
+                if (message.getMailboxID() == mailbox.getID()) {
+                    mailbox.addMessage(message);
+                }
+            }
         }
     }
 
