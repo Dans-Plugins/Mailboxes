@@ -9,6 +9,7 @@ public class HelpCommand {
         sender.sendMessage(ChatColor.AQUA + "=== Mailboxes Commands ===");
         sender.sendMessage(ChatColor.AQUA + "/m help");
         sender.sendMessage(ChatColor.AQUA + "/m list");
+        sender.sendMessage(ChatColor.AQUA + "/m send");
         sender.sendMessage(ChatColor.AQUA + "/m config");
         return true;
     }

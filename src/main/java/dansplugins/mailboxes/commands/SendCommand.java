@@ -14,20 +14,12 @@ import java.util.UUID;
 public class SendCommand {
 
     public boolean execute(CommandSender sender, String[] args) {
-        String messageType;
-        String messageSender;
-        String messageRecipient;
-        String messageContent;
-
         if (!(sender instanceof Player)) {
-            messageType = "ConsoleMessage";
-            messageSender = "Console";
+            // TODO: add message
+            return false;
         }
-        else {
-            Player player = (Player) sender;
-            messageType = "PlayerMessage";
-            messageSender = player.getName();
-        }
+
+        Player player = (Player) sender;
 
         if (args.length == 0) {
             // TODO: send usage message
@@ -43,10 +35,15 @@ public class SendCommand {
 
         String recipientName = singleQuoteArgs.get(0);
         UUID recipientUUID = UUIDChecker.getInstance().findUUIDBasedOnPlayerName(recipientName);
-        messageRecipient = recipientUUID.toString();
-        messageContent = singleQuoteArgs.get(1);
 
-        Message message = MessageFactory.getInstance().createMessage(messageType, messageSender, messageRecipient, messageContent);
+        if (recipientUUID == null) {
+            // TODO: add message
+            return false;
+        }
+
+        String messageContent = singleQuoteArgs.get(1);
+
+        Message message = MessageFactory.getInstance().createPlayerMessage(player.getUniqueId(), recipientUUID, messageContent);
 
         return MailService.getInstance().sendMessage(message);
     }

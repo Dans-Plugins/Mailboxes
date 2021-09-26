@@ -11,7 +11,6 @@ import java.util.UUID;
 public class Message implements IMessage, Savable {
 
     private int ID;
-    private String type;
     private String sender;
     private String recipient;
     private String content;
@@ -19,9 +18,8 @@ public class Message implements IMessage, Savable {
 
     private int mailboxID;
 
-    public Message(int ID, String type, String sender, String recipient, String content) {
+    public Message(int ID, String sender, String recipient, String content) {
         this.ID = ID;
-        this.type = type;
         this.sender = sender;
         this.recipient = recipient;
         this.content = content;
@@ -40,16 +38,6 @@ public class Message implements IMessage, Savable {
     @Override
     public void setID(int ID) {
         this.ID = ID;
-    }
-
-    @Override
-    public String getType() {
-        return type;
-    }
-
-    @Override
-    public void setType(String type) {
-        this.type = type;
     }
 
     @Override
@@ -108,8 +96,8 @@ public class Message implements IMessage, Savable {
 
         Map<String, String> saveMap = new HashMap<>();
         saveMap.put("ID", gson.toJson(ID));
-        saveMap.put("type", gson.toJson(type));
         saveMap.put("sender", gson.toJson(sender));
+        saveMap.put("recipient", gson.toJson(recipient));
         saveMap.put("content", gson.toJson(content));
         saveMap.put("date", gson.toJson(date));
         saveMap.put("mailboxID", gson.toJson(mailboxID));
@@ -122,7 +110,6 @@ public class Message implements IMessage, Savable {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         ID = Integer.parseInt(gson.fromJson(data.get("ID"), String.class));
-        type = gson.fromJson(data.get("type"), String.class);
         sender = gson.fromJson(data.get("sender"), String.class);
         content = gson.fromJson(data.get("content"), String.class);
         date = gson.fromJson(data.get("date"), Date.class);

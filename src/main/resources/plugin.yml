@@ -12,5 +12,7 @@ permissions:
     default: true
   mailboxes.list:
     default: true
+  mailboxes.send:
+    default: true
   mailboxes.config:
     default: op

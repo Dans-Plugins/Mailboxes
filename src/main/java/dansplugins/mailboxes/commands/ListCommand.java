@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 public class ListCommand {
 
     public boolean execute(CommandSender sender) {
-
         if (!(sender instanceof Player)) {
             // TODO: add message
             return false;
