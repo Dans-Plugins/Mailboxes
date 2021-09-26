@@ -27,7 +27,7 @@ public class MessageFactory {
         return new Message(ID, sender, recipient, content);
     }
 
-    public Message createPlayerMessage(UUID senderUUID, UUID recipientUUID, String content) {
+    public PlayerMessage createPlayerMessage(UUID senderUUID, UUID recipientUUID, String content) {
         int ID = getNewID();
         String senderName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(senderUUID);
         String recipientName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(recipientUUID);

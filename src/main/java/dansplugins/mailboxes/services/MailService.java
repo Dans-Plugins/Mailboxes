@@ -3,6 +3,7 @@ package dansplugins.mailboxes.services;
 import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
+import dansplugins.mailboxes.objects.PlayerMessage;
 import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,7 +31,7 @@ public class MailService {
         Logger.getInstance().log("Message Sender: " + message.getSender());
         Logger.getInstance().log("Message Recipient: " + message.getRecipient());
 
-        if (message.getType().equalsIgnoreCase("PlayerMessage") || message.getType().equalsIgnoreCase("ConsoleMessage")) {
+        if (message instanceof PlayerMessage) {
             UUID recipientUUID = UUID.fromString(message.getRecipient());
             Mailbox mailbox = PersistentData.getInstance().getMailbox(recipientUUID);
 
