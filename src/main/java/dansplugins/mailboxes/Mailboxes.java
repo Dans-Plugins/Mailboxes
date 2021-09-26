@@ -23,7 +23,7 @@ public final class Mailboxes extends JavaPlugin {
         instance = this;
 
         // create/load config
-        if (!(new File("./plugins/Currencies/config.yml").exists())) {
+        if (!(new File("./plugins/Mailboxes/config.yml").exists())) {
             ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
         }
         else {
