@@ -35,6 +35,10 @@ public final class Mailboxes extends JavaPlugin {
         }
 
         StorageManager.getInstance().load();
+
+        EventRegistry.getInstance().registerEvents();
+
+        Scheduler.getInstance().scheduleAutosave();
     }
 
     @Override
