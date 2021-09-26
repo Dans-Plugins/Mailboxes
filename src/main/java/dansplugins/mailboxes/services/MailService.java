@@ -33,6 +33,10 @@ public class MailService {
 
         if (message instanceof PlayerMessage) {
             PlayerMessage playerMessage = (PlayerMessage) message;
+
+            Logger.getInstance().log("Sender UUID: " + playerMessage.getSenderUUID());
+            Logger.getInstance().log("Recipient UUID: " + playerMessage.getRecipientUUID());
+
             Mailbox mailbox = PersistentData.getInstance().getMailbox(playerMessage.getRecipientUUID());
 
             if (mailbox == null) {

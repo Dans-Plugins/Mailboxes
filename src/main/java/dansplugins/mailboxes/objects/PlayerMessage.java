@@ -8,9 +8,10 @@ public class PlayerMessage extends Message {
     private UUID senderUUID;
     private UUID recipientUUID;
 
-    public PlayerMessage(int ID, String sender, String recipient, String content) {
+    public PlayerMessage(int ID, String sender, String recipient, String content, UUID senderUUID, UUID recipientUUID) {
         super(ID, sender, recipient, content);
-
+        this.senderUUID = senderUUID;
+        this.recipientUUID = recipientUUID;
     }
 
     public PlayerMessage(Map<String, String> data) {

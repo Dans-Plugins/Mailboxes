@@ -32,7 +32,7 @@ public class MessageFactory {
         String senderName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(senderUUID);
         String recipientName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(recipientUUID);
 
-        return new PlayerMessage(ID, senderName, recipientName, content);
+        return new PlayerMessage(ID, senderName, recipientName, content, senderUUID, recipientUUID);
     }
 
     private int getNewID() {
