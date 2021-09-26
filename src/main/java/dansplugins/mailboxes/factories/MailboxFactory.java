@@ -22,6 +22,12 @@ public class MailboxFactory {
 
 
     public Mailbox createMailbox(Player player) {
-        return new Mailbox(player);
+        int ID = getNewID();
+        return new Mailbox(ID, player);
+    }
+
+    private int getNewID() {
+        // TODO: implement
+        return -1;
     }
 }

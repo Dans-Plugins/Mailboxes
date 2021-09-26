@@ -18,12 +18,14 @@ public class Mailbox implements IMailbox, Savable {
     private UUID ownerUUID;
     private ArrayList<Message> messages = new ArrayList<>();
 
-    public Mailbox(UUID uuid) {
-        ownerUUID = uuid;
+    public Mailbox(int ID, UUID uuid) {
+        this.ID = ID;
+        this.ownerUUID = uuid;
     }
 
-    public Mailbox(Player player) {
-        ownerUUID = player.getUniqueId();
+    public Mailbox(int ID, Player player) {
+        this.ID = ID;
+        this.ownerUUID = player.getUniqueId();
     }
 
     public Mailbox(Map<String, String> data) {
