@@ -1,6 +1,7 @@
 package dansplugins.mailboxes.data;
 
 import dansplugins.mailboxes.objects.Mailbox;
+import dansplugins.mailboxes.objects.Message;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -50,4 +51,14 @@ public class PersistentData {
         mailboxes.remove(mailbox);
     }
 
+    public Message getMessage(int messageID) {
+        for (Mailbox mailbox : mailboxes) {
+            for (Message message : mailbox.getMessages()) {
+                if (message.getID() == messageID) {
+                    return message;
+                }
+            }
+        }
+        return null;
+    }
 }
