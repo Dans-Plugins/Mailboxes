@@ -1,5 +1,10 @@
 package dansplugins.mailboxes.objects;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,5 +37,26 @@ public class PlayerMessage extends Message {
 
     public void setRecipientUUID(UUID recipientUUID) {
         this.recipientUUID = recipientUUID;
+    }
+
+    @Override
+    public Map<String, String> save() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        Map<String, String> saveMap = super.save();
+        saveMap.put("senderUUID", gson.toJson(senderUUID));
+        saveMap.put("recipientUUID", gson.toJson(recipientUUID));
+
+        return saveMap;
+    }
+
+    @Override
+    public void load(Map<String, String> data) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        super.load(data);
+
+        senderUUID = UUID.fromString(gson.fromJson(data.get("senderUUID"), String.class));
+        recipientUUID = UUID.fromString(gson.fromJson(data.get("recipientUUID"), String.class));
     }
 }

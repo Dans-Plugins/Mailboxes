@@ -80,6 +80,18 @@ public class Mailbox implements IMailbox, Savable {
     }
 
     @Override
+    public void sendListOfMessagesToPlayer(Player player) {
+        if (messages.size() == 0) {
+            player.sendMessage(ChatColor.RED + "You don't have any messages at this time.");
+            return;
+        }
+        player.sendMessage(ChatColor.AQUA + "=== Messages ===");
+        for (Message message : messages) {
+            player.sendMessage(ChatColor.AQUA + "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender());
+        }
+    }
+
+    @Override
     public Map<String, String> save() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -96,17 +108,5 @@ public class Mailbox implements IMailbox, Savable {
 
         ID = Integer.parseInt(gson.fromJson(data.get("ID"), String.class));
         ownerUUID = UUID.fromString(gson.fromJson(data.get("ownerUUID"), String.class));
-    }
-
-    @Override
-    public void sendListOfMessagesToPlayer(Player player) {
-        if (messages.size() == 0) {
-            player.sendMessage(ChatColor.RED + "You don't have any messages at this time.");
-            return;
-        }
-        player.sendMessage(ChatColor.AQUA + "=== Messages ===");
-        for (Message message : messages) {
-            player.sendMessage(ChatColor.AQUA + "" + message.getID() + " - " + message.getDate().toString() + " - " + message.getSender());
-        }
     }
 }

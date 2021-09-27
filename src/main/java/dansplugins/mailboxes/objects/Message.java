@@ -122,6 +122,7 @@ public class Message implements IMessage, Savable {
 
         ID = Integer.parseInt(gson.fromJson(data.get("ID"), String.class));
         sender = gson.fromJson(data.get("sender"), String.class);
+        recipient = gson.fromJson(data.get("recipient"), String.class);
         content = gson.fromJson(data.get("content"), String.class);
         date = gson.fromJson(data.get("date"), Date.class);
         mailboxID = Integer.parseInt(gson.fromJson(data.get("mailboxID"), String.class));
