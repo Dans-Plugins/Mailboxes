@@ -43,8 +43,8 @@ public class MessageFactory {
         int maxAttempts = 25;
         int newID = -1;
         do {
-            int maxCurrencyIDNumber = ConfigManager.getInstance().getInt("maxMessageIDNumber");
-            newID = random.nextInt(maxCurrencyIDNumber);
+            int maxMessageIDNumber = ConfigManager.getInstance().getInt("maxMessageIDNumber");
+            newID = random.nextInt(maxMessageIDNumber);
             numAttempts++;
         } while (isMessageIDTaken(newID) && numAttempts <= maxAttempts);
         return newID;
