@@ -1,5 +1,7 @@
 package dansplugins.mailboxes.objects;
 
+import org.bukkit.entity.Player;
+
 import java.util.Date;
 
 public interface IMessage {
@@ -15,4 +17,5 @@ public interface IMessage {
     void setDate(Date date);
     int getMailboxID();
     void setMailboxID(int ID);
+    void sendContentToPlayer(Player player);
 }

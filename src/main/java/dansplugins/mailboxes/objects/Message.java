@@ -2,6 +2,8 @@ package dansplugins.mailboxes.objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -88,6 +90,15 @@ public class Message implements IMessage, Savable {
     @Override
     public void setMailboxID(int ID) {
         this.mailboxID = ID;
+    }
+
+    @Override
+    public void sendContentToPlayer(Player player) {
+        player.sendMessage(ChatColor.AQUA + "=============================");
+        player.sendMessage(ChatColor.AQUA + "Date: " + date.toString());
+        player.sendMessage(ChatColor.AQUA + "From: " + sender);
+        player.sendMessage(ChatColor.AQUA + "\"" + content + "\"");
+        player.sendMessage(ChatColor.AQUA + "=============================");
     }
 
     @Override

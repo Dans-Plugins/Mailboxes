@@ -1,9 +1,6 @@
 package dansplugins.mailboxes;
 
-import dansplugins.mailboxes.commands.ConfigCommand;
-import dansplugins.mailboxes.commands.HelpCommand;
-import dansplugins.mailboxes.commands.ListCommand;
-import dansplugins.mailboxes.commands.SendCommand;
+import dansplugins.mailboxes.commands.*;
 import dansplugins.mailboxes.utils.ArgumentParser;
 import dansplugins.mailboxes.utils.PermissionChecker;
 import org.bukkit.ChatColor;
@@ -45,6 +42,12 @@ public class CommandInterpreter {
             if (secondaryLabel.equalsIgnoreCase("send")) {
                 if (!PermissionChecker.getInstance().checkPermission(sender, "mailboxes.send")) { return false; }
                 SendCommand command = new SendCommand();
+                return command.execute(sender, arguments);
+            }
+
+            if (secondaryLabel.equalsIgnoreCase("open")) {
+                if (!PermissionChecker.getInstance().checkPermission(sender, "mailboxes.open")) { return false; }
+                OpenCommand command = new OpenCommand();
                 return command.execute(sender, arguments);
             }
 
