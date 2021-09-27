@@ -44,6 +44,9 @@ public class ConfigManager {
         if (!getConfig().isSet("maxMessageIDNumber")) {
             getConfig().set("maxMessageIDNumber", 10000);
         }
+        if (!getConfig().isSet("maxMailboxIDNumber")) {
+            getConfig().set("maxMailboxIDNumber", 10000);
+        }
         getConfig().options().copyDefaults(true);
         Mailboxes.getInstance().saveConfig();
     }

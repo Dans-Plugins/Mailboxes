@@ -41,6 +41,15 @@ public class PersistentData {
         return null;
     }
 
+    public Mailbox getMailbox(int mailboxID) {
+        for (Mailbox mailbox : mailboxes) {
+            if (mailbox.getID() == mailboxID) {
+                return mailbox;
+            }
+        }
+        return null;
+    }
+
     public void addMailbox(Mailbox mailbox) {
         if (getMailbox(mailbox.getOwnerUUID()) == null) {
             mailboxes.add(mailbox);
