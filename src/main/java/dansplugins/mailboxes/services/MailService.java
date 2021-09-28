@@ -44,6 +44,8 @@ public class MailService {
                 return false;
             }
 
+            playerMessage.setMailboxID(mailbox.getID());
+
             mailbox.addMessage(playerMessage);
             Player player = Bukkit.getPlayer(playerMessage.getRecipientUUID());
             try {
