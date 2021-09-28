@@ -54,8 +54,9 @@ public class SendCommand {
         String messageContent = singleQuoteArgs.get(0);
 
         PlayerMessage message = MessageFactory.getInstance().createPlayerMessage(player.getUniqueId(), recipientUUID, messageContent);
-
-        return MailService.getInstance().sendMessage(message);
+        MailService.getInstance().sendMessage(message);
+        player.sendMessage(ChatColor.GREEN + "Sent.");
+        return true;
     }
 
 }

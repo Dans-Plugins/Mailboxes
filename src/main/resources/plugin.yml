@@ -16,9 +16,9 @@ permissions:
     default: true
   mailboxes.open:
     default: true
-  mailbox.delete:
+  mailboxes.delete:
     default: true
-  mailbox.archive:
+  mailboxes.archive:
     default: true
   mailboxes.config:
     default: op
