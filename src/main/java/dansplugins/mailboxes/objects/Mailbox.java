@@ -146,6 +146,8 @@ public class Mailbox implements IMailbox, Savable {
     public void archiveMessage(Message message) {
         Logger.getInstance().log("Archiving message with ID: " + message.getID());
         message.setArchived(true);
+        removeActiveMessage(message);
+        addArchivedMessage(message);
     }
 
     @Override
