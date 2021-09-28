@@ -64,6 +64,12 @@ public class Mailbox implements IMailbox, Savable {
     }
 
     @Override
+    public void removeMessage(Message message) {
+        removeActiveMessage(message);
+        removeArchivedMessage(message);
+    }
+
+    @Override
     public ArrayList<Message> getActiveMessages() {
         return activeMessages;
     }

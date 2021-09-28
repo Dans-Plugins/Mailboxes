@@ -38,7 +38,7 @@ public class DeleteCommand {
             return false;
         }
 
-        mailbox.removeActiveMessage(message);
+        mailbox.removeMessage(message);
         player.sendMessage(ChatColor.GREEN + "Deleted.");
         return true;
     }

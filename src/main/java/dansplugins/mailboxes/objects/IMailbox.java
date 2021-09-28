@@ -11,6 +11,7 @@ public interface IMailbox {
     UUID getOwnerUUID();
     void setOwnerUUID(UUID uuid);
     Message getMessage(int ID);
+    void removeMessage(Message message);
     ArrayList<Message> getActiveMessages();
     Message getActiveMessage(int ID);
     void addActiveMessage(Message message);
