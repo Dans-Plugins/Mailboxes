@@ -23,7 +23,8 @@ public class StorageManager {
 
     private final static String FILE_PATH = "./plugins/Mailboxes/";
     private final static String MAILBOXES_FILE_NAME = "mailboxes.json";
-    private final static String MESSAGES_FILE_NAME = "messages.json";
+    private final static String ACTIVE_MESSAGES_FILE_NAME = "activeMessages.json";
+    private final static String ARCHIVED_MESSAGES_FILE_NAME = "archivedMessages.json";
 
     private final static Type LIST_MAP_TYPE = new TypeToken<ArrayList<HashMap<String, String>>>(){}.getType();
 
@@ -42,7 +43,7 @@ public class StorageManager {
 
     public void save() {
         saveMailboxes();
-        saveMessages();
+        saveActiveMessages();
         if (ConfigManager.getInstance().hasBeenAltered()) {
             Mailboxes.getInstance().saveConfig();
         }
@@ -50,7 +51,7 @@ public class StorageManager {
 
     public void load() {
         loadMailboxes();
-        loadMessages();
+        loadActiveMessages();
     }
 
     private void saveMailboxes() {
@@ -62,7 +63,7 @@ public class StorageManager {
         writeOutFiles(Mailboxes, MAILBOXES_FILE_NAME);
     }
 
-    private void saveMessages() {
+    private void saveActiveMessages() {
         List<Map<String, String>> messages = new ArrayList<>();
         for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
             for (Message message : mailbox.getActiveMessages()){
@@ -70,7 +71,7 @@ public class StorageManager {
             }
         }
 
-        writeOutFiles(messages, MESSAGES_FILE_NAME);
+        writeOutFiles(messages, ACTIVE_MESSAGES_FILE_NAME);
     }
 
     private void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
@@ -98,8 +99,8 @@ public class StorageManager {
         }
     }
 
-    private void loadMessages() {
-        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + MESSAGES_FILE_NAME);
+    private void loadActiveMessages() {
+        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + ACTIVE_MESSAGES_FILE_NAME);
 
         // load in messages
         ArrayList<Message> messages = new ArrayList<>();
