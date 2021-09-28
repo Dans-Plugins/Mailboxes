@@ -9,8 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
-
 public class MailService {
 
     private static MailService instance;
@@ -46,7 +44,7 @@ public class MailService {
 
             playerMessage.setMailboxID(mailbox.getID());
 
-            mailbox.addMessage(playerMessage);
+            mailbox.addActiveMessage(playerMessage);
             Player player = Bukkit.getPlayer(playerMessage.getRecipientUUID());
             try {
                 player.sendMessage(ChatColor.AQUA + "You've received a message. Type /m list to view your messages.");

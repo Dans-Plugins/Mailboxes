@@ -10,10 +10,19 @@ public interface IMailbox {
     void setID(int ID);
     UUID getOwnerUUID();
     void setOwnerUUID(UUID uuid);
-    ArrayList<Message> getMessages();
     Message getMessage(int ID);
-    void addMessage(Message message);
     void removeMessage(Message message);
-    void removeMessage(int ID);
-    void sendListOfMessagesToPlayer(Player player);
+    ArrayList<Message> getActiveMessages();
+    Message getActiveMessage(int ID);
+    void addActiveMessage(Message message);
+    void removeActiveMessage(Message message);
+    void removeActiveMessage(int ID);
+    void sendListOfActiveMessagesToPlayer(Player player);
+    ArrayList<Message> getArchivedMessages();
+    Message getArchivedMessage(int ID);
+    void addArchivedMessage(Message message);
+    void removeArchivedMessage(Message message);
+    void removeArchivedMessage(int ID);
+    void sendListOfArchivedMessagesToPlayer(Player player);
+    void archiveMessage(Message message);
 }

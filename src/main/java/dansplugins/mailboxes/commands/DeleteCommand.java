@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 public class DeleteCommand {
 
     public boolean execute(CommandSender sender, String[] args) {
-
         if (!(sender instanceof Player)) {
             // TODO: add message
             return false;

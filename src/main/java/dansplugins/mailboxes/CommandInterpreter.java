@@ -36,7 +36,7 @@ public class CommandInterpreter {
             if (secondaryLabel.equalsIgnoreCase("list")) {
                 if (!PermissionChecker.getInstance().checkPermission(sender, "mailboxes.list")) { return false; }
                 ListCommand command = new ListCommand();
-                return command.execute(sender);
+                return command.execute(sender, arguments);
             }
 
             if (secondaryLabel.equalsIgnoreCase("send")) {
@@ -54,6 +54,12 @@ public class CommandInterpreter {
             if (secondaryLabel.equalsIgnoreCase("delete")) {
                 if (!PermissionChecker.getInstance().checkPermission(sender, "mailboxes.delete")) { return false; }
                 DeleteCommand command = new DeleteCommand();
+                return command.execute(sender, arguments);
+            }
+
+            if (secondaryLabel.equalsIgnoreCase("archive")) {
+                if (!PermissionChecker.getInstance().checkPermission(sender, "mailboxes.archive")) { return false; }
+                ArchiveCommand command = new ArchiveCommand();
                 return command.execute(sender, arguments);
             }
 

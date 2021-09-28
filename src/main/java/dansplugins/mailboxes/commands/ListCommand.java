@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public class ListCommand {
 
-    public boolean execute(CommandSender sender) {
+    public boolean execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
             Logger.getInstance().log("Only players can use this command");
             return false;
@@ -24,7 +24,22 @@ public class ListCommand {
             return false;
         }
 
-        mailbox.sendListOfMessagesToPlayer(player);
+        if (args.length > 0) {
+            String list = args[0];
+            if (list.equalsIgnoreCase("active")) {
+                mailbox.sendListOfActiveMessagesToPlayer(player);
+            }
+            else if (list.equalsIgnoreCase("archived")) {
+                mailbox.sendListOfArchivedMessagesToPlayer(player);
+            }
+            else {
+                player.sendMessage(ChatColor.RED + "Sub-commands: active, archived");
+                return false;
+            }
+            return true;
+        }
+
+        mailbox.sendListOfActiveMessagesToPlayer(player);
         return true;
     }
 

@@ -23,7 +23,8 @@ public class StorageManager {
 
     private final static String FILE_PATH = "./plugins/Mailboxes/";
     private final static String MAILBOXES_FILE_NAME = "mailboxes.json";
-    private final static String MESSAGES_FILE_NAME = "messages.json";
+    private final static String ACTIVE_MESSAGES_FILE_NAME = "activeMessages.json";
+    private final static String ARCHIVED_MESSAGES_FILE_NAME = "archivedMessages.json";
 
     private final static Type LIST_MAP_TYPE = new TypeToken<ArrayList<HashMap<String, String>>>(){}.getType();
 
@@ -42,7 +43,8 @@ public class StorageManager {
 
     public void save() {
         saveMailboxes();
-        saveMessages();
+        saveActiveMessages();
+        saveArchivedMessages();
         if (ConfigManager.getInstance().hasBeenAltered()) {
             Mailboxes.getInstance().saveConfig();
         }
@@ -50,7 +52,8 @@ public class StorageManager {
 
     public void load() {
         loadMailboxes();
-        loadMessages();
+        loadActiveMessages();
+        loadArchivedMessages();
     }
 
     private void saveMailboxes() {
@@ -62,15 +65,26 @@ public class StorageManager {
         writeOutFiles(Mailboxes, MAILBOXES_FILE_NAME);
     }
 
-    private void saveMessages() {
+    private void saveActiveMessages() {
         List<Map<String, String>> messages = new ArrayList<>();
         for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
-            for (Message message : mailbox.getMessages()){
+            for (Message message : mailbox.getActiveMessages()){
                 messages.add(message.save());
             }
         }
 
-        writeOutFiles(messages, MESSAGES_FILE_NAME);
+        writeOutFiles(messages, ACTIVE_MESSAGES_FILE_NAME);
+    }
+
+    private void saveArchivedMessages() {
+        List<Map<String, String>> messages = new ArrayList<>();
+        for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
+            for (Message message : mailbox.getArchivedMessages()){
+                messages.add(message.save());
+            }
+        }
+
+        writeOutFiles(messages, ARCHIVED_MESSAGES_FILE_NAME);
     }
 
     private void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
@@ -98,8 +112,8 @@ public class StorageManager {
         }
     }
 
-    private void loadMessages() {
-        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + MESSAGES_FILE_NAME);
+    private void loadActiveMessages() {
+        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + ACTIVE_MESSAGES_FILE_NAME);
 
         // load in messages
         ArrayList<Message> messages = new ArrayList<>();
@@ -110,10 +124,31 @@ public class StorageManager {
 
         // add messages to the correct mailboxes
         for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
-            mailbox.getMessages().clear();
+            mailbox.getActiveMessages().clear();
             for (Message message : messages) {
                 if (message.getMailboxID() == mailbox.getID()) {
-                    mailbox.addMessage(message);
+                    mailbox.addActiveMessage(message);
+                }
+            }
+        }
+    }
+
+    private void loadArchivedMessages() {
+        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + ARCHIVED_MESSAGES_FILE_NAME);
+
+        // load in messages
+        ArrayList<Message> messages = new ArrayList<>();
+        for (Map<String, String> messageData : data){
+            Message message = new Message(messageData);
+            messages.add(message);
+        }
+
+        // add messages to the correct mailboxes
+        for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
+            mailbox.getArchivedMessages().clear();
+            for (Message message : messages) {
+                if (message.getMailboxID() == mailbox.getID()) {
+                    mailbox.addArchivedMessage(message);
                 }
             }
         }

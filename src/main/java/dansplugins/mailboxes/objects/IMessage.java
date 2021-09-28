@@ -18,4 +18,6 @@ public interface IMessage {
     int getMailboxID();
     void setMailboxID(int ID);
     void sendContentToPlayer(Player player);
+    boolean isArchived();
+    void setArchived(boolean b);
 }
