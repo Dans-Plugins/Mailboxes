@@ -8,7 +8,7 @@ This plugin isn't available on SpigotMC yet, but you can download a pre-release 
 
 ## Usage
 - [User Guide](https://github.com/dmccoystephenson/Mailboxes/wiki/Guide) (coming soon)
-- [List of Commands](https://github.com/dmccoystephenson/Mailboxes/wiki/Commands) (coming soon)
+- [List of Commands](https://github.com/dmccoystephenson/Mailboxes/wiki/Commands)
 - [FAQ](https://github.com/dmccoystephenson/Mailboxes/wiki/FAQ) (coming soon)
 
 ## Support
