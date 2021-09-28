@@ -18,8 +18,8 @@ public class Message implements IMessage, Savable {
     private String recipient;
     private String content;
     private Date date;
-
     private int mailboxID;
+    boolean archived = false;
 
     public Message(int ID, String sender, String recipient, String content) {
         this.ID = ID;
@@ -114,6 +114,16 @@ public class Message implements IMessage, Savable {
     }
 
     @Override
+    public boolean isArchived() {
+        return archived;
+    }
+
+    @Override
+    public void setArchived(boolean b) {
+        archived = b;
+    }
+
+    @Override
     public Map<String, String> save() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -124,6 +134,7 @@ public class Message implements IMessage, Savable {
         saveMap.put("content", gson.toJson(content));
         saveMap.put("date", gson.toJson(date));
         saveMap.put("mailboxID", gson.toJson(mailboxID));
+        saveMap.put("archived", gson.toJson(archived));
 
         return saveMap;
     }
@@ -138,5 +149,6 @@ public class Message implements IMessage, Savable {
         content = gson.fromJson(data.get("content"), String.class);
         date = gson.fromJson(data.get("date"), Date.class);
         mailboxID = Integer.parseInt(gson.fromJson(data.get("mailboxID"), String.class));
+        archived = Boolean.parseBoolean(gson.fromJson(data.get("archived"), String.class));
     }
 }
