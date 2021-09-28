@@ -14,5 +14,6 @@ public interface IMailbox {
     Message getMessage(int ID);
     void addMessage(Message message);
     void removeMessage(Message message);
+    void removeMessage(int ID);
     void sendListOfMessagesToPlayer(Player player);
 }

@@ -51,6 +51,12 @@ public class CommandInterpreter {
                 return command.execute(sender, arguments);
             }
 
+            if (secondaryLabel.equalsIgnoreCase("delete")) {
+                if (!PermissionChecker.getInstance().checkPermission(sender, "mailboxes.delete")) { return false; }
+                DeleteCommand command = new DeleteCommand();
+                return command.execute(sender, arguments);
+            }
+
             sender.sendMessage(ChatColor.RED + "Mailboxes doesn't recognize that command.");
         }
         return false;

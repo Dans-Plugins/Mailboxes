@@ -80,6 +80,12 @@ public class Mailbox implements IMailbox, Savable {
     }
 
     @Override
+    public void removeMessage(int ID) {
+        Message message = getMessage(ID);
+        removeMessage(message);
+    }
+
+    @Override
     public void sendListOfMessagesToPlayer(Player player) {
         if (messages.size() == 0) {
             player.sendMessage(ChatColor.RED + "You don't have any messages at this time.");
