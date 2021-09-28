@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class Message implements IMessage, Savable {
 

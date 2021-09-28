@@ -1,9 +1,8 @@
 package dansplugins.mailboxes.commands;
 
+import dansplugins.mailboxes.factories.MessageFactory;
 import dansplugins.mailboxes.objects.PlayerMessage;
 import dansplugins.mailboxes.services.MailService;
-import dansplugins.mailboxes.factories.MessageFactory;
-import dansplugins.mailboxes.objects.Message;
 import dansplugins.mailboxes.utils.ArgumentParser;
 import dansplugins.mailboxes.utils.Logger;
 import dansplugins.mailboxes.utils.UUIDChecker;

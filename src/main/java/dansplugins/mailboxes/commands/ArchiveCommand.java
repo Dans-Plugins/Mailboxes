@@ -1,7 +1,6 @@
 package dansplugins.mailboxes.commands;
 
 import dansplugins.mailboxes.data.PersistentData;
-import dansplugins.mailboxes.managers.MailboxManager;
 import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
 import org.bukkit.ChatColor;
