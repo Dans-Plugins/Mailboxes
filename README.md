@@ -37,4 +37,4 @@ GPL3
 This project is in active development.
 
 ### bStats
-This plugin doesn't have a bStats page yet.
+You can find the bStats page for this plugin [here](https://bstats.org/plugin/bukkit/Mailboxes/12902).
