@@ -44,6 +44,7 @@ public class StorageManager {
     public void save() {
         saveMailboxes();
         saveActiveMessages();
+        saveArchivedMessages();
         if (ConfigManager.getInstance().hasBeenAltered()) {
             Mailboxes.getInstance().saveConfig();
         }
@@ -52,6 +53,7 @@ public class StorageManager {
     public void load() {
         loadMailboxes();
         loadActiveMessages();
+        loadArchivedMessages();
     }
 
     private void saveMailboxes() {
@@ -72,6 +74,17 @@ public class StorageManager {
         }
 
         writeOutFiles(messages, ACTIVE_MESSAGES_FILE_NAME);
+    }
+
+    private void saveArchivedMessages() {
+        List<Map<String, String>> messages = new ArrayList<>();
+        for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
+            for (Message message : mailbox.getArchivedMessages()){
+                messages.add(message.save());
+            }
+        }
+
+        writeOutFiles(messages, ARCHIVED_MESSAGES_FILE_NAME);
     }
 
     private void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
@@ -115,6 +128,27 @@ public class StorageManager {
             for (Message message : messages) {
                 if (message.getMailboxID() == mailbox.getID()) {
                     mailbox.addActiveMessage(message);
+                }
+            }
+        }
+    }
+
+    private void loadArchivedMessages() {
+        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + ARCHIVED_MESSAGES_FILE_NAME);
+
+        // load in messages
+        ArrayList<Message> messages = new ArrayList<>();
+        for (Map<String, String> messageData : data){
+            Message message = new Message(messageData);
+            messages.add(message);
+        }
+
+        // add messages to the correct mailboxes
+        for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
+            mailbox.getArchivedMessages().clear();
+            for (Message message : messages) {
+                if (message.getMailboxID() == mailbox.getID()) {
+                    mailbox.addArchivedMessage(message);
                 }
             }
         }
