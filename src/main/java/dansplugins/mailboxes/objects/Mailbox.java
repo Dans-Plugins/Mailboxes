@@ -53,6 +53,17 @@ public class Mailbox implements IMailbox, Savable {
     }
 
     @Override
+    public Message getMessage(int ID) {
+        Message message = getActiveMessage(ID);
+        if (message != null) {
+            return message;
+        }
+        else {
+            return getArchivedMessage(ID);
+        }
+    }
+
+    @Override
     public ArrayList<Message> getActiveMessages() {
         return activeMessages;
     }

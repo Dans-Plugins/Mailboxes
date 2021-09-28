@@ -10,6 +10,7 @@ public interface IMailbox {
     void setID(int ID);
     UUID getOwnerUUID();
     void setOwnerUUID(UUID uuid);
+    Message getMessage(int ID);
     ArrayList<Message> getActiveMessages();
     Message getActiveMessage(int ID);
     void addActiveMessage(Message message);
