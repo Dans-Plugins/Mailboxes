@@ -43,7 +43,7 @@ public class SendCommand {
             return false;
         }
 
-        String messageContent = singleQuoteArgs.get(1);
+        String messageContent = singleQuoteArgs.get(0);
 
         PlayerMessage message = MessageFactory.getInstance().createPlayerMessage(player.getUniqueId(), recipientUUID, messageContent);
 
