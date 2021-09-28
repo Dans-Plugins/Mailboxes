@@ -26,7 +26,7 @@ public class DeleteCommand {
 
         Mailbox mailbox = PersistentData.getInstance().getMailbox(player);
 
-        Message message = mailbox.getActiveMessage(ID);
+        Message message = mailbox.getMessage(ID);
 
         if (message == null) {
             player.sendMessage(ChatColor.RED + "That message wasn't found.");

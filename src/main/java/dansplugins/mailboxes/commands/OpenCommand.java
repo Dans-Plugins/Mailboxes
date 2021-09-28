@@ -32,7 +32,7 @@ public class OpenCommand {
             return false;
         }
 
-        Message message = mailbox.getActiveMessage(ID);
+        Message message = mailbox.getMessage(ID);
 
         if (message == null) {
             player.sendMessage(ChatColor.RED + "A message with that ID wasn't found.");

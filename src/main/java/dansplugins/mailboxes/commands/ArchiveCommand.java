@@ -27,10 +27,15 @@ public class ArchiveCommand {
 
         Mailbox mailbox = PersistentData.getInstance().getMailbox(player);
 
-        Message message = mailbox.getActiveMessage(ID);
+        Message message = mailbox.getMessage(ID);
 
         if (message == null) {
             player.sendMessage(ChatColor.RED + "That message wasn't found.");
+            return false;
+        }
+
+        if (message.isArchived()) {
+            player.sendMessage(ChatColor.RED + "That message is already archived.");
             return false;
         }
 
