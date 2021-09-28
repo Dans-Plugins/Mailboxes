@@ -1,5 +1,6 @@
 package dansplugins.mailboxes.externalapi;
 
+import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
 import org.bukkit.entity.Player;
 
@@ -7,95 +8,100 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class M_Mailbox implements IM_Mailbox {
+
+    private Mailbox mailbox;
+
+    public M_Mailbox(Mailbox mailbox) {
+        this.mailbox = mailbox;
+    }
+
+    // accessors
+
     @Override
     public int getID() {
-        // TODO: implement
-        return 0;
+        return mailbox.getID();
     }
 
     @Override
     public UUID getOwnerUUID() {
-        // TODO: implement
-        return null;
+        return mailbox.getOwnerUUID();
     }
 
     @Override
     public Message getMessage(int ID) {
-        // TODO: implement
-        return null;
+        return mailbox.getMessage(ID);
     }
 
     @Override
     public ArrayList<Message> getActiveMessages() {
-        // TODO: implement
-        return null;
+        return mailbox.getActiveMessages();
     }
 
     @Override
     public Message getActiveMessage(int ID) {
-        // TODO: implement
-        return null;
+        return mailbox.getActiveMessage(ID);
     }
 
     @Override
     public ArrayList<Message> getArchivedMessages() {
-        // TODO: implement
-        return null;
+        return mailbox.getArchivedMessages();
     }
 
     @Override
     public Message getArchivedMessage(int ID) {
-        // TODO: implement
-        return null;
+        return mailbox.getArchivedMessage(ID);
     }
 
     @Override
     public void sendListOfActiveMessagesToPlayer(Player player) {
-        // TODO: implement
+        mailbox.sendListOfActiveMessagesToPlayer(player);
     }
 
     @Override
     public void sendListOfArchivedMessagesToPlayer(Player player) {
-        // TODO: implement
+        mailbox.sendListOfArchivedMessagesToPlayer(player);
     }
+
+    // mutators
 
     @Override
     public void addArchivedMessage(Message message) {
-        // TODO: implement
+        mailbox.addArchivedMessage(message);
     }
 
     @Override
     public void removeArchivedMessage(Message message) {
-        // TODO: implement
+        mailbox.removeArchivedMessage(message);
     }
 
     @Override
     public void removeArchivedMessage(int ID) {
-        // TODO: implement
+        mailbox.removeArchivedMessage(ID);
     }
 
     @Override
     public void addActiveMessage(Message message) {
-        // TODO: implement
+        mailbox.addActiveMessage(message);
     }
 
     @Override
     public void removeActiveMessage(Message message) {
-        // TODO: implement
+        mailbox.removeActiveMessage(message);
     }
 
     @Override
     public void removeActiveMessage(int ID) {
-        // TODO: implement
+        mailbox.removeActiveMessage(ID);
     }
 
     @Override
     public void removeMessage(Message message) {
-        // TODO: implement
+        mailbox.removeMessage(message);
     }
 
     @Override
     public void archiveMessage(Message message) {
-        // TODO: implement
+        mailbox.archiveMessage(message);
     }
+
 }
