@@ -16,6 +16,7 @@ public class Mailbox implements IMailbox, Savable {
     private int ID;
     private UUID ownerUUID;
     private ArrayList<Message> activeMessages = new ArrayList<>();
+    private ArrayList<Message> archivedMessages = new ArrayList<>();
 
     public Mailbox(int ID, UUID uuid) {
         this.ID = ID;
@@ -87,11 +88,56 @@ public class Mailbox implements IMailbox, Savable {
     @Override
     public void sendListOfActiveMessagesToPlayer(Player player) {
         if (activeMessages.size() == 0) {
-            player.sendMessage(ChatColor.RED + "You don't have any messages at this time.");
+            player.sendMessage(ChatColor.RED + "You don't have any active messages at this time.");
             return;
         }
-        player.sendMessage(ChatColor.AQUA + "=== Messages ===");
+        player.sendMessage(ChatColor.AQUA + "=== Active Messages ===");
         for (Message message : activeMessages) {
+            player.sendMessage(ChatColor.AQUA + "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender());
+        }
+    }
+
+    @Override
+    public ArrayList<Message> getArchivedMessages() {
+        return archivedMessages;
+    }
+
+    @Override
+    public Message getArchivedMessage(int ID) {
+        for (Message message : archivedMessages) {
+            if (message.getID() == ID) {
+                return message;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void addArchivedMessage(Message message) {
+        if (getArchivedMessage(message.getID()) == null) {
+            archivedMessages.add(message);
+        }
+    }
+
+    @Override
+    public void removeArchivedMessage(Message message) {
+        archivedMessages.remove(message);
+    }
+
+    @Override
+    public void removeArchivedMessage(int ID) {
+        Message message = getArchivedMessage(ID);
+        removeArchivedMessage(message);
+    }
+
+    @Override
+    public void sendListOfArchivedMessagesToPlayer(Player player) {
+        if (activeMessages.size() == 0) {
+            player.sendMessage(ChatColor.RED + "You don't have any archived messages at this time.");
+            return;
+        }
+        player.sendMessage(ChatColor.AQUA + "=== Archived Messages ===");
+        for (Message message : archivedMessages) {
             player.sendMessage(ChatColor.AQUA + "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender());
         }
     }

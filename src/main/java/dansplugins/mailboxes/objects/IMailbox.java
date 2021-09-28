@@ -16,5 +16,11 @@ public interface IMailbox {
     void removeActiveMessage(Message message);
     void removeActiveMessage(int ID);
     void sendListOfActiveMessagesToPlayer(Player player);
+    ArrayList<Message> getArchivedMessages();
+    Message getArchivedMessage(int ID);
+    void addArchivedMessage(Message message);
+    void removeArchivedMessage(Message message);
+    void removeArchivedMessage(int ID);
+    void sendListOfArchivedMessagesToPlayer(Player player);
     void archiveMessage(Message message);
 }
