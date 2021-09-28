@@ -57,6 +57,12 @@ public class CommandInterpreter {
                 return command.execute(sender, arguments);
             }
 
+            if (secondaryLabel.equalsIgnoreCase("archive")) {
+                if (!PermissionChecker.getInstance().checkPermission(sender, "mailboxes.archive")) { return false; }
+                ArchiveCommand command = new ArchiveCommand();
+                return command.execute(sender, arguments);
+            }
+
             sender.sendMessage(ChatColor.RED + "Mailboxes doesn't recognize that command.");
         }
         return false;

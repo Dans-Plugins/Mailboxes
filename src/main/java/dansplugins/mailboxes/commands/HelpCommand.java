@@ -12,6 +12,7 @@ public class HelpCommand {
         sender.sendMessage(ChatColor.AQUA + "/m open");
         sender.sendMessage(ChatColor.AQUA + "/m send");
         sender.sendMessage(ChatColor.AQUA + "/m delete");
+        sender.sendMessage(ChatColor.AQUA + "/m archive");
         sender.sendMessage(ChatColor.AQUA + "/m config");
         return true;
     }
