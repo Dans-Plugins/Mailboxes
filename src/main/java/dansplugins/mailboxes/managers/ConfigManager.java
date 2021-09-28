@@ -58,7 +58,8 @@ public class ConfigManager {
             if (option.equalsIgnoreCase("version")) {
                 sender.sendMessage(ChatColor.RED + "Cannot set version.");
                 return;
-            } else if (option.equalsIgnoreCase("maxMessageIDNumber")) { // no integers yet
+            } else if (option.equalsIgnoreCase("maxMessageIDNumber")
+                    || option.equalsIgnoreCase("maxMailboxIDNumber")) { // no integers yet
                 getConfig().set(option, Integer.parseInt(value));
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
             } else if (option.equalsIgnoreCase("debugMode")) {
@@ -84,7 +85,8 @@ public class ConfigManager {
         sender.sendMessage(ChatColor.AQUA + "=== Config List ===");
         sender.sendMessage(ChatColor.AQUA + "version: " + getConfig().getString("version")
                 + ", debugMode: " + getString("debugMode")
-                + ", maxMessageIDNumber: " + getInt("maxMessageIDNumber"));
+                + ", maxMessageIDNumber: " + getInt("maxMessageIDNumber")
+                + ", maxMailboxIDNumber: " + getInt("maxMailboxIDNumber"));
     }
 
     public boolean hasBeenAltered() {
