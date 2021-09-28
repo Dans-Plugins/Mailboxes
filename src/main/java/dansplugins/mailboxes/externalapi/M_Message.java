@@ -1,54 +1,55 @@
 package dansplugins.mailboxes.externalapi;
 
+import dansplugins.mailboxes.objects.Message;
 import org.bukkit.entity.Player;
 
 import java.util.Date;
 
 public class M_Message implements IM_Message {
+
+    private Message message;
+
+    public M_Message(Message message) {
+        this.message = message;
+    }
+
     @Override
     public int getID() {
-        // TODO: implement
-        return 0;
+        return message.getID();
     }
 
     @Override
     public String getSender() {
-        // TODO: implement
-        return null;
+        return message.getSender();
     }
 
     @Override
     public String getRecipient() {
-        // TODO: implement
-        return null;
+        return message.getRecipient();
     }
 
     @Override
     public String getContent() {
-        // TODO: implement
-        return null;
+        return message.getRecipient();
     }
 
     @Override
     public Date getDate() {
-        // TODO: implement
-        return null;
+        return message.getDate();
     }
 
     @Override
     public int getMailboxID() {
-        // TODO: implement
-        return 0;
+        return message.getMailboxID();
     }
 
     @Override
     public void sendContentToPlayer(Player player) {
-        // TODO: implement
+        message.sendContentToPlayer(player);
     }
 
     @Override
     public boolean isArchived() {
-        // TODO: implement
-        return false;
+        return message.isArchived();
     }
 }
