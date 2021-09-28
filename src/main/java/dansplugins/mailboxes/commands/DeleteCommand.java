@@ -40,7 +40,7 @@ public class DeleteCommand {
         }
 
         mailbox.removeMessage(message);
-        player.sendMessage(ChatColor.GREEN + "Removed.");
+        player.sendMessage(ChatColor.GREEN + "Deleted.");
         return true;
     }
 
