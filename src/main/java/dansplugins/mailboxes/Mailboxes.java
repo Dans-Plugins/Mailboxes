@@ -1,5 +1,6 @@
 package dansplugins.mailboxes;
 
+import dansplugins.mailboxes.bstats.Metrics;
 import dansplugins.mailboxes.managers.ConfigManager;
 import dansplugins.mailboxes.managers.StorageManager;
 import org.bukkit.command.Command;
@@ -21,6 +22,10 @@ public final class Mailboxes extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        // bStats
+        int pluginId = 12902;
+        Metrics metrics = new Metrics(this, pluginId);
 
         // create/load config
         if (!(new File("./plugins/Mailboxes/config.yml").exists())) {
