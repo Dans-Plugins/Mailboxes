@@ -23,23 +23,23 @@ public class SendCommand {
 
         Player player = (Player) sender;
 
-        if (args.length == 0) {
-            player.sendMessage(ChatColor.RED + "Usage: /m send 'player name' 'message'");
+        if (args.length < 2) {
+            player.sendMessage(ChatColor.RED + "Usage: /m send (playerName) 'message'");
+            return false;
+        }
+
+        String recipientName = args[0];
+        UUID recipientUUID = UUIDChecker.getInstance().findUUIDBasedOnPlayerName(recipientName);
+
+        if (recipientUUID == null) {
+            player.sendMessage(ChatColor.RED + "That player wasn't found.");
             return false;
         }
 
         ArrayList<String> singleQuoteArgs = ArgumentParser.getInstance().getArgumentsInsideSingleQuotes(args);
 
-        if (singleQuoteArgs.size() < 2) {
-            player.sendMessage(ChatColor.RED + "Player name and message must be designated between single quotes.");
-            return false;
-        }
-
-        String recipientName = singleQuoteArgs.get(0);
-        UUID recipientUUID = UUIDChecker.getInstance().findUUIDBasedOnPlayerName(recipientName);
-
-        if (recipientUUID == null) {
-            player.sendMessage(ChatColor.RED + "That player wasn't found.");
+        if (singleQuoteArgs.size() < 1) {
+            player.sendMessage(ChatColor.RED + "Message must be designated between single quotes.");
             return false;
         }
 
