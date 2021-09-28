@@ -24,7 +24,7 @@ public class ListCommand {
             return false;
         }
 
-        mailbox.sendListOfMessagesToPlayer(player);
+        mailbox.sendListOfActiveMessagesToPlayer(player);
         return true;
     }
 

@@ -2,11 +2,10 @@ package dansplugins.mailboxes.objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,7 @@ public class Mailbox implements IMailbox, Savable {
 
     private int ID;
     private UUID ownerUUID;
-    private ArrayList<Message> messages = new ArrayList<>();
+    private ArrayList<Message> activeMessages = new ArrayList<>();
 
     public Mailbox(int ID, UUID uuid) {
         this.ID = ID;
@@ -53,13 +52,13 @@ public class Mailbox implements IMailbox, Savable {
     }
 
     @Override
-    public ArrayList<Message> getMessages() {
-        return messages;
+    public ArrayList<Message> getActiveMessages() {
+        return activeMessages;
     }
 
     @Override
-    public Message getMessage(int ID) {
-        for (Message message : messages) {
+    public Message getActiveMessage(int ID) {
+        for (Message message : activeMessages) {
             if (message.getID() == ID) {
                 return message;
             }
@@ -68,33 +67,39 @@ public class Mailbox implements IMailbox, Savable {
     }
 
     @Override
-    public void addMessage(Message message) {
-        if (getMessage(message.getID()) == null) {
-            messages.add(message);
+    public void addActiveMessage(Message message) {
+        if (getActiveMessage(message.getID()) == null) {
+            activeMessages.add(message);
         }
     }
 
     @Override
-    public void removeMessage(Message message) {
-        messages.remove(message);
+    public void removeActiveMessage(Message message) {
+        activeMessages.remove(message);
     }
 
     @Override
-    public void removeMessage(int ID) {
-        Message message = getMessage(ID);
-        removeMessage(message);
+    public void removeActiveMessage(int ID) {
+        Message message = getActiveMessage(ID);
+        removeActiveMessage(message);
     }
 
     @Override
-    public void sendListOfMessagesToPlayer(Player player) {
-        if (messages.size() == 0) {
+    public void sendListOfActiveMessagesToPlayer(Player player) {
+        if (activeMessages.size() == 0) {
             player.sendMessage(ChatColor.RED + "You don't have any messages at this time.");
             return;
         }
         player.sendMessage(ChatColor.AQUA + "=== Messages ===");
-        for (Message message : messages) {
+        for (Message message : activeMessages) {
             player.sendMessage(ChatColor.AQUA + "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender());
         }
+    }
+
+    @Override
+    public void archiveMessage(Message message) {
+        Logger.getInstance().log("Archiving message with ID: " + message.getID());
+        message.setArchived(true);
     }
 
     @Override

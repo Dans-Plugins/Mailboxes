@@ -65,7 +65,7 @@ public class StorageManager {
     private void saveMessages() {
         List<Map<String, String>> messages = new ArrayList<>();
         for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
-            for (Message message : mailbox.getMessages()){
+            for (Message message : mailbox.getActiveMessages()){
                 messages.add(message.save());
             }
         }
@@ -110,10 +110,10 @@ public class StorageManager {
 
         // add messages to the correct mailboxes
         for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
-            mailbox.getMessages().clear();
+            mailbox.getActiveMessages().clear();
             for (Message message : messages) {
                 if (message.getMailboxID() == mailbox.getID()) {
-                    mailbox.addMessage(message);
+                    mailbox.addActiveMessage(message);
                 }
             }
         }

@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 public class DeleteCommand {
 
     public boolean execute(CommandSender sender, String[] args) {
-
         if (!(sender instanceof Player)) {
             // TODO: add message
             return false;
@@ -27,7 +26,7 @@ public class DeleteCommand {
 
         Mailbox mailbox = PersistentData.getInstance().getMailbox(player);
 
-        Message message = mailbox.getMessage(ID);
+        Message message = mailbox.getActiveMessage(ID);
 
         if (message == null) {
             player.sendMessage(ChatColor.RED + "That message wasn't found.");
@@ -39,7 +38,7 @@ public class DeleteCommand {
             return false;
         }
 
-        mailbox.removeMessage(message);
+        mailbox.removeActiveMessage(message);
         player.sendMessage(ChatColor.GREEN + "Deleted.");
         return true;
     }

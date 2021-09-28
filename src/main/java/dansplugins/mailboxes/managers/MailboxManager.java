@@ -3,6 +3,8 @@ package dansplugins.mailboxes.managers;
 import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.factories.MailboxFactory;
 import dansplugins.mailboxes.objects.Mailbox;
+import dansplugins.mailboxes.objects.Message;
+import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

@@ -62,7 +62,7 @@ public class PersistentData {
 
     public Message getMessage(int messageID) {
         for (Mailbox mailbox : mailboxes) {
-            for (Message message : mailbox.getMessages()) {
+            for (Message message : mailbox.getActiveMessages()) {
                 if (message.getID() == messageID) {
                     return message;
                 }
