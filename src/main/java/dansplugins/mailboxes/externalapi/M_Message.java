@@ -52,4 +52,5 @@ public class M_Message implements IM_Message {
     public boolean isArchived() {
         return message.isArchived();
     }
+
 }
