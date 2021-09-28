@@ -4,7 +4,7 @@
 Mailboxes is an open source plugin that allows players and plugins to send persistent messages to other players.
 
 ## Installation
-This plugin isn't ready to be used yet.
+This plugin isn't available on SpigotMC yet, but you can download a pre-release version [here](https://github.com/dmccoystephenson/Mailboxes/releases).
 
 ## Usage
 - [User Guide](https://github.com/dmccoystephenson/Mailboxes/wiki/Guide) (coming soon)
