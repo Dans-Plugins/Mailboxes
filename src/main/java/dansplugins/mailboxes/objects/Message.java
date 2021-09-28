@@ -29,6 +29,15 @@ public class Message implements IMessage, Savable {
         this.date = new Date();
     }
 
+    public Message(int ID, String sender, String recipient, String content, int mailboxID) {
+        this.ID = ID;
+        this.sender = sender;
+        this.recipient = recipient;
+        this.content = content;
+        this.date = new Date();
+        this.mailboxID = mailboxID;
+    }
+
     public Message(Map<String, String> data) {
         this.load(data);
     }
