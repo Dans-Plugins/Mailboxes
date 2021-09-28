@@ -1,6 +1,7 @@
 package dansplugins.mailboxes.commands;
 
 import dansplugins.mailboxes.factories.MessageFactory;
+import dansplugins.mailboxes.managers.ConfigManager;
 import dansplugins.mailboxes.objects.PlayerMessage;
 import dansplugins.mailboxes.services.MailService;
 import dansplugins.mailboxes.utils.ArgumentParser;
@@ -34,6 +35,13 @@ public class SendCommand {
         if (recipientUUID == null) {
             player.sendMessage(ChatColor.RED + "That player wasn't found.");
             return false;
+        }
+
+        if (ConfigManager.getInstance().getBoolean("preventSendingMessagesToSelf")) {
+            if (recipientUUID.equals(player.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "You can't send a message to yourself.");
+                return false;
+            }
         }
 
         ArrayList<String> singleQuoteArgs = ArgumentParser.getInstance().getArgumentsInsideSingleQuotes(args);

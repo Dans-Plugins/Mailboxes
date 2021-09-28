@@ -47,6 +47,9 @@ public class ConfigManager {
         if (!getConfig().isSet("maxMailboxIDNumber")) {
             getConfig().set("maxMailboxIDNumber", 10000);
         }
+        if (!getConfig().isSet("preventSendingMessagesToSelf")) {
+            getConfig().set("preventSendingMessagesToSelf", true);
+        }
         getConfig().options().copyDefaults(true);
         Mailboxes.getInstance().saveConfig();
     }
@@ -62,7 +65,8 @@ public class ConfigManager {
                     || option.equalsIgnoreCase("maxMailboxIDNumber")) { // no integers yet
                 getConfig().set(option, Integer.parseInt(value));
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
-            } else if (option.equalsIgnoreCase("debugMode")) {
+            } else if (option.equalsIgnoreCase("debugMode")
+                    || option.equalsIgnoreCase("preventSendingMessagesToSelf")) {
                 getConfig().set(option, Boolean.parseBoolean(value));
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
             } else if (option.equalsIgnoreCase("")) {
@@ -86,7 +90,8 @@ public class ConfigManager {
         sender.sendMessage(ChatColor.AQUA + "version: " + getConfig().getString("version")
                 + ", debugMode: " + getString("debugMode")
                 + ", maxMessageIDNumber: " + getInt("maxMessageIDNumber")
-                + ", maxMailboxIDNumber: " + getInt("maxMailboxIDNumber"));
+                + ", maxMailboxIDNumber: " + getInt("maxMailboxIDNumber")
+                + ", preventSendingMessagesToSelf: " + getBoolean("preventSendingMessagesToSelf"));
     }
 
     public boolean hasBeenAltered() {
