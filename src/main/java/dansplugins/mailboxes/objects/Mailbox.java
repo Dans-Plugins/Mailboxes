@@ -105,7 +105,7 @@ public class Mailbox implements IMailbox, Savable {
     @Override
     public void sendListOfActiveMessagesToPlayer(Player player) {
         if (activeMessages.size() == 0) {
-            player.sendMessage(ChatColor.RED + "You don't have any active messages at this time.");
+            player.sendMessage(ChatColor.AQUA + "You don't have any active messages at this time.");
             return;
         }
         player.sendMessage(ChatColor.AQUA + "=== Active Messages ===");
@@ -150,7 +150,7 @@ public class Mailbox implements IMailbox, Savable {
     @Override
     public void sendListOfArchivedMessagesToPlayer(Player player) {
         if (archivedMessages.size() == 0) {
-            player.sendMessage(ChatColor.RED + "You don't have any archived messages at this time.");
+            player.sendMessage(ChatColor.AQUA + "You don't have any archived messages at this time.");
             return;
         }
         player.sendMessage(ChatColor.AQUA + "=== Archived Messages ===");
