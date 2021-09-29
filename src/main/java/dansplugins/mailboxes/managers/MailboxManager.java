@@ -37,6 +37,9 @@ public class MailboxManager {
     }
 
     public void alertPlayerIfTheyHaveActiveMessages(Player player) {
+        if (!ConfigManager.getInstance().getBoolean("activeMessagesAlertEnabled")) {
+            return;
+        }
         Mailbox mailbox = PersistentData.getInstance().getMailbox(player);
         if (mailbox == null) {
             Logger.getInstance().log("ERROR: Mailbox is null.");
