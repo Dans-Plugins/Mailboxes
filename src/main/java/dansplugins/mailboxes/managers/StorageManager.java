@@ -8,6 +8,7 @@ import dansplugins.mailboxes.Mailboxes;
 import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
+import dansplugins.mailboxes.objects.PlayerMessage;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -69,7 +70,13 @@ public class StorageManager {
         List<Map<String, String>> messages = new ArrayList<>();
         for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
             for (Message message : mailbox.getActiveMessages()){
-                messages.add(message.save());
+                if (message instanceof PlayerMessage) {
+                    PlayerMessage playerMessage = (PlayerMessage) message;
+                    messages.add(playerMessage.save());
+                }
+                else {
+                    messages.add(message.save());
+                }
             }
         }
 
@@ -80,7 +87,13 @@ public class StorageManager {
         List<Map<String, String>> messages = new ArrayList<>();
         for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
             for (Message message : mailbox.getArchivedMessages()){
-                messages.add(message.save());
+                if (message instanceof PlayerMessage) {
+                    PlayerMessage playerMessage = (PlayerMessage) message;
+                    messages.add(playerMessage.save());
+                }
+                else {
+                    messages.add(message.save());
+                }
             }
         }
 
