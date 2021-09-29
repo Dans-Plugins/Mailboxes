@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class MailService {
+public class MailService implements IMailService {
 
     private static MailService instance;
 
