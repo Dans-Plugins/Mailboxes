@@ -3,6 +3,7 @@ package dansplugins.mailboxes.managers;
 import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.factories.MailboxFactory;
 import dansplugins.mailboxes.objects.Mailbox;
+import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -33,4 +34,14 @@ public class MailboxManager {
         player.sendMessage(ChatColor.AQUA + "You have been assigned a mailbox. Type /m help for help."); // TODO: add config option for this message
     }
 
+    public void alertPlayerIfTheyHaveActiveMessages(Player player) {
+        Mailbox mailbox = PersistentData.getInstance().getMailbox(player);
+        if (mailbox == null) {
+            Logger.getInstance().log("ERROR: Mailbox is null.");
+            return;
+        }
+        if (mailbox.getActiveMessages().size() > 0) {
+            player.sendMessage(ChatColor.GREEN + "You have active messages in your mailbox. Type /m list to view them."); // TODO: add a config option for this message
+        }
+    }
 }
