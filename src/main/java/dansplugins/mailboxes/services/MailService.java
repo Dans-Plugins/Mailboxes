@@ -35,7 +35,7 @@ public class MailService implements IMailService {
             Logger.getInstance().log("Sender UUID: " + playerMessage.getSenderUUID());
             Logger.getInstance().log("Recipient UUID: " + playerMessage.getRecipientUUID());
 
-            Mailbox mailbox = PersistentData.getInstance().getMailbox(playerMessage.getRecipientUUID());
+            Mailbox mailbox = MailboxLookupService.getInstance().lookup(playerMessage.getRecipientUUID());
 
             if (mailbox == null) {
                 Logger.getInstance().log("Mailbox was null.");

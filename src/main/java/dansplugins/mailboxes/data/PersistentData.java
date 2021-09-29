@@ -2,6 +2,7 @@ package dansplugins.mailboxes.data;
 
 import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
+import dansplugins.mailboxes.services.MailboxLookupService;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class PersistentData {
     }
 
     public Mailbox getMailbox(Player player) {
-        return getMailbox(player.getUniqueId());
+        return MailboxLookupService.getInstance().lookup(player.getUniqueId());
     }
 
     public Mailbox getMailbox(UUID playerUUID) {
