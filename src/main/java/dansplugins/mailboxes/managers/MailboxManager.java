@@ -31,7 +31,9 @@ public class MailboxManager {
         // player doesn't have a mailbox
         Mailbox newMailbox = MailboxFactory.getInstance().createMailbox(player);
         PersistentData.getInstance().addMailbox(newMailbox);
-        player.sendMessage(ChatColor.AQUA + "You have been assigned a mailbox. Type /m help for help."); // TODO: add config option for this message
+        if (ConfigManager.getInstance().getBoolean("assignmentAlertEnabled")) {
+            player.sendMessage(ChatColor.AQUA + "You have been assigned a mailbox. Type /m help for help.");
+        }
     }
 
     public void alertPlayerIfTheyHaveActiveMessages(Player player) {
