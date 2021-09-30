@@ -1,6 +1,7 @@
 package dansplugins.mailboxes;
 
 import dansplugins.mailboxes.bstats.Metrics;
+import dansplugins.mailboxes.externalapi.MailboxesAPI;
 import dansplugins.mailboxes.managers.ConfigManager;
 import dansplugins.mailboxes.managers.StorageManager;
 import org.bukkit.command.Command;
@@ -12,6 +13,8 @@ import java.io.File;
 public final class Mailboxes extends JavaPlugin {
 
     private static Mailboxes instance;
+
+    private MailboxesAPI API = new MailboxesAPI();
 
     public static Mailboxes getInstance() {
         return instance;
@@ -62,6 +65,10 @@ public final class Mailboxes extends JavaPlugin {
 
     public boolean isDebugEnabled() {
         return ConfigManager.getInstance().getBoolean("debugMode");
+    }
+
+    public MailboxesAPI getAPI() {
+        return API;
     }
 
     private boolean isVersionMismatched() {

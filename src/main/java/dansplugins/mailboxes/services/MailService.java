@@ -1,5 +1,7 @@
 package dansplugins.mailboxes.services;
 
+import dansplugins.mailboxes.Mailboxes;
+import dansplugins.mailboxes.externalapi.MailboxesAPI;
 import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
 import dansplugins.mailboxes.objects.PlayerMessage;
@@ -22,6 +24,14 @@ public class MailService implements IMailService {
             instance = new MailService();
         }
         return instance;
+    }
+
+    public boolean sendWelcomeMessage(Player player) {
+        return Mailboxes.getInstance().getAPI().sendPluginMessageToPlayer(
+                Mailboxes.getInstance().getName(),
+                player,
+                "Welcome to the Mailboxes plugin! This message was sent using the plugin's external API."
+        );
     }
 
     public boolean sendMessage(Message message) {

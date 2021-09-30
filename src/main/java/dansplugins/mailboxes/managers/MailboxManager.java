@@ -3,6 +3,7 @@ package dansplugins.mailboxes.managers;
 import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.factories.MailboxFactory;
 import dansplugins.mailboxes.objects.Mailbox;
+import dansplugins.mailboxes.services.MailService;
 import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -33,6 +34,9 @@ public class MailboxManager {
         PersistentData.getInstance().addMailbox(newMailbox);
         if (ConfigManager.getInstance().getBoolean("assignmentAlertEnabled")) {
             player.sendMessage(ChatColor.AQUA + "You have been assigned a mailbox. Type /m help for help.");
+        }
+        if (ConfigManager.getInstance().getBoolean("welcomeMessageEnabled")) {
+            MailService.getInstance().sendWelcomeMessage(player);
         }
     }
 
