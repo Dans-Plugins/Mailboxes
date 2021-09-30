@@ -40,6 +40,7 @@ public class OpenCommand {
         }
 
         message.sendContentToPlayer(player);
+        message.setUnread(false);
         return true;
     }
 

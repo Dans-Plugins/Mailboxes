@@ -19,7 +19,7 @@ public class Message implements IMessage, Savable {
     private Date date;
     private int mailboxID;
     private boolean archived = false;
-    private boolean unread = false;
+    private boolean unread = true;
 
     public Message(int ID, String sender, String recipient, String content) {
         this.ID = ID;
