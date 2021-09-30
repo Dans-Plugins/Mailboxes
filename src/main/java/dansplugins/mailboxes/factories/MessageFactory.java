@@ -4,6 +4,7 @@ import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.managers.ConfigManager;
 import dansplugins.mailboxes.objects.Message;
 import dansplugins.mailboxes.objects.PlayerMessage;
+import dansplugins.mailboxes.objects.PluginMessage;
 import dansplugins.mailboxes.utils.UUIDChecker;
 
 import java.util.Random;
@@ -33,8 +34,13 @@ public class MessageFactory {
         int messageID = getNewMessageID();
         String senderName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(senderUUID);
         String recipientName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(recipientUUID);
-
         return new PlayerMessage(messageID, senderName, recipientName, content, senderUUID, recipientUUID);
+    }
+
+    public PluginMessage createPluginMessage(String pluginName, UUID recipientUUID, String content) {
+        int messageID = getNewMessageID();
+        String recipientName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(recipientUUID);
+        return new PluginMessage(messageID, pluginName, recipientName, content, recipientUUID);
     }
 
     private int getNewMessageID() {

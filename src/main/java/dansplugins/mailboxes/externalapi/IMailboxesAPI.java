@@ -7,4 +7,5 @@ public interface IMailboxesAPI {
     String getVersion();
     M_Mailbox getMailbox(Player player);
     M_Message getMessage(int ID);
+    boolean sendPluginMessageToPlayer(String pluginName, Player player, String content);
 }
