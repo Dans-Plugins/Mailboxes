@@ -32,8 +32,11 @@ public class ListCommand {
             else if (list.equalsIgnoreCase("archived")) {
                 mailbox.sendListOfArchivedMessagesToPlayer(player);
             }
+            else if (list.equalsIgnoreCase("unread")) {
+                mailbox.sendListOfUnreadMessagesToPlayer(player);
+            }
             else {
-                player.sendMessage(ChatColor.RED + "Sub-commands: active, archived");
+                player.sendMessage(ChatColor.RED + "Sub-commands: active, archived, unread");
                 return false;
             }
             return true;

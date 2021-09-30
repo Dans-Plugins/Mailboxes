@@ -191,6 +191,39 @@ public class Mailbox implements IMailbox, Savable {
     }
 
     @Override
+    public ArrayList<Message> getUnreadMessages() {
+        ArrayList<Message> toReturn = new ArrayList<>();
+        for (Message message : activeMessages) {
+            if (message.isUnread()) {
+                toReturn.add(message);
+            }
+        }
+        for (Message message : archivedMessages) {
+            if (message.isUnread()) {
+                toReturn.add(message);
+            }
+        }
+        return toReturn;
+    }
+
+    @Override
+    public void sendListOfUnreadMessagesToPlayer(Player player) {
+        ArrayList<Message> unreadMessages = getUnreadMessages();
+        if (unreadMessages.size() == 0) {
+            player.sendMessage(ChatColor.AQUA + "You don't have any unread messages at this time.");
+            return;
+        }
+        player.sendMessage(ChatColor.AQUA + "=== Unread Messages ===");
+        for (Message message : unreadMessages) {
+            String toSend = "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender();
+            if (message.isUnread()) {
+                toSend = "**" + toSend;
+            }
+            player.sendMessage(ChatColor.AQUA + toSend);
+        }
+    }
+
+    @Override
     public Map<String, String> save() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
