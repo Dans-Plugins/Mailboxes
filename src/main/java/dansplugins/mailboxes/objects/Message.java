@@ -18,7 +18,8 @@ public class Message implements IMessage, Savable {
     private String content;
     private Date date;
     private int mailboxID;
-    boolean archived = false;
+    private boolean archived = false;
+    private boolean unread = false;
 
     public Message(int ID, String sender, String recipient, String content) {
         this.ID = ID;
@@ -123,6 +124,16 @@ public class Message implements IMessage, Savable {
     }
 
     @Override
+    public boolean isUnread() {
+        return unread;
+    }
+
+    @Override
+    public void setUnread(boolean b) {
+        unread = b;
+    }
+
+    @Override
     public Map<String, String> save() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -134,6 +145,7 @@ public class Message implements IMessage, Savable {
         saveMap.put("date", gson.toJson(date));
         saveMap.put("mailboxID", gson.toJson(mailboxID));
         saveMap.put("archived", gson.toJson(archived));
+        saveMap.put("unread", gson.toJson(unread));
 
         return saveMap;
     }
@@ -149,5 +161,6 @@ public class Message implements IMessage, Savable {
         date = gson.fromJson(data.get("date"), Date.class);
         mailboxID = Integer.parseInt(gson.fromJson(data.get("mailboxID"), String.class));
         archived = Boolean.parseBoolean(gson.fromJson(data.get("archived"), String.class));
+        unread = Boolean.parseBoolean(gson.fromJson(data.get("unread"), String.class));
     }
 }
