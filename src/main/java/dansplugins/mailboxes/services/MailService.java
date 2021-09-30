@@ -1,6 +1,5 @@
 package dansplugins.mailboxes.services;
 
-import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
 import dansplugins.mailboxes.objects.PlayerMessage;
