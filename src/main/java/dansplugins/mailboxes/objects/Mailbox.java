@@ -110,7 +110,11 @@ public class Mailbox implements IMailbox, Savable {
         }
         player.sendMessage(ChatColor.AQUA + "=== Active Messages ===");
         for (Message message : activeMessages) {
-            player.sendMessage(ChatColor.AQUA + "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender());
+            String toSend = "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender();
+            if (message.isUnread()) {
+                toSend = "**" + toSend;
+            }
+            player.sendMessage(ChatColor.AQUA + toSend);
         }
     }
 
@@ -155,7 +159,11 @@ public class Mailbox implements IMailbox, Savable {
         }
         player.sendMessage(ChatColor.AQUA + "=== Archived Messages ===");
         for (Message message : archivedMessages) {
-            player.sendMessage(ChatColor.AQUA + "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender());
+            String toSend = "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender();
+            if (message.isUnread()) {
+                toSend = "**" + toSend;
+            }
+            player.sendMessage(ChatColor.AQUA + toSend);
         }
     }
 
