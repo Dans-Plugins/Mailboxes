@@ -12,14 +12,14 @@ import java.util.Map;
 
 public class Message implements IMessage, Savable {
 
-    private int ID;
-    private String sender;
-    private String recipient;
-    private String content;
-    private Date date;
-    private int mailboxID;
-    private boolean archived = false;
-    private boolean unread = true;
+    protected int ID;
+    protected String sender;
+    protected String recipient;
+    protected String content;
+    protected Date date;
+    protected int mailboxID;
+    protected boolean archived = false;
+    protected boolean unread = true;
 
     public Message(int ID, String sender, String recipient, String content) {
         this.ID = ID;

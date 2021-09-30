@@ -9,6 +9,7 @@ import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
 import dansplugins.mailboxes.objects.PlayerMessage;
+import dansplugins.mailboxes.objects.PluginMessage;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -44,8 +45,8 @@ public class StorageManager {
 
     public void save() {
         saveMailboxes();
-        saveActiveMessages();
-        saveArchivedMessages();
+        saveMessages(ACTIVE_MESSAGES_FILE_NAME);
+        saveMessages(ARCHIVED_MESSAGES_FILE_NAME);
         if (ConfigManager.getInstance().hasBeenAltered()) {
             Mailboxes.getInstance().saveConfig();
         }
@@ -66,7 +67,7 @@ public class StorageManager {
         writeOutFiles(Mailboxes, MAILBOXES_FILE_NAME);
     }
 
-    private void saveActiveMessages() {
+    private void saveMessages(String fileName) {
         List<Map<String, String>> messages = new ArrayList<>();
         for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
             for (Message message : mailbox.getActiveMessages()){
@@ -74,22 +75,9 @@ public class StorageManager {
                     PlayerMessage playerMessage = (PlayerMessage) message;
                     messages.add(playerMessage.save());
                 }
-                else {
-                    messages.add(message.save());
-                }
-            }
-        }
-
-        writeOutFiles(messages, ACTIVE_MESSAGES_FILE_NAME);
-    }
-
-    private void saveArchivedMessages() {
-        List<Map<String, String>> messages = new ArrayList<>();
-        for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
-            for (Message message : mailbox.getArchivedMessages()){
-                if (message instanceof PlayerMessage) {
-                    PlayerMessage playerMessage = (PlayerMessage) message;
-                    messages.add(playerMessage.save());
+                else if (message instanceof PluginMessage) {
+                    PluginMessage pluginMessage = (PluginMessage) message;
+                    messages.add(pluginMessage.save());
                 }
                 else {
                     messages.add(message.save());
@@ -97,7 +85,7 @@ public class StorageManager {
             }
         }
 
-        writeOutFiles(messages, ARCHIVED_MESSAGES_FILE_NAME);
+        writeOutFiles(messages, fileName);
     }
 
     private void writeOutFiles(List<Map<String, String>> saveData, String fileName) {

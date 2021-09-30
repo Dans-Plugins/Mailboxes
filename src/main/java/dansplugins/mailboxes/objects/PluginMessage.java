@@ -9,27 +9,17 @@ import org.bukkit.entity.Player;
 import java.util.Map;
 import java.util.UUID;
 
-public class PlayerMessage extends Message {
+public class PluginMessage extends Message {
 
-    private UUID senderUUID;
     private UUID recipientUUID;
 
-    public PlayerMessage(int ID, String sender, String recipient, String content, UUID senderUUID, UUID recipientUUID) {
-        super(ID, sender, recipient, content);
-        this.senderUUID = senderUUID;
+    public PluginMessage(int ID, String pluginName, String recipient, String content, UUID recipientUUID) {
+        super(ID, pluginName, recipient, content);
         this.recipientUUID = recipientUUID;
     }
 
-    public PlayerMessage(Map<String, String> data) {
+    public PluginMessage(Map<String, String> data) {
         super(data);
-    }
-
-    public UUID getSenderUUID() {
-        return senderUUID;
-    }
-
-    public void setSenderUUID(UUID senderUUID) {
-        this.senderUUID = senderUUID;
     }
 
     public UUID getRecipientUUID() {
@@ -45,7 +35,7 @@ public class PlayerMessage extends Message {
         Logger.getInstance().log("Message ID: " + ID);
         Logger.getInstance().log("Mailbox ID: " + mailboxID);
         player.sendMessage(ChatColor.AQUA + "=============================");
-        player.sendMessage(ChatColor.AQUA + "Type: Player Message");
+        player.sendMessage(ChatColor.AQUA + "Type: Plugin Message");
         player.sendMessage(ChatColor.AQUA + "Date: " + date.toString());
         player.sendMessage(ChatColor.AQUA + "From: " + sender);
         player.sendMessage(ChatColor.AQUA + "\"" + content + "\"");
@@ -57,7 +47,6 @@ public class PlayerMessage extends Message {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         Map<String, String> saveMap = super.save();
-        saveMap.put("senderUUID", gson.toJson(senderUUID));
         saveMap.put("recipientUUID", gson.toJson(recipientUUID));
 
         return saveMap;
@@ -69,7 +58,7 @@ public class PlayerMessage extends Message {
 
         super.load(data);
 
-        senderUUID = UUID.fromString(gson.fromJson(data.get("senderUUID"), String.class));
         recipientUUID = UUID.fromString(gson.fromJson(data.get("recipientUUID"), String.class));
     }
+
 }
