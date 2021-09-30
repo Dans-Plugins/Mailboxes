@@ -25,4 +25,5 @@ public interface IMailbox {
     void removeArchivedMessage(int ID);
     void sendListOfArchivedMessagesToPlayer(Player player);
     void archiveMessage(Message message);
+    boolean containsUnreadMessages();
 }

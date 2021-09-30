@@ -176,6 +176,21 @@ public class Mailbox implements IMailbox, Savable {
     }
 
     @Override
+    public boolean containsUnreadMessages() {
+        for (Message message : activeMessages) {
+            if (message.isUnread()) {
+                return true;
+            }
+        }
+        for (Message message : archivedMessages) {
+            if (message.isUnread()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public Map<String, String> save() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
