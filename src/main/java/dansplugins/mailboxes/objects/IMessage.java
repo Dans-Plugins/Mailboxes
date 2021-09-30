@@ -20,4 +20,6 @@ public interface IMessage {
     void sendContentToPlayer(Player player);
     boolean isArchived();
     void setArchived(boolean b);
+    boolean isUnread();
+    void setUnread(boolean b);
 }

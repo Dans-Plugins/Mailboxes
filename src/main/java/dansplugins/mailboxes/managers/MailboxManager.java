@@ -36,8 +36,8 @@ public class MailboxManager {
         }
     }
 
-    public void alertPlayerIfTheyHaveActiveMessages(Player player) {
-        if (!ConfigManager.getInstance().getBoolean("activeMessagesAlertEnabled")) {
+    public void alertPlayerIfTheyHaveUnreadMessages(Player player) {
+        if (!ConfigManager.getInstance().getBoolean("unreadMessagesAlertEnabled")) {
             return;
         }
         Mailbox mailbox = PersistentData.getInstance().getMailbox(player);
@@ -45,8 +45,8 @@ public class MailboxManager {
             Logger.getInstance().log("ERROR: Mailbox is null.");
             return;
         }
-        if (mailbox.getActiveMessages().size() > 0) {
-            player.sendMessage(ChatColor.GREEN + "You have active messages in your mailbox. Type /m list to view them."); // TODO: add a config option for this message
+        if (mailbox.containsUnreadMessages()) {
+            player.sendMessage(ChatColor.GREEN + "You have unread messages in your mailbox. Type /m list unread to view them."); // TODO: add a config option for this message
         }
     }
 }
