@@ -10,6 +10,7 @@ import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
 import dansplugins.mailboxes.objects.PlayerMessage;
 import dansplugins.mailboxes.objects.PluginMessage;
+import dansplugins.mailboxes.utils.Logger;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -121,7 +122,10 @@ public class StorageManager {
         ArrayList<Message> archivedMessages = new ArrayList<>();
         for (Map<String, String> messageData : activeMessagesData){
             Message message = new Message(messageData);
-            if (message.getType().equalsIgnoreCase("Player Message")) {
+            if (message.getType().equalsIgnoreCase("Default Message")) {
+                activeMessages.add(message);
+            }
+            else if (message.getType().equalsIgnoreCase("Player Message")) {
                 PlayerMessage playerMessage = new PlayerMessage(messageData);
                 activeMessages.add(playerMessage);
             }
@@ -132,13 +136,19 @@ public class StorageManager {
         }
         for (Map<String, String> messageData : archivedMessagesData){
             Message message = new Message(messageData);
-            if (message.getType().equalsIgnoreCase("Player Message")) {
+            if (message.getType().equalsIgnoreCase("Default Message")) {
+                archivedMessages.add(message);
+            }
+            else if (message.getType().equalsIgnoreCase("Player Message")) {
                 PlayerMessage playerMessage = new PlayerMessage(messageData);
                 archivedMessages.add(playerMessage);
             }
             else if (message.getType().equalsIgnoreCase("Plugin Message")) {
                 PluginMessage pluginMessage = new PluginMessage(messageData);
                 archivedMessages.add(pluginMessage);
+            }
+            else {
+                Logger.getInstance().log("Unsupported message type encountered: " + message.getType());
             }
         }
 
