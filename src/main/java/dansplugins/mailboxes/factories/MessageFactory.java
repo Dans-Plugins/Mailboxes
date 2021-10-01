@@ -27,7 +27,7 @@ public class MessageFactory {
 
     public Message createMessage(String sender, String recipient, String content) {
         int ID = getNewMessageID();
-        return new Message(ID, sender, recipient, content);
+        return new Message(ID, "Default Message", sender, recipient, content);
     }
 
     public PlayerMessage createPlayerMessage(UUID senderUUID, UUID recipientUUID, String content) {

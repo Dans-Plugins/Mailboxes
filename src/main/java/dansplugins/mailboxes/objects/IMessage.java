@@ -7,6 +7,8 @@ import java.util.Date;
 public interface IMessage {
     int getID();
     void setID(int ID);
+    String getType();
+    void setType(String type);
     String getSender();
     void setSender(String sender);
     String getRecipient();

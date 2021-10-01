@@ -14,7 +14,7 @@ public class PluginMessage extends Message {
     private UUID recipientUUID;
 
     public PluginMessage(int ID, String pluginName, String recipient, String content, UUID recipientUUID) {
-        super(ID, pluginName, recipient, content);
+        super(ID, "Plugin Message", pluginName, recipient, content);
         this.recipientUUID = recipientUUID;
     }
 
@@ -28,18 +28,6 @@ public class PluginMessage extends Message {
 
     public void setRecipientUUID(UUID recipientUUID) {
         this.recipientUUID = recipientUUID;
-    }
-
-    @Override
-    public void sendContentToPlayer(Player player) {
-        Logger.getInstance().log("Message ID: " + ID);
-        Logger.getInstance().log("Mailbox ID: " + mailboxID);
-        player.sendMessage(ChatColor.AQUA + "=============================");
-        player.sendMessage(ChatColor.AQUA + "Type: Plugin Message");
-        player.sendMessage(ChatColor.AQUA + "Date: " + date.toString());
-        player.sendMessage(ChatColor.AQUA + "From: " + sender);
-        player.sendMessage(ChatColor.AQUA + "\"" + content + "\"");
-        player.sendMessage(ChatColor.AQUA + "=============================");
     }
 
     @Override
