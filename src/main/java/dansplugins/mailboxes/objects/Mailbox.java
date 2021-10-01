@@ -6,6 +6,7 @@ import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -110,7 +111,8 @@ public class Mailbox implements IMailbox, Savable {
         }
         player.sendMessage(ChatColor.AQUA + "=== Active Messages ===");
         for (Message message : activeMessages) {
-            String toSend = "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String toSend = "ID: " + message.getID() + " - Date: " + dateFormat.format(message.getDate()) + " - Sender: " + message.getSender();
             if (message.isUnread()) {
                 toSend = ChatColor.BOLD + toSend;
             }
