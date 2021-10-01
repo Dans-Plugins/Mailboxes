@@ -54,8 +54,7 @@ public class StorageManager {
 
     public void load() {
         loadMailboxes();
-        loadActiveMessages();
-        loadArchivedMessages();
+        loadMessages();
     }
 
     private void saveMailboxes() {
@@ -113,41 +112,46 @@ public class StorageManager {
         }
     }
 
-    private void loadActiveMessages() {
-        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + ACTIVE_MESSAGES_FILE_NAME);
+    private void loadMessages() {
+        ArrayList<HashMap<String, String>> activeMessagesData = loadDataFromFilename(FILE_PATH + ACTIVE_MESSAGES_FILE_NAME);
+        ArrayList<HashMap<String, String>> archivedMessagesData = loadDataFromFilename(FILE_PATH + ARCHIVED_MESSAGES_FILE_NAME);
 
         // load in messages
-        ArrayList<Message> messages = new ArrayList<>();
-        for (Map<String, String> messageData : data){
+        ArrayList<Message> activeMessages = new ArrayList<>();
+        ArrayList<Message> archivedMessages = new ArrayList<>();
+        for (Map<String, String> messageData : activeMessagesData){
             Message message = new Message(messageData);
-            messages.add(message);
+            if (message.getType().equalsIgnoreCase("Player Message")) {
+                PlayerMessage playerMessage = new PlayerMessage(messageData);
+                activeMessages.add(playerMessage);
+            }
+            else if (message.getType().equalsIgnoreCase("Plugin Message")) {
+                PluginMessage pluginMessage = new PluginMessage(messageData);
+                activeMessages.add(pluginMessage);
+            }
+        }
+        for (Map<String, String> messageData : archivedMessagesData){
+            Message message = new Message(messageData);
+            if (message.getType().equalsIgnoreCase("Player Message")) {
+                PlayerMessage playerMessage = new PlayerMessage(messageData);
+                archivedMessages.add(playerMessage);
+            }
+            else if (message.getType().equalsIgnoreCase("Plugin Message")) {
+                PluginMessage pluginMessage = new PluginMessage(messageData);
+                archivedMessages.add(pluginMessage);
+            }
         }
 
         // add messages to the correct mailboxes
         for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
             mailbox.getActiveMessages().clear();
-            for (Message message : messages) {
+            mailbox.getArchivedMessages().clear();
+            for (Message message : activeMessages) {
                 if (message.getMailboxID() == mailbox.getID()) {
                     mailbox.addActiveMessage(message);
                 }
             }
-        }
-    }
-
-    private void loadArchivedMessages() {
-        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + ARCHIVED_MESSAGES_FILE_NAME);
-
-        // load in messages
-        ArrayList<Message> messages = new ArrayList<>();
-        for (Map<String, String> messageData : data){
-            Message message = new Message(messageData);
-            messages.add(message);
-        }
-
-        // add messages to the correct mailboxes
-        for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
-            mailbox.getArchivedMessages().clear();
-            for (Message message : messages) {
+            for (Message message : archivedMessages) {
                 if (message.getMailboxID() == mailbox.getID()) {
                     mailbox.addArchivedMessage(message);
                 }
