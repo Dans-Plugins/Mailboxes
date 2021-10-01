@@ -1,5 +1,5 @@
 name: Mailboxes
-version: 0.10-alpha-1
+version: 0.10
 main: dansplugins.mailboxes.Mailboxes
 api-version: 1.13
 
