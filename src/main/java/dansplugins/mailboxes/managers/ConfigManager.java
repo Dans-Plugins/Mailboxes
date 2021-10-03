@@ -51,7 +51,7 @@ public class ConfigManager {
             getConfig().set("preventSendingMessagesToSelf", true);
         }
         if (!getConfig().isSet("assignmentAlertEnabled")) {
-            getConfig().set("assignmentAlertEnabled", true);
+            getConfig().set("assignmentAlertEnabled", false);
         }
         if (!getConfig().isSet("unreadMessagesAlertEnabled")) {
             getConfig().set("unreadMessagesAlertEnabled", true);

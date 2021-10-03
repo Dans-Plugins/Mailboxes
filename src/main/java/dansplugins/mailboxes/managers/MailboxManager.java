@@ -50,7 +50,8 @@ public class MailboxManager {
             return;
         }
         if (mailbox.containsUnreadMessages()) {
-            player.sendMessage(ChatColor.GREEN + "You have unread messages in your mailbox. Type /m list unread to view them."); // TODO: add a config option for this message
+            int count = mailbox.getUnreadMessages().size();
+            player.sendMessage(ChatColor.GREEN + "You have " + count + " unread messages in your mailbox. Type /m list unread to view them."); // TODO: add a config option for this message
         }
     }
 }
