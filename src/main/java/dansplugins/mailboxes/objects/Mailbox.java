@@ -110,9 +110,10 @@ public class Mailbox implements IMailbox, Savable {
             return;
         }
         player.sendMessage(ChatColor.AQUA + "=== Active Messages ===");
+        player.sendMessage(ChatColor.AQUA + "D: date, S: sender");
         for (Message message : activeMessages) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String toSend = "* ID: " + message.getID() + " - Date: " + dateFormat.format(message.getDate()) + " - Sender: " + message.getSender();
+            String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
             if (message.isUnread()) {
                 toSend = ChatColor.BOLD + toSend;
             }
