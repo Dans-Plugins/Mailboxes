@@ -161,10 +161,12 @@ public class Mailbox implements IMailbox, Savable {
             return;
         }
         player.sendMessage(ChatColor.AQUA + "=== Archived Messages ===");
+        player.sendMessage(ChatColor.AQUA + "D: date, S: sender");
         for (Message message : archivedMessages) {
-            String toSend = "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
             if (message.isUnread()) {
-                toSend = "**" + toSend;
+                toSend = ChatColor.BOLD + toSend;
             }
             player.sendMessage(ChatColor.AQUA + toSend);
         }
@@ -217,11 +219,11 @@ public class Mailbox implements IMailbox, Savable {
             return;
         }
         player.sendMessage(ChatColor.AQUA + "=== Unread Messages ===");
-        for (Message message : unreadMessages) {
-            String toSend = "ID: " + message.getID() + " - Date: " + message.getDate().toString() + " - Sender: " + message.getSender();
-            if (message.isUnread()) {
-                toSend = "**" + toSend;
-            }
+        player.sendMessage(ChatColor.AQUA + "D: date, S: sender");
+        for (Message message : getUnreadMessages()) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
+            toSend = ChatColor.BOLD + toSend;
             player.sendMessage(ChatColor.AQUA + toSend);
         }
     }
