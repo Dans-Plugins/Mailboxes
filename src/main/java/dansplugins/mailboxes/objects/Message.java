@@ -2,6 +2,7 @@ package dansplugins.mailboxes.objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dansplugins.mailboxes.managers.ConfigManager;
 import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -123,7 +124,13 @@ public class Message implements IMessage, Savable {
         player.sendMessage(ChatColor.AQUA + "Type: " + type);
         player.sendMessage(ChatColor.AQUA + "Date: " + date.toString());
         player.sendMessage(ChatColor.AQUA + "From: " + sender);
-        player.sendMessage(ChatColor.AQUA + "\"" + content + "\"");
+        if (ConfigManager.getInstance().getBoolean("quotesEnabled")) {
+            player.sendMessage(ChatColor.AQUA + "\"" + content + "\"");
+        }
+        else {
+            player.sendMessage(ChatColor.AQUA + content);
+        }
+
         player.sendMessage(ChatColor.AQUA + "=============================");
     }
 

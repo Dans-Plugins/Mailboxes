@@ -59,6 +59,9 @@ public class ConfigManager {
         if (!getConfig().isSet("welcomeMessageEnabled")) {
             getConfig().set("welcomeMessageEnabled", true);
         }
+        if (!getConfig().isSet("quotesEnabled")) {
+            getConfig().set("quotesEnabled", true);
+        }
         getConfig().options().copyDefaults(true);
         Mailboxes.getInstance().saveConfig();
     }
@@ -78,7 +81,8 @@ public class ConfigManager {
                     || option.equalsIgnoreCase("preventSendingMessagesToSelf")
                     || option.equalsIgnoreCase("assignmentAlertEnabled")
                     || option.equalsIgnoreCase("unreadMessagesAlertEnabled")
-                    || option.equalsIgnoreCase("welcomeMessageEnabled")) {
+                    || option.equalsIgnoreCase("welcomeMessageEnabled")
+                    || option.equalsIgnoreCase("quotesEnabled")) {
                 getConfig().set(option, Boolean.parseBoolean(value));
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
             } else if (option.equalsIgnoreCase("")) {
@@ -106,7 +110,8 @@ public class ConfigManager {
                 + ", preventSendingMessagesToSelf: " + getBoolean("preventSendingMessagesToSelf")
                 + ", assignmentAlertEnabled: " + getBoolean("assignmentAlertEnabled")
                 + ", unreadMessagesAlertEnabled: " + getBoolean("unreadMessagesAlertEnabled")
-                + ", welcomeMessageEnabled: " + getBoolean("welcomeMessageEnabled"));
+                + ", welcomeMessageEnabled: " + getBoolean("welcomeMessageEnabled")
+                + ", quotesEnabled: " + getBoolean("quotesEnabled"));
     }
 
     public boolean hasBeenAltered() {
