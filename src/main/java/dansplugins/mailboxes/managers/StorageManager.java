@@ -182,7 +182,7 @@ public class StorageManager {
 
     private ArrayList<HashMap<String, String>> loadDataFromFilename(String filename) {
         try{
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();;
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
             return gson.fromJson(reader, LIST_MAP_TYPE);
         } catch (FileNotFoundException e) {
