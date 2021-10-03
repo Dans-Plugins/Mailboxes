@@ -2,10 +2,13 @@ package dansplugins.mailboxes.externalapi;
 
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public interface IMailboxesAPI {
     String getAPIVersion();
     String getVersion();
     M_Mailbox getMailbox(Player player);
     M_Message getMessage(int ID);
     boolean sendPluginMessageToPlayer(String pluginName, Player player, String content);
+    boolean sendPluginMessageToPlayer(String pluginName, UUID playerUUID, String content);
 }
