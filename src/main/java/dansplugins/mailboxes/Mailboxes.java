@@ -20,7 +20,7 @@ public final class Mailboxes extends JavaPlugin {
         return instance;
     }
 
-    private final String version = "v1.1-alpha-2";
+    private final String version = "v1.1-alpha-3";
 
     @Override
     public void onEnable() {
