@@ -68,24 +68,35 @@ public class StorageManager {
     }
 
     private void saveMessages(String fileName) {
-        List<Map<String, String>> messages = new ArrayList<>();
+        List<Map<String, String>> messagesData = new ArrayList<>();
         for (Mailbox mailbox : PersistentData.getInstance().getMailboxes()) {
-            for (Message message : mailbox.getActiveMessages()){
+            ArrayList<Message> messages;
+            if (fileName.equals(ACTIVE_MESSAGES_FILE_NAME)) {
+                messages = mailbox.getActiveMessages();
+            }
+            else if (fileName.equals(ARCHIVED_MESSAGES_FILE_NAME)) {
+                messages = mailbox.getArchivedMessages();
+            }
+            else {
+                Logger.getInstance().log("Error: " + fileName + " + not recognized.");
+                return;
+            }
+            for (Message message : messages){
                 if (message instanceof PlayerMessage) {
                     PlayerMessage playerMessage = (PlayerMessage) message;
-                    messages.add(playerMessage.save());
+                    messagesData.add(playerMessage.save());
                 }
                 else if (message instanceof PluginMessage) {
                     PluginMessage pluginMessage = (PluginMessage) message;
-                    messages.add(pluginMessage.save());
+                    messagesData.add(pluginMessage.save());
                 }
                 else {
-                    messages.add(message.save());
+                    messagesData.add(message.save());
                 }
             }
         }
 
-        writeOutFiles(messages, fileName);
+        writeOutFiles(messagesData, fileName);
     }
 
     private void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
