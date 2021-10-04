@@ -124,6 +124,7 @@ public class Message implements IMessage, Savable {
         player.sendMessage(ChatColor.AQUA + "Type: " + type);
         player.sendMessage(ChatColor.AQUA + "Date: " + date.toString());
         player.sendMessage(ChatColor.AQUA + "From: " + sender);
+        player.sendMessage("\n");
         if (ConfigManager.getInstance().getBoolean("quotesEnabled")) {
             player.sendMessage(ChatColor.AQUA + "\"" + content + "\"");
         }
