@@ -44,14 +44,14 @@ public class SendCommand {
             }
         }
 
-        ArrayList<String> singleQuoteArgs = ArgumentParser.getInstance().getArgumentsInsideSingleQuotes(args);
+        ArrayList<String> doubleQuoteArgs = ArgumentParser.getInstance().getArgumentsInsideDoubleQuotes(args);
 
-        if (singleQuoteArgs.size() < 1) {
-            player.sendMessage(ChatColor.RED + "Message must be designated between single quotes.");
+        if (doubleQuoteArgs.size() < 1) {
+            player.sendMessage(ChatColor.RED + "Message must be designated between double quotes.");
             return false;
         }
 
-        String messageContent = singleQuoteArgs.get(0);
+        String messageContent = doubleQuoteArgs.get(0);
 
         PlayerMessage message = MessageFactory.getInstance().createPlayerMessage(player.getUniqueId(), recipientUUID, messageContent);
         MailService.getInstance().sendMessage(message);

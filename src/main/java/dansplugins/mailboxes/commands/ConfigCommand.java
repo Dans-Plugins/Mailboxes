@@ -26,18 +26,7 @@ public class ConfigCommand {
             }
             String option = args[1];
 
-            String value = "";
-            if (option.equalsIgnoreCase("denyUsageMessage") || option.equalsIgnoreCase("denyCreationMessage")) {
-                ArrayList<String> singleQuoteArgs = ArgumentParser.getInstance().getArgumentsInsideSingleQuotes(args);
-                if (singleQuoteArgs.size() == 0) {
-                    sender.sendMessage(ChatColor.RED + "New message must be in between single quotes.");
-                    return false;
-                }
-                value = singleQuoteArgs.get(0);
-            }
-            else {
-                value = args[2];
-            }
+            String value = args[2];
 
             ConfigManager.getInstance().setConfigOption(option, value, sender);
             return true;
