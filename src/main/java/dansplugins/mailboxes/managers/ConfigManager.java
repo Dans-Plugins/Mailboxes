@@ -60,7 +60,7 @@ public class ConfigManager {
             getConfig().set("welcomeMessageEnabled", true);
         }
         if (!getConfig().isSet("quotesEnabled")) {
-            getConfig().set("quotesEnabled", true);
+            getConfig().set("quotesEnabled", false);
         }
         getConfig().options().copyDefaults(true);
         Mailboxes.getInstance().saveConfig();
