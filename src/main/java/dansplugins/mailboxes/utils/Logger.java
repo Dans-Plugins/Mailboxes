@@ -19,7 +19,7 @@ public class Logger {
 
     public void log(String message) {
         if (Mailboxes.getInstance().isDebugEnabled()) {
-            System.out.println("[Currencies] " + message);
+            System.out.println("[Mailboxes] " + message);
         }
     }
 
