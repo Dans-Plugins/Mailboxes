@@ -49,6 +49,7 @@ public final class Mailboxes extends JavaPlugin {
 
         Scheduler.getInstance().scheduleAutosave();
 
+        DansAPI.getInstance().initialize(this);
         DansAPI.getInstance().getToolbox().getLogger().log("Test");
     }
 
