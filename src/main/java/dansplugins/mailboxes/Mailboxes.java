@@ -1,6 +1,7 @@
 package dansplugins.mailboxes;
 
 import dansplugins.dansapi.implementation.DansAPI;
+import dansplugins.dansapi.implementation.DansAPI_Integrator;
 import dansplugins.mailboxes.bstats.Metrics;
 import dansplugins.mailboxes.externalapi.MailboxesAPI;
 import dansplugins.mailboxes.managers.ConfigManager;
@@ -49,8 +50,8 @@ public final class Mailboxes extends JavaPlugin {
 
         Scheduler.getInstance().scheduleAutosave();
 
-        DansAPI.getInstance().initialize(this);
-        DansAPI.getInstance().getToolbox().getLogger().log("This debug message was printed through the use of Dan's API.");
+        DansAPI_Integrator DAPI_Integrator = new DansAPI_Integrator(this);
+        DAPI_Integrator.getAPI().getToolbox().getLogger().log("This debug message was printed through the use of Dan's API.");
     }
 
     @Override
