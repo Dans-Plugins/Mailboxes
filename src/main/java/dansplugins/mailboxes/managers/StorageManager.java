@@ -31,7 +31,7 @@ public class StorageManager {
 
     private final static Type LIST_MAP_TYPE = new TypeToken<ArrayList<HashMap<String, String>>>(){}.getType();
 
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();;
+    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private StorageManager() {
 

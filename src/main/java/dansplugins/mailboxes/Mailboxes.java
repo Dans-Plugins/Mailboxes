@@ -1,5 +1,6 @@
 package dansplugins.mailboxes;
 
+import dansplugins.dansapi.implementation.DansAPI;
 import dansplugins.mailboxes.bstats.Metrics;
 import dansplugins.mailboxes.externalapi.MailboxesAPI;
 import dansplugins.mailboxes.managers.ConfigManager;
@@ -20,7 +21,7 @@ public final class Mailboxes extends JavaPlugin {
         return instance;
     }
 
-    private final String version = "v1.1";
+    private final String version = "v1.2-alpha-1";
 
     @Override
     public void onEnable() {
@@ -47,6 +48,8 @@ public final class Mailboxes extends JavaPlugin {
         EventRegistry.getInstance().registerEvents();
 
         Scheduler.getInstance().scheduleAutosave();
+
+        DansAPI.getInstance().getToolbox().getLogger().log("Test");
     }
 
     @Override
