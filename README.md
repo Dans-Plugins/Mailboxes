@@ -38,7 +38,7 @@ Name | Main Contributions
 Daniel Stephenson | Creator
 
 ## License
-GPL3
+MIT
 
 ## Project Status
 This project is in active development.
