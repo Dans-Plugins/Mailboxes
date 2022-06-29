@@ -4,19 +4,6 @@ import java.util.ArrayList;
 
 public class ArgumentParser {
 
-    private static ArgumentParser instance;
-
-    private ArgumentParser() {
-
-    }
-
-    public static ArgumentParser getInstance() {
-        if (instance == null) {
-            instance = new ArgumentParser();
-        }
-        return instance;
-    }
-
     public String[] dropFirstArgument(String[] args) {
         String[] toReturn = new String[args.length - 1];
 

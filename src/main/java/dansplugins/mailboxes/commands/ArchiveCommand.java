@@ -8,6 +8,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ArchiveCommand {
+    private final PersistentData persistentData;
+
+    public ArchiveCommand(PersistentData persistentData) {
+        this.persistentData = persistentData;
+    }
 
     public boolean execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
@@ -24,7 +29,7 @@ public class ArchiveCommand {
 
         int ID = Integer.parseInt(args[0]); // TODO: fix error here
 
-        Mailbox mailbox = PersistentData.getInstance().getMailbox(player);
+        Mailbox mailbox = persistentData.getMailbox(player);
 
         Message message = mailbox.getMessage(ID);
 

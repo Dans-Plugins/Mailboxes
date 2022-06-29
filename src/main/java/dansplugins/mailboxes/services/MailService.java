@@ -1,7 +1,7 @@
 package dansplugins.mailboxes.services;
 
 import dansplugins.mailboxes.Mailboxes;
-import dansplugins.mailboxes.externalapi.MailboxesAPI;
+import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
 import dansplugins.mailboxes.objects.PlayerMessage;
@@ -11,42 +11,38 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class MailService implements IMailService {
+public class MailService {
+    private final Mailboxes mailboxes;
+    private final Logger logger;
+    private final PersistentData.LookupService lookupService;
 
-    private static MailService instance;
-
-    private MailService() {
-
-    }
-
-    public static MailService getInstance() {
-        if (instance == null) {
-            instance = new MailService();
-        }
-        return instance;
+    public MailService(Mailboxes mailboxes, Logger logger, PersistentData.LookupService lookupService) {
+        this.mailboxes = mailboxes;
+        this.logger = logger;
+        this.lookupService = lookupService;
     }
 
     public boolean sendWelcomeMessage(Player player) {
-        return Mailboxes.getInstance().getAPI().sendPluginMessageToPlayer(
-                Mailboxes.getInstance().getName(),
+        return mailboxes.getAPI().sendPluginMessageToPlayer(
+                mailboxes.getName(),
                 player,
                 "Welcome to the Mailboxes plugin! This message was sent using the plugin's external API."
         );
     }
 
     public boolean sendMessage(Message message) {
-        Logger.getInstance().log("Attempting to send message with ID " + message.getID());
-        Logger.getInstance().log("Message Sender: " + message.getSender());
-        Logger.getInstance().log("Message Recipient: " + message.getRecipient());
+        logger.log("Attempting to send message with ID " + message.getID());
+        logger.log("Message Sender: " + message.getSender());
+        logger.log("Message Recipient: " + message.getRecipient());
 
         if (message instanceof PlayerMessage) {
             PlayerMessage playerMessage = (PlayerMessage) message;
-            Logger.getInstance().log("Type: Player Message");
+            logger.log("Type: Player Message");
             return sendPlayerMessage(playerMessage);
         }
         else if (message instanceof PluginMessage) {
             PluginMessage pluginMessage = (PluginMessage) message;
-            Logger.getInstance().log("Type: Plugin Message");
+            logger.log("Type: Plugin Message");
             return sendPluginMessage(pluginMessage);
         }
         else {
@@ -55,13 +51,13 @@ public class MailService implements IMailService {
     }
 
     private boolean sendPlayerMessage(PlayerMessage playerMessage) {
-        Logger.getInstance().log("Sender UUID: " + playerMessage.getSenderUUID());
-        Logger.getInstance().log("Recipient UUID: " + playerMessage.getRecipientUUID());
+        logger.log("Sender UUID: " + playerMessage.getSenderUUID());
+        logger.log("Recipient UUID: " + playerMessage.getRecipientUUID());
 
-        Mailbox mailbox = MailboxLookupService.getInstance().lookup(playerMessage.getRecipientUUID());
+        Mailbox mailbox = lookupService.lookup(playerMessage.getRecipientUUID());
 
         if (mailbox == null) {
-            Logger.getInstance().log("Mailbox was null.");
+            logger.log("Mailbox was null.");
             return false;
         }
 
@@ -78,12 +74,12 @@ public class MailService implements IMailService {
     }
 
     private boolean sendPluginMessage(PluginMessage pluginMessage) {
-        Logger.getInstance().log("Recipient UUID: " + pluginMessage.getRecipientUUID());
+        logger.log("Recipient UUID: " + pluginMessage.getRecipientUUID());
 
-        Mailbox mailbox = MailboxLookupService.getInstance().lookup(pluginMessage.getRecipientUUID());
+        Mailbox mailbox = lookupService.lookup(pluginMessage.getRecipientUUID());
 
         if (mailbox == null) {
-            Logger.getInstance().log("Mailbox was null.");
+            logger.log("Mailbox was null.");
             return false;
         }
 

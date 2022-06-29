@@ -3,22 +3,14 @@ package dansplugins.mailboxes.utils;
 import dansplugins.mailboxes.Mailboxes;
 
 public class Logger {
+    private final Mailboxes mailboxes;
 
-    private static Logger instance;
-
-    private Logger() {
-
-    }
-
-    public static Logger getInstance() {
-        if (instance == null) {
-            instance = new Logger();
-        }
-        return instance;
+    public Logger(Mailboxes mailboxes) {
+        this.mailboxes = mailboxes;
     }
 
     public void log(String message) {
-        if (Mailboxes.getInstance().isDebugEnabled()) {
+        if (mailboxes.isDebugEnabled()) {
             System.out.println("[Mailboxes] " + message);
         }
     }
