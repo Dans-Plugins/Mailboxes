@@ -2,27 +2,20 @@ package dansplugins.mailboxes.data;
 
 import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
-import dansplugins.mailboxes.services.MailboxLookupService;
+import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class PersistentData {
+    private final LookupService lookupService;
 
-    private static PersistentData instance;
+    private final ArrayList<Mailbox> mailboxes = new ArrayList<>();
 
-    private ArrayList<Mailbox> mailboxes = new ArrayList<>();
-
-    private PersistentData() {
-
-    }
-
-    public static PersistentData getInstance() {
-        if (instance == null) {
-            instance = new PersistentData();
-        }
-        return instance;
+    public PersistentData(Logger logger) {
+        this.lookupService = new LookupService(logger, this);
     }
 
     public ArrayList<Mailbox> getMailboxes() {
@@ -30,7 +23,7 @@ public class PersistentData {
     }
 
     public Mailbox getMailbox(Player player) {
-        return MailboxLookupService.getInstance().lookup(player.getUniqueId());
+        return lookupService.lookup(player.getUniqueId());
     }
 
     public Mailbox getMailbox(UUID playerUUID) {
@@ -70,5 +63,53 @@ public class PersistentData {
             }
         }
         return null;
+    }
+
+    public LookupService getLookupService() {
+        return lookupService;
+    }
+
+    public class LookupService {
+        private final Logger logger;
+        private final PersistentData persistentData;
+
+        private final HashSet<Mailbox> cache = new HashSet<>();
+
+        public LookupService(Logger logger, PersistentData persistentData) {
+            this.logger = logger;
+            this.persistentData = persistentData;
+        }
+
+        public Mailbox lookup(UUID playerUUID) {
+            logger.log("Looking up mailbox for " + playerUUID.toString());
+            Mailbox mailbox = checkCache(playerUUID);
+            if (mailbox == null) {
+                return checkStorage(playerUUID);
+            }
+            return mailbox;
+        }
+
+        private Mailbox checkCache(UUID playerUUID) {
+            for (Mailbox mailbox : cache) {
+                if (mailbox.getOwnerUUID().equals(playerUUID)) {
+                    logger.log("Found in cache!");
+                    return mailbox;
+                }
+            }
+            return null;
+        }
+
+        private Mailbox checkStorage(UUID playerUUID) {
+            Mailbox mailbox = persistentData.getMailbox(playerUUID);
+            if (mailbox != null) {
+                logger.log("Found in storage!");
+                cache.add(mailbox);
+            }
+            else {
+                logger.log("Not found.");
+            }
+            return mailbox;
+        }
+
     }
 }

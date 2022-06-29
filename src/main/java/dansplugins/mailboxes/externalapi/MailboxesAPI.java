@@ -3,48 +3,51 @@ package dansplugins.mailboxes.externalapi;
 import dansplugins.mailboxes.Mailboxes;
 import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.factories.MessageFactory;
-import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.PluginMessage;
 import dansplugins.mailboxes.services.MailService;
-import jdk.jfr.internal.Logger;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class MailboxesAPI implements IMailboxesAPI {
+public class MailboxesAPI {
+    private final Mailboxes mailboxes;
+    private final PersistentData persistentData;
+    private final MessageFactory messageFactory;
+    private final MailService mailService;
 
     private String APIVersion = "v0.0.3";
 
-    @Override
+    public MailboxesAPI(Mailboxes mailboxes, PersistentData persistentData, MessageFactory messageFactory, MailService mailService) {
+        this.mailboxes = mailboxes;
+        this.persistentData = persistentData;
+        this.messageFactory = messageFactory;
+        this.mailService = mailService;
+    }
+
     public String getAPIVersion() {
         return APIVersion;
     }
 
-    @Override
     public String getVersion() {
-        return Mailboxes.getInstance().getVersion();
+        return mailboxes.getVersion();
     }
 
-    @Override
     public M_Mailbox getMailbox(Player player) {
-        return new M_Mailbox(PersistentData.getInstance().getMailbox(player));
+        return new M_Mailbox(persistentData.getMailbox(player));
     }
 
-    @Override
     public M_Message getMessage(int ID) {
-        return new M_Message(PersistentData.getInstance().getMessage(ID));
+        return new M_Message(persistentData.getMessage(ID));
     }
 
-    @Override
     public boolean sendPluginMessageToPlayer(String pluginName, Player player, String content) {
-        PluginMessage message = MessageFactory.getInstance().createPluginMessage(pluginName, player.getUniqueId(), content);
-        return MailService.getInstance().sendMessage(message);
+        PluginMessage message = messageFactory.createPluginMessage(pluginName, player.getUniqueId(), content);
+        return mailService.sendMessage(message);
     }
 
-    @Override
     public boolean sendPluginMessageToPlayer(String pluginName, UUID playerUUID, String content) {
-        PluginMessage message = MessageFactory.getInstance().createPluginMessage(pluginName, playerUUID, content);
-        return MailService.getInstance().sendMessage(message);
+        PluginMessage message = messageFactory.createPluginMessage(pluginName, playerUUID, content);
+        return mailService.sendMessage(message);
     }
 
 }

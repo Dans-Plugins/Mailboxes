@@ -2,7 +2,8 @@ package dansplugins.mailboxes.objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dansplugins.mailboxes.managers.ConfigManager;
+
+import dansplugins.mailboxes.services.ConfigService;
 import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,7 +12,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Message implements IMessage, Savable {
+public class Message implements Savable {
+    private final Logger logger;
+    private final ConfigService configService;
 
     protected int ID;
     protected String type;
@@ -23,7 +26,9 @@ public class Message implements IMessage, Savable {
     protected boolean archived = false;
     protected boolean unread = true;
 
-    public Message(int ID, String type, String sender, String recipient, String content) {
+    public Message(Logger logger, ConfigService configService, int ID, String type, String sender, String recipient, String content) {
+        this.logger = logger;
+        this.configService = configService;
         this.ID = ID;
         this.type = type;
         this.sender = sender;
@@ -32,7 +37,9 @@ public class Message implements IMessage, Savable {
         this.date = new Date();
     }
 
-    public Message(int ID, String type, String sender, String recipient, String content, int mailboxID) {
+    public Message(Logger logger, ConfigService configService, int ID, String type, String sender, String recipient, String content, int mailboxID) {
+        this.logger = logger;
+        this.configService = configService;
         this.ID = ID;
         this.type = type;
         this.sender = sender;
@@ -42,90 +49,77 @@ public class Message implements IMessage, Savable {
         this.mailboxID = mailboxID;
     }
 
-    public Message(Map<String, String> data) {
+    public Message(Map<String, String> data, Logger logger, ConfigService configService) {
+        this.logger = logger;
+        this.configService = configService;
         this.load(data);
     }
 
-    @Override
     public int getID() {
         return ID;
     }
 
-    @Override
     public void setID(int ID) {
         this.ID = ID;
     }
 
-    @Override
     public String getType() {
         return type;
     }
 
-    @Override
     public void setType(String type) {
         this.type = type;
     }
 
-    @Override
     public String getSender() {
         return sender;
     }
 
-    @Override
     public void setSender(String sender) {
         this.sender = sender;
     }
 
-    @Override
     public String getRecipient() {
         return recipient;
     }
 
-    @Override
     public void setRecipient(String recipient) {
         this.recipient = recipient;
     }
 
-    @Override
     public String getContent() {
         return content;
     }
 
-    @Override
     public void setContent(String content) {
         this.content = content;
     }
 
-    @Override
     public Date getDate() {
         return date;
     }
 
-    @Override
     public void setDate(Date date) {
         this.date = date;
     }
 
-    @Override
     public int getMailboxID() {
         return mailboxID;
     }
 
-    @Override
     public void setMailboxID(int ID) {
         this.mailboxID = ID;
     }
 
-    @Override
     public void sendContentToPlayer(Player player) {
-        Logger.getInstance().log("Message ID: " + ID);
-        Logger.getInstance().log("Mailbox ID: " + mailboxID);
+        logger.log("Message ID: " + ID);
+        logger.log("Mailbox ID: " + mailboxID);
         player.sendMessage(ChatColor.AQUA + "=============================");
         player.sendMessage(ChatColor.AQUA + "Type: " + type);
         player.sendMessage(ChatColor.AQUA + "Date: " + date.toString());
         player.sendMessage(ChatColor.AQUA + "From: " + sender);
         player.sendMessage("\n");
-        if (ConfigManager.getInstance().getBoolean("quotesEnabled")) {
+        if (configService.getBoolean("quotesEnabled")) {
             player.sendMessage(ChatColor.AQUA + "\"" + content + "\"");
         }
         else {
@@ -135,27 +129,22 @@ public class Message implements IMessage, Savable {
         player.sendMessage(ChatColor.AQUA + "=============================");
     }
 
-    @Override
     public boolean isArchived() {
         return archived;
     }
 
-    @Override
     public void setArchived(boolean b) {
         archived = b;
     }
 
-    @Override
     public boolean isUnread() {
         return unread;
     }
 
-    @Override
     public void setUnread(boolean b) {
         unread = b;
     }
 
-    @Override
     public Map<String, String> save() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -173,7 +162,6 @@ public class Message implements IMessage, Savable {
         return saveMap;
     }
 
-    @Override
     public void load(Map<String, String> data) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 

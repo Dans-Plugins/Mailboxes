@@ -1,13 +1,15 @@
 package dansplugins.mailboxes.commands;
 
-import dansplugins.mailboxes.managers.ConfigManager;
-import dansplugins.mailboxes.utils.ArgumentParser;
+import dansplugins.mailboxes.services.ConfigService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
-
 public class ConfigCommand {
+    private final ConfigService configService;
+
+    public ConfigCommand(ConfigService configService) {
+        this.configService = configService;
+    }
 
     public boolean execute(CommandSender sender, String[] args) {
         if (args.length == 0) {
@@ -16,7 +18,7 @@ public class ConfigCommand {
         }
 
         if (args[0].equalsIgnoreCase("show")) {
-            ConfigManager.getInstance().sendConfigList(sender);
+            configService.sendConfigList(sender);
             return true;
         }
         else if (args[0].equalsIgnoreCase("set")) {
@@ -28,7 +30,7 @@ public class ConfigCommand {
 
             String value = args[2];
 
-            ConfigManager.getInstance().setConfigOption(option, value, sender);
+            configService.setConfigOption(option, value, sender);
             return true;
         }
         else {

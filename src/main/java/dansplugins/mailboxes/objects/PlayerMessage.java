@@ -2,9 +2,8 @@ package dansplugins.mailboxes.objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dansplugins.mailboxes.services.ConfigService;
 import dansplugins.mailboxes.utils.Logger;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import java.util.Map;
 import java.util.UUID;
@@ -14,14 +13,14 @@ public class PlayerMessage extends Message {
     private UUID senderUUID;
     private UUID recipientUUID;
 
-    public PlayerMessage(int ID, String sender, String recipient, String content, UUID senderUUID, UUID recipientUUID) {
-        super(ID, "Player Message", sender, recipient, content);
+    public PlayerMessage(int ID, String sender, String recipient, String content, UUID senderUUID, UUID recipientUUID, Logger logger, ConfigService configService) {
+        super(logger, configService, ID, "Player Message", sender, recipient, content);
         this.senderUUID = senderUUID;
         this.recipientUUID = recipientUUID;
     }
 
-    public PlayerMessage(Map<String, String> data) {
-        super(data);
+    public PlayerMessage(Map<String, String> data, Logger logger, ConfigService configService) {
+        super(data, logger, configService);
     }
 
     public UUID getSenderUUID() {

@@ -8,16 +8,23 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ListCommand {
+    private final Logger logger;
+    private final PersistentData persistentData;
+
+    public ListCommand(Logger logger, PersistentData persistentData) {
+        this.logger = logger;
+        this.persistentData = persistentData;
+    }
 
     public boolean execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            Logger.getInstance().log("Only players can use this command");
+            logger.log("Only players can use this command");
             return false;
         }
 
         Player player = (Player) sender;
 
-        Mailbox mailbox = PersistentData.getInstance().getMailbox(player);
+        Mailbox mailbox = persistentData.getMailbox(player);
 
         if (mailbox == null) {
             player.sendMessage(ChatColor.RED + "ERROR: Mailbox was not found.");

@@ -1,31 +1,28 @@
 package dansplugins.mailboxes.factories;
 
 import dansplugins.mailboxes.data.PersistentData;
-import dansplugins.mailboxes.managers.ConfigManager;
 import dansplugins.mailboxes.objects.Mailbox;
+import dansplugins.mailboxes.services.ConfigService;
+
+import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.entity.Player;
 
 import java.util.Random;
 
 public class MailboxFactory {
+    private final ConfigService configService;
+    private final PersistentData persistentData;
+    private final Logger logger;
 
-    private static MailboxFactory instance;
-
-    private MailboxFactory() {
-
+    public MailboxFactory(ConfigService configService, PersistentData persistentData, Logger logger) {
+        this.configService = configService;
+        this.persistentData = persistentData;
+        this.logger = logger;
     }
-
-    public static MailboxFactory getInstance() {
-        if (instance == null) {
-            instance = new MailboxFactory();
-        }
-        return instance;
-    }
-
 
     public Mailbox createMailbox(Player player) {
         int ID = getNewMailboxID();
-        return new Mailbox(ID, player);
+        return new Mailbox(logger, ID, player);
     }
 
     private int getNewMailboxID() {
@@ -34,7 +31,7 @@ public class MailboxFactory {
         int maxAttempts = 25;
         int newID = -1;
         do {
-            int maxMailboxIDNumber = ConfigManager.getInstance().getInt("maxMailboxIDNumber");
+            int maxMailboxIDNumber = configService.getInt("maxMailboxIDNumber");
             newID = random.nextInt(maxMailboxIDNumber);
             numAttempts++;
         } while (isMailboxIDTaken(newID) && numAttempts <= maxAttempts);
@@ -42,6 +39,6 @@ public class MailboxFactory {
     }
 
     private boolean isMailboxIDTaken(int mailboxID) {
-        return PersistentData.getInstance().getMailbox(mailboxID) != null;
+        return persistentData.getMailbox(mailboxID) != null;
     }
 }
