@@ -15,8 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 
 public final class Mailboxes extends JavaPlugin {
-
-    private final String version = "v1.1";
+    private final String pluginVersion = "v" + getDescription().getVersion();
 
     private final ConfigService configService = new ConfigService(this);
     private final Logger logger = new Logger(this);
@@ -69,7 +68,7 @@ public final class Mailboxes extends JavaPlugin {
     }
 
     public String getVersion() {
-        return version;
+        return pluginVersion;
     }
 
     public boolean isDebugEnabled() {
