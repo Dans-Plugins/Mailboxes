@@ -3,6 +3,15 @@
 ## Description
 Mailboxes is an open source plugin that allows players and plugins to send persistent messages to players.
 
+## Features
+
+- **Player Messaging**: Players can send and receive persistent messages
+- **Plugin Integration**: Plugins can send messages to players via external API
+- **Plugin-to-Plugin Messaging**: Plugins can communicate with each other via REST API without requiring a dependency
+- **Topic-Based System**: Create topics for organized message exchange between plugins
+- **Persistent Storage**: All messages and topics are saved to disk
+- **Secure REST API**: API key authentication for secure plugin communication
+
 ## Server Software
 This plugin was developed using the Spigot API. Users may run into trouble using it with other available server softwares like Paper.
 
@@ -16,7 +25,35 @@ This plugin was developed using the Spigot API. Users may run into trouble using
 ## Usage
 - [User Guide](https://github.com/dmccoystephenson/Mailboxes/wiki/Guide) (coming soon)
 - [List of Commands](https://github.com/dmccoystephenson/Mailboxes/wiki/Commands)
+- [REST API Documentation](REST_API.md) - For plugin developers
 - [FAQ](https://github.com/dmccoystephenson/Mailboxes/wiki/FAQ) (coming soon)
+
+## For Plugin Developers
+
+The Mailboxes plugin provides a REST API that allows your plugin to communicate with other plugins without requiring a direct dependency. This is perfect for:
+
+- Inter-plugin communication
+- Event broadcasting
+- Data sharing between plugins
+- Loosely-coupled plugin architecture
+
+See the [REST API Documentation](REST_API.md) for complete details on how to use the API.
+
+### Quick Example
+
+```bash
+# Create a topic
+curl -X POST http://localhost:8080/api/topics \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "player-events", "description": "Player events"}'
+
+# Publish a message
+curl -X POST http://localhost:8080/api/topics/player-events/publish \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{"producerPlugin": "MyPlugin", "content": "Player joined"}'
+```
 
 ## Support
 You can find the support discord server [here](https://discord.gg/xXtuAQ2).
