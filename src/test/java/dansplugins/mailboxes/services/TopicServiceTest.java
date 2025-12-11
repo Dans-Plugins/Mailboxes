@@ -89,7 +89,7 @@ class TopicServiceTest {
 
     @Test
     void testGetAllTopics() {
-        List<TopicMailbox> topics = new java.util.ArrayList<>();
+        ArrayList<TopicMailbox> topics = new ArrayList<>();
         topics.add(new TopicMailbox(1, "topic1", "Desc1"));
         topics.add(new TopicMailbox(2, "topic2", "Desc2"));
         when(persistentData.getTopicMailboxes()).thenReturn(topics);
@@ -213,12 +213,12 @@ class TopicServiceTest {
 
     @Test
     void testIdCounterInitializationWithExistingTopics() {
-        List<TopicMailbox> existingTopics = new java.util.ArrayList<>();
+        ArrayList<TopicMailbox> existingTopics = new ArrayList<>();
         existingTopics.add(new TopicMailbox(5, "topic1", "Desc1"));
         existingTopics.add(new TopicMailbox(3, "topic2", "Desc2"));
         
         when(persistentData.getTopicMailboxes()).thenReturn(existingTopics);
-        when(persistentData.getTopicMessages()).thenReturn(new java.util.ArrayList<>());
+        when(persistentData.getTopicMessages()).thenReturn(new ArrayList<>());
         when(persistentData.getTopicMailbox("new-topic")).thenReturn(null);
 
         TopicService service = new TopicService(persistentData, logger);
@@ -230,11 +230,11 @@ class TopicServiceTest {
 
     @Test
     void testMessageIdCounterInitializationWithExistingMessages() {
-        List<TopicMessage> existingMessages = new java.util.ArrayList<>();
+        ArrayList<TopicMessage> existingMessages = new ArrayList<>();
         existingMessages.add(new TopicMessage(10, "topic1", "Plugin1", "Content1"));
         existingMessages.add(new TopicMessage(7, "topic2", "Plugin2", "Content2"));
         
-        when(persistentData.getTopicMailboxes()).thenReturn(new java.util.ArrayList<>());
+        when(persistentData.getTopicMailboxes()).thenReturn(new ArrayList<>());
         when(persistentData.getTopicMessages()).thenReturn(existingMessages);
 
         TopicService service = new TopicService(persistentData, logger);

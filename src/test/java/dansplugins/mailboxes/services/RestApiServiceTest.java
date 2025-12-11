@@ -5,6 +5,7 @@ import dansplugins.mailboxes.objects.TopicMessage;
 import dansplugins.mailboxes.utils.Logger;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
+import okhttp3.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +45,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.get("/api/health", req -> {
+            okhttp3.Response response = client.get("/api/health", req -> {
                 req.header("X-API-Key", "test-api-key");
             });
             
@@ -60,7 +61,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.get("/api/topics");
+            okhttp3.Response response = client.get("/api/topics");
             assertEquals(401, response.code());
         });
         
@@ -72,7 +73,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.get("/api/topics", req -> {
+            okhttp3.Response response = client.get("/api/topics", req -> {
                 req.header("X-API-Key", "wrong-key");
             });
             assertEquals(401, response.code());
@@ -89,7 +90,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.post("/api/topics", 
+            okhttp3.Response response = client.post("/api/topics", 
                 "{\"name\":\"test-topic\",\"description\":\"Test description\"}",
                 req -> {
                     req.header("X-API-Key", "test-api-key");
@@ -108,7 +109,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.post("/api/topics", 
+            okhttp3.Response response = client.post("/api/topics", 
                 "{\"description\":\"Test description\"}",
                 req -> {
                     req.header("X-API-Key", "test-api-key");
@@ -128,7 +129,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.post("/api/topics", 
+            okhttp3.Response response = client.post("/api/topics", 
                 "{\"name\":\"test-topic\",\"description\":\"Test description\"}",
                 req -> {
                     req.header("X-API-Key", "test-api-key");
@@ -151,7 +152,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.get("/api/topics", req -> {
+            okhttp3.Response response = client.get("/api/topics", req -> {
                 req.header("X-API-Key", "test-api-key");
             });
             
@@ -172,7 +173,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.get("/api/topics/test-topic", req -> {
+            okhttp3.Response response = client.get("/api/topics/test-topic", req -> {
                 req.header("X-API-Key", "test-api-key");
             });
             
@@ -190,7 +191,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.get("/api/topics/non-existent", req -> {
+            okhttp3.Response response = client.get("/api/topics/non-existent", req -> {
                 req.header("X-API-Key", "test-api-key");
             });
             
@@ -207,7 +208,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.delete("/api/topics/test-topic", req -> {
+            okhttp3.Response response = client.delete("/api/topics/test-topic", req -> {
                 req.header("X-API-Key", "test-api-key");
             });
             
@@ -224,7 +225,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.delete("/api/topics/non-existent", req -> {
+            okhttp3.Response response = client.delete("/api/topics/non-existent", req -> {
                 req.header("X-API-Key", "test-api-key");
             });
             
@@ -242,7 +243,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.post("/api/topics/test-topic/publish",
+            okhttp3.Response response = client.post("/api/topics/test-topic/publish",
                 "{\"producerPlugin\":\"ProducerPlugin\",\"content\":\"Test content\"}",
                 req -> {
                     req.header("X-API-Key", "test-api-key");
@@ -263,7 +264,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.post("/api/topics/test-topic/publish",
+            okhttp3.Response response = client.post("/api/topics/test-topic/publish",
                 "{\"content\":\"Test content\"}",
                 req -> {
                     req.header("X-API-Key", "test-api-key");
@@ -281,7 +282,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.post("/api/topics/test-topic/publish",
+            okhttp3.Response response = client.post("/api/topics/test-topic/publish",
                 "{\"producerPlugin\":\"ProducerPlugin\"}",
                 req -> {
                     req.header("X-API-Key", "test-api-key");
@@ -304,7 +305,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.get("/api/topics/test-topic/consume?consumerPlugin=ConsumerPlugin",
+            okhttp3.Response response = client.get("/api/topics/test-topic/consume?consumerPlugin=ConsumerPlugin",
                 req -> {
                     req.header("X-API-Key", "test-api-key");
                 });
@@ -323,7 +324,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.get("/api/topics/test-topic/consume",
+            okhttp3.Response response = client.get("/api/topics/test-topic/consume",
                 req -> {
                     req.header("X-API-Key", "test-api-key");
                 });
@@ -341,7 +342,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.post("/api/topics/test-topic/subscribe",
+            okhttp3.Response response = client.post("/api/topics/test-topic/subscribe",
                 "{\"pluginName\":\"TestPlugin\"}",
                 req -> {
                     req.header("X-API-Key", "test-api-key");
@@ -361,7 +362,7 @@ class RestApiServiceTest {
         restApiService.start();
         
         JavalinTest.test(restApiService.getApp(), (server, client) -> {
-            var response = client.delete("/api/topics/test-topic/subscribe?pluginName=TestPlugin",
+            okhttp3.Response response = client.delete("/api/topics/test-topic/subscribe?pluginName=TestPlugin",
                 req -> {
                     req.header("X-API-Key", "test-api-key");
                 });
