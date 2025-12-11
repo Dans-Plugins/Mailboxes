@@ -2,6 +2,8 @@ package dansplugins.mailboxes.data;
 
 import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
+import dansplugins.mailboxes.objects.TopicMailbox;
+import dansplugins.mailboxes.objects.TopicMessage;
 import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.entity.Player;
 
@@ -13,6 +15,8 @@ public class PersistentData {
     private final LookupService lookupService;
 
     private final ArrayList<Mailbox> mailboxes = new ArrayList<>();
+    private final ArrayList<TopicMailbox> topicMailboxes = new ArrayList<>();
+    private final ArrayList<TopicMessage> topicMessages = new ArrayList<>();
 
     public PersistentData(Logger logger) {
         this.lookupService = new LookupService(logger, this);
@@ -67,6 +71,61 @@ public class PersistentData {
 
     public LookupService getLookupService() {
         return lookupService;
+    }
+
+    // Topic Mailbox methods
+    public ArrayList<TopicMailbox> getTopicMailboxes() {
+        return topicMailboxes;
+    }
+
+    public TopicMailbox getTopicMailbox(String name) {
+        for (TopicMailbox topicMailbox : topicMailboxes) {
+            if (topicMailbox.getName().equals(name)) {
+                return topicMailbox;
+            }
+        }
+        return null;
+    }
+
+    public TopicMailbox getTopicMailbox(int id) {
+        for (TopicMailbox topicMailbox : topicMailboxes) {
+            if (topicMailbox.getID() == id) {
+                return topicMailbox;
+            }
+        }
+        return null;
+    }
+
+    public void addTopicMailbox(TopicMailbox topicMailbox) {
+        if (getTopicMailbox(topicMailbox.getName()) == null) {
+            topicMailboxes.add(topicMailbox);
+        }
+    }
+
+    public void removeTopicMailbox(TopicMailbox topicMailbox) {
+        topicMailboxes.remove(topicMailbox);
+    }
+
+    // Topic Message methods
+    public ArrayList<TopicMessage> getTopicMessages() {
+        return topicMessages;
+    }
+
+    public TopicMessage getTopicMessage(int id) {
+        for (TopicMessage message : topicMessages) {
+            if (message.getID() == id) {
+                return message;
+            }
+        }
+        return null;
+    }
+
+    public void addTopicMessage(TopicMessage message) {
+        topicMessages.add(message);
+    }
+
+    public void removeTopicMessage(TopicMessage message) {
+        topicMessages.remove(message);
     }
 
     public class LookupService {

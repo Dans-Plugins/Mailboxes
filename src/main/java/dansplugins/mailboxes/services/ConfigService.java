@@ -55,6 +55,19 @@ public class ConfigService {
         if (!getConfig().isSet("quotesEnabled")) {
             getConfig().set("quotesEnabled", false);
         }
+        if (!getConfig().isSet("apiEnabled")) {
+            getConfig().set("apiEnabled", true);
+        }
+        if (!getConfig().isSet("apiPort")) {
+            getConfig().set("apiPort", 8080);
+        }
+        if (!getConfig().isSet("apiKey")) {
+            // Generate a random secure API key on first run
+            String randomApiKey = generateSecureApiKey();
+            getConfig().set("apiKey", randomApiKey);
+            System.out.println("Generated new API key: " + randomApiKey);
+            System.out.println("Please save this API key! It will be needed to access the REST API.");
+        }
         getConfig().options().copyDefaults(true);
         mailboxes.saveConfig();
     }
@@ -67,7 +80,8 @@ public class ConfigService {
                 sender.sendMessage(ChatColor.RED + "Cannot set version.");
                 return;
             } else if (option.equalsIgnoreCase("maxMessageIDNumber")
-                    || option.equalsIgnoreCase("maxMailboxIDNumber")) { // no integers yet
+                    || option.equalsIgnoreCase("maxMailboxIDNumber")
+                    || option.equalsIgnoreCase("apiPort")) {
                 getConfig().set(option, Integer.parseInt(value));
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
             } else if (option.equalsIgnoreCase("debugMode")
@@ -75,12 +89,16 @@ public class ConfigService {
                     || option.equalsIgnoreCase("assignmentAlertEnabled")
                     || option.equalsIgnoreCase("unreadMessagesAlertEnabled")
                     || option.equalsIgnoreCase("welcomeMessageEnabled")
-                    || option.equalsIgnoreCase("quotesEnabled")) {
+                    || option.equalsIgnoreCase("quotesEnabled")
+                    || option.equalsIgnoreCase("apiEnabled")) {
                 getConfig().set(option, Boolean.parseBoolean(value));
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
             } else if (option.equalsIgnoreCase("")) {
                 getConfig().set(option, Double.parseDouble(value)); // no doubles yet
                 sender.sendMessage(ChatColor.GREEN + "Double set.");
+            } else if (option.equalsIgnoreCase("apiKey")) {
+                sender.sendMessage(ChatColor.RED + "Cannot set API key via command. Please edit config.yml directly.");
+                return;
             } else {
                 getConfig().set(option, value);
                 sender.sendMessage(ChatColor.GREEN + "String set.");
@@ -104,7 +122,10 @@ public class ConfigService {
                 + ", assignmentAlertEnabled: " + getBoolean("assignmentAlertEnabled")
                 + ", unreadMessagesAlertEnabled: " + getBoolean("unreadMessagesAlertEnabled")
                 + ", welcomeMessageEnabled: " + getBoolean("welcomeMessageEnabled")
-                + ", quotesEnabled: " + getBoolean("quotesEnabled"));
+                + ", quotesEnabled: " + getBoolean("quotesEnabled")
+                + ", apiEnabled: " + getBoolean("apiEnabled")
+                + ", apiPort: " + getInt("apiPort")
+                + ", apiKey: ***");
     }
 
     public boolean hasBeenAltered() {
@@ -129,6 +150,19 @@ public class ConfigService {
 
     public String getString(String option) {
         return getConfig().getString(option);
+    }
+
+    private String generateSecureApiKey() {
+        // Generate a secure random API key
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder apiKey = new StringBuilder();
+        java.util.Random random = new java.security.SecureRandom();
+        
+        for (int i = 0; i < 32; i++) {
+            apiKey.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        
+        return apiKey.toString();
     }
 
 }
