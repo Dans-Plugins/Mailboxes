@@ -26,6 +26,10 @@ public class RestApiService {
         this.configService = configService;
     }
 
+    public Javalin getApp() {
+        return app;
+    }
+
     public void start() {
         int port = configService.getInt("apiPort");
         logger.log("Starting REST API on port " + port);
