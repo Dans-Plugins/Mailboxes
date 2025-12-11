@@ -7,6 +7,7 @@ import dansplugins.mailboxes.objects.TopicMessage;
 import dansplugins.mailboxes.utils.Logger;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.http.HttpResponseException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -92,8 +93,7 @@ public class RestApiService {
         String expectedApiKey = configService.getString("apiKey");
 
         if (apiKey == null || !constantTimeEquals(apiKey, expectedApiKey)) {
-            ctx.status(401).json(createErrorResponse("Unauthorized: Invalid or missing API key"));
-            ctx.skipRemainingHandlers();
+            throw new HttpResponseException(401, "Unauthorized: Invalid or missing API key");
         }
     }
 
