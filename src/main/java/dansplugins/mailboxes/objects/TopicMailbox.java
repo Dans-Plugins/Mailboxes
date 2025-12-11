@@ -94,6 +94,7 @@ public class TopicMailbox implements Savable {
         saveMap.put("ID", gson.toJson(ID));
         saveMap.put("name", gson.toJson(name));
         saveMap.put("description", gson.toJson(description));
+        saveMap.put("subscribedPlugins", gson.toJson(subscribedPlugins));
 
         return saveMap;
     }
@@ -105,5 +106,13 @@ public class TopicMailbox implements Savable {
         ID = Integer.parseInt(gson.fromJson(data.get("ID"), String.class));
         name = gson.fromJson(data.get("name"), String.class);
         description = gson.fromJson(data.get("description"), String.class);
+        
+        if (data.containsKey("subscribedPlugins")) {
+            java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<ArrayList<String>>(){}.getType();
+            subscribedPlugins = gson.fromJson(data.get("subscribedPlugins"), listType);
+            if (subscribedPlugins == null) {
+                subscribedPlugins = new ArrayList<>();
+            }
+        }
     }
 }

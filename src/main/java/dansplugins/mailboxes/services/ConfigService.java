@@ -62,7 +62,11 @@ public class ConfigService {
             getConfig().set("apiPort", 8080);
         }
         if (!getConfig().isSet("apiKey")) {
-            getConfig().set("apiKey", "changeme");
+            // Generate a random secure API key on first run
+            String randomApiKey = generateSecureApiKey();
+            getConfig().set("apiKey", randomApiKey);
+            System.out.println("Generated new API key: " + randomApiKey);
+            System.out.println("Please save this API key! It will be needed to access the REST API.");
         }
         getConfig().options().copyDefaults(true);
         mailboxes.saveConfig();
@@ -146,6 +150,19 @@ public class ConfigService {
 
     public String getString(String option) {
         return getConfig().getString(option);
+    }
+
+    private String generateSecureApiKey() {
+        // Generate a secure random API key
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder apiKey = new StringBuilder();
+        java.util.Random random = new java.security.SecureRandom();
+        
+        for (int i = 0; i < 32; i++) {
+            apiKey.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        
+        return apiKey.toString();
     }
 
 }

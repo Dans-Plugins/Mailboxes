@@ -87,10 +87,29 @@ public class RestApiService {
         String apiKey = ctx.header("X-API-Key");
         String expectedApiKey = configService.getString("apiKey");
 
-        if (apiKey == null || !apiKey.equals(expectedApiKey)) {
+        if (apiKey == null || !constantTimeEquals(apiKey, expectedApiKey)) {
             ctx.status(401).json(createErrorResponse("Unauthorized: Invalid or missing API key"));
             ctx.skipRemainingHandlers();
         }
+    }
+
+    private boolean constantTimeEquals(String a, String b) {
+        if (a == null || b == null) {
+            return false;
+        }
+        
+        byte[] aBytes = a.getBytes();
+        byte[] bBytes = b.getBytes();
+        
+        if (aBytes.length != bBytes.length) {
+            return false;
+        }
+        
+        int result = 0;
+        for (int i = 0; i < aBytes.length; i++) {
+            result |= aBytes[i] ^ bBytes[i];
+        }
+        return result == 0;
     }
 
     private void createTopic(Context ctx) {

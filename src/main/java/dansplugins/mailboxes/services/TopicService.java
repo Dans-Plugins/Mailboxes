@@ -11,12 +11,29 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TopicService {
     private final PersistentData persistentData;
     private final Logger logger;
-    private final AtomicInteger nextTopicMailboxId = new AtomicInteger(1);
-    private final AtomicInteger nextTopicMessageId = new AtomicInteger(1);
+    private final AtomicInteger nextTopicMailboxId;
+    private final AtomicInteger nextTopicMessageId;
 
     public TopicService(PersistentData persistentData, Logger logger) {
         this.persistentData = persistentData;
         this.logger = logger;
+        
+        // Initialize ID counters based on existing data
+        int maxTopicId = 0;
+        for (TopicMailbox topic : persistentData.getTopicMailboxes()) {
+            if (topic.getID() > maxTopicId) {
+                maxTopicId = topic.getID();
+            }
+        }
+        this.nextTopicMailboxId = new AtomicInteger(maxTopicId + 1);
+        
+        int maxMessageId = 0;
+        for (TopicMessage message : persistentData.getTopicMessages()) {
+            if (message.getID() > maxMessageId) {
+                maxMessageId = message.getID();
+            }
+        }
+        this.nextTopicMessageId = new AtomicInteger(maxMessageId + 1);
     }
 
     public TopicMailbox createTopic(String name, String description) {
