@@ -47,6 +47,9 @@ public class RestApiService {
     }
 
     private void setupRoutes() {
+        // Add authentication filter for all API routes
+        app.before("/api/*", this::authenticate);
+
         // Create a new topic
         app.post("/api/topics", this::createTopic);
 
@@ -78,6 +81,16 @@ public class RestApiService {
             response.put("service", "Mailboxes REST API");
             ctx.json(response);
         });
+    }
+
+    private void authenticate(Context ctx) {
+        String apiKey = ctx.header("X-API-Key");
+        String expectedApiKey = configService.getString("apiKey");
+
+        if (apiKey == null || !apiKey.equals(expectedApiKey)) {
+            ctx.status(401).json(createErrorResponse("Unauthorized: Invalid or missing API key"));
+            ctx.skipRemainingHandlers();
+        }
     }
 
     private void createTopic(Context ctx) {

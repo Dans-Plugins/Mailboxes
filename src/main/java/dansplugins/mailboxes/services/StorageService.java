@@ -10,6 +10,8 @@ import dansplugins.mailboxes.objects.Mailbox;
 import dansplugins.mailboxes.objects.Message;
 import dansplugins.mailboxes.objects.PlayerMessage;
 import dansplugins.mailboxes.objects.PluginMessage;
+import dansplugins.mailboxes.objects.TopicMailbox;
+import dansplugins.mailboxes.objects.TopicMessage;
 import dansplugins.mailboxes.utils.Logger;
 
 import java.io.*;
@@ -30,6 +32,8 @@ public class StorageService {
     private final static String MAILBOXES_FILE_NAME = "mailboxes.json";
     private final static String ACTIVE_MESSAGES_FILE_NAME = "activeMessages.json";
     private final static String ARCHIVED_MESSAGES_FILE_NAME = "archivedMessages.json";
+    private final static String TOPIC_MAILBOXES_FILE_NAME = "topicMailboxes.json";
+    private final static String TOPIC_MESSAGES_FILE_NAME = "topicMessages.json";
 
     private final static Type LIST_MAP_TYPE = new TypeToken<ArrayList<HashMap<String, String>>>(){}.getType();
 
@@ -46,6 +50,8 @@ public class StorageService {
         saveMailboxes();
         saveMessages(ACTIVE_MESSAGES_FILE_NAME);
         saveMessages(ARCHIVED_MESSAGES_FILE_NAME);
+        saveTopicMailboxes();
+        saveTopicMessages();
         if (configService.hasBeenAltered()) {
             mailboxes.saveConfig();
         }
@@ -54,6 +60,8 @@ public class StorageService {
     public void load() {
         loadMailboxes();
         loadMessages();
+        loadTopicMailboxes();
+        loadTopicMessages();
     }
 
     private void saveMailboxes() {
@@ -187,6 +195,56 @@ public class StorageService {
             // Fail silently because this can actually happen in normal use
         }
         return new ArrayList<>();
+    }
+
+    private void saveTopicMailboxes() {
+        List<Map<String, String>> topicMailboxesData = new ArrayList<>();
+        for (TopicMailbox topicMailbox : persistentData.getTopicMailboxes()){
+            topicMailboxesData.add(topicMailbox.save());
+        }
+
+        writeOutFiles(topicMailboxesData, TOPIC_MAILBOXES_FILE_NAME);
+    }
+
+    private void saveTopicMessages() {
+        List<Map<String, String>> topicMessagesData = new ArrayList<>();
+        for (TopicMessage topicMessage : persistentData.getTopicMessages()){
+            topicMessagesData.add(topicMessage.save());
+        }
+
+        writeOutFiles(topicMessagesData, TOPIC_MESSAGES_FILE_NAME);
+    }
+
+    private void loadTopicMailboxes() {
+        persistentData.getTopicMailboxes().clear();
+
+        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + TOPIC_MAILBOXES_FILE_NAME);
+
+        for (Map<String, String> topicMailboxData : data){
+            TopicMailbox topicMailbox = new TopicMailbox(topicMailboxData);
+            persistentData.addTopicMailbox(topicMailbox);
+        }
+    }
+
+    private void loadTopicMessages() {
+        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + TOPIC_MESSAGES_FILE_NAME);
+
+        // load in messages
+        ArrayList<TopicMessage> topicMessages = new ArrayList<>();
+        for (Map<String, String> messageData : data){
+            TopicMessage topicMessage = new TopicMessage(messageData);
+            topicMessages.add(topicMessage);
+        }
+
+        // add messages to the correct topic mailboxes
+        for (TopicMailbox topicMailbox : persistentData.getTopicMailboxes()) {
+            topicMailbox.getMessages().clear();
+            for (TopicMessage message : topicMessages) {
+                if (message.getTopic().equals(topicMailbox.getName())) {
+                    topicMailbox.addMessage(message);
+                }
+            }
+        }
     }
 
 }

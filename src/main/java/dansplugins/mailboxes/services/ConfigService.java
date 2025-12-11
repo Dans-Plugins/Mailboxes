@@ -61,6 +61,9 @@ public class ConfigService {
         if (!getConfig().isSet("apiPort")) {
             getConfig().set("apiPort", 8080);
         }
+        if (!getConfig().isSet("apiKey")) {
+            getConfig().set("apiKey", "changeme");
+        }
         getConfig().options().copyDefaults(true);
         mailboxes.saveConfig();
     }
@@ -89,6 +92,9 @@ public class ConfigService {
             } else if (option.equalsIgnoreCase("")) {
                 getConfig().set(option, Double.parseDouble(value)); // no doubles yet
                 sender.sendMessage(ChatColor.GREEN + "Double set.");
+            } else if (option.equalsIgnoreCase("apiKey")) {
+                sender.sendMessage(ChatColor.RED + "Cannot set API key via command. Please edit config.yml directly.");
+                return;
             } else {
                 getConfig().set(option, value);
                 sender.sendMessage(ChatColor.GREEN + "String set.");
@@ -114,7 +120,8 @@ public class ConfigService {
                 + ", welcomeMessageEnabled: " + getBoolean("welcomeMessageEnabled")
                 + ", quotesEnabled: " + getBoolean("quotesEnabled")
                 + ", apiEnabled: " + getBoolean("apiEnabled")
-                + ", apiPort: " + getInt("apiPort"));
+                + ", apiPort: " + getInt("apiPort")
+                + ", apiKey: ***");
     }
 
     public boolean hasBeenAltered() {
