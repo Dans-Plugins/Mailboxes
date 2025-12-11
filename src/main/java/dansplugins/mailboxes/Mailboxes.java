@@ -24,6 +24,8 @@ public final class Mailboxes extends JavaPlugin {
     private final MailboxFactory mailboxFactory = new MailboxFactory(configService, persistentData, logger);
     private final MailService mailService = new MailService(this, logger, persistentData.getLookupService());
     private final MailboxService mailboxService = new MailboxService(persistentData, mailboxFactory, configService, mailService, logger);
+    private final TopicService topicService = new TopicService(persistentData, logger);
+    private RestApiService restApiService;
     private final EventRegistry eventRegistry = new EventRegistry(this, mailboxService);
     private final Scheduler scheduler = new Scheduler(logger, this, storageService);
     private final UUIDChecker uuidChecker = new UUIDChecker();
@@ -55,10 +57,26 @@ public final class Mailboxes extends JavaPlugin {
         eventRegistry.registerEvents();
 
         scheduler.scheduleAutosave();
+
+        // Start REST API if enabled
+        if (configService.getBoolean("apiEnabled")) {
+            try {
+                restApiService = new RestApiService(topicService, logger, configService);
+                restApiService.start();
+            } catch (Exception e) {
+                logger.log("Failed to start REST API: " + e.getMessage());
+                getLogger().severe("Failed to start REST API: " + e.getMessage());
+            }
+        }
     }
 
     @Override
     public void onDisable() {
+        // Stop REST API if running
+        if (restApiService != null) {
+            restApiService.stop();
+        }
+        
         storageService.save();
     }
 
