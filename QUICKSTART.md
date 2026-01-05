@@ -79,9 +79,18 @@ public class YourPlugin extends JavaPlugin {
 That's it! Now you can send messages anywhere in your plugin:
 
 ```java
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class MyCommand implements CommandExecutor {
+    
+    private final YourPlugin plugin;
+    
+    public MyCommand(YourPlugin plugin) {
+        this.plugin = plugin;
+    }
     
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -89,7 +98,7 @@ public class MyCommand implements CommandExecutor {
             Player player = (Player) sender;
             
             // Send a message to the player
-            boolean success = yourPlugin.getMailboxesAPI().sendPluginMessageToPlayer(
+            boolean success = plugin.getMailboxesAPI().sendPluginMessageToPlayer(
                 "YourPlugin",              // Your plugin name
                 player,                    // The player
                 "Hello from YourPlugin!"   // Your message
@@ -144,6 +153,11 @@ public void notifyPayment(UUID playerUUID, double amount) {
 
 **Server Events:**
 ```java
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.PlayerDeathEvent;
+
 @EventHandler
 public void onPlayerDeath(PlayerDeathEvent event) {
     Player player = event.getEntity();

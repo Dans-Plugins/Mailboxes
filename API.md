@@ -402,6 +402,9 @@ public class EconomyPlugin extends JavaPlugin {
 Read a player's messages and perform actions based on them:
 
 ```java
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 public void checkPlayerMessages(Player player) {
     if (mailboxesAPI == null) return;
     
@@ -422,6 +425,11 @@ public void checkPlayerMessages(Player player) {
 Notify players of important events:
 
 ```java
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.PlayerDeathEvent;
+
 @EventHandler
 public void onPlayerDeath(PlayerDeathEvent event) {
     Player player = event.getEntity();
@@ -470,7 +478,9 @@ public void sendServerAnnouncement(String announcement) {
         .map(Player::getUniqueId)
         .collect(Collectors.toSet());
     
-    List<UUID> playersToNotify = getTrackedPlayerUUIDs(); // Your method
+    // getTrackedPlayerUUIDs() is a placeholder - implement this method to return
+    // the list of player UUIDs you want to notify (e.g., from a database or config)
+    List<UUID> playersToNotify = getTrackedPlayerUUIDs();
     for (UUID playerUUID : playersToNotify) {
         // Check if player is not online using the set
         if (!onlineUUIDs.contains(playerUUID)) {
@@ -590,6 +600,8 @@ if (apiVersion.compareTo("v0.0.3") >= 0) {
 Wrap API calls in try-catch blocks for production code:
 
 ```java
+import java.util.logging.Level;
+
 try {
     mailboxesAPI.sendPluginMessageToPlayer("MyPlugin", player, message);
 } catch (Exception e) {
@@ -602,6 +614,10 @@ try {
 Avoid sending too many messages in quick succession:
 
 ```java
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 // Consider batching or rate-limiting per player
 // Note: This is a simplified example showing the concept
 // For production use, implement proper per-player cooldown tracking
