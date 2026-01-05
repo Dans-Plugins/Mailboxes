@@ -2,8 +2,10 @@ package dansplugins.mailboxes.externalapi;
 
 import dansplugins.mailboxes.objects.Message;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Date;
+import java.util.List;
 
 public class M_Message {
 
@@ -43,6 +45,14 @@ public class M_Message {
 
     public boolean isArchived() {
         return message.isArchived();
+    }
+
+    public boolean hasAttachments() {
+        return message.hasAttachments();
+    }
+
+    public List<ItemStack> getAttachments() {
+        return message.getAttachments();
     }
 
 }
