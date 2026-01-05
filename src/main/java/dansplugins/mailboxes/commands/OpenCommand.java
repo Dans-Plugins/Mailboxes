@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class OpenCommand {
                 player.sendMessage(ChatColor.YELLOW + "Some items couldn't fit in your inventory and remain attached to the message.");
                 player.sendMessage(ChatColor.YELLOW + "Please free up space and open the message again.");
                 // Keep failed items as attachments
-                List<ItemStack> remainingItems = new java.util.ArrayList<>();
+                List<ItemStack> remainingItems = new ArrayList<>();
                 for (ItemStack item : failedItems.values()) {
                     remainingItems.add(item);
                 }

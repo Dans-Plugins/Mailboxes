@@ -2,6 +2,7 @@ package dansplugins.mailboxes.objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import dansplugins.mailboxes.services.ConfigService;
 import dansplugins.mailboxes.utils.Logger;
@@ -9,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -223,7 +225,8 @@ public class Message implements Savable {
         // Deserialize attachments
         if (data.containsKey("attachments")) {
             try {
-                List<Map<String, Object>> serializedAttachments = gson.fromJson(data.get("attachments"), List.class);
+                Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
+                List<Map<String, Object>> serializedAttachments = gson.fromJson(data.get("attachments"), listType);
                 if (serializedAttachments != null) {
                     attachments = new ArrayList<>();
                     for (Map<String, Object> serializedItem : serializedAttachments) {

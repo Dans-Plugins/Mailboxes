@@ -8,6 +8,7 @@ import dansplugins.mailboxes.utils.ArgumentParser;
 import dansplugins.mailboxes.utils.Logger;
 import dansplugins.mailboxes.utils.UUIDChecker;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -94,7 +95,7 @@ public class SendCommand {
             
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
             
-            if (itemInHand == null || itemInHand.getType().toString().equals("AIR")) {
+            if (itemInHand == null || itemInHand.getType() == Material.AIR) {
                 player.sendMessage(ChatColor.RED + "You must hold an item in your hand to attach it.");
                 return false;
             }
