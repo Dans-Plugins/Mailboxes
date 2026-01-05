@@ -55,6 +55,12 @@ public class ConfigService {
         if (!getConfig().isSet("quotesEnabled")) {
             getConfig().set("quotesEnabled", false);
         }
+        if (!getConfig().isSet("attachmentsEnabled")) {
+            getConfig().set("attachmentsEnabled", true);
+        }
+        if (!getConfig().isSet("maxAttachmentStackSize")) {
+            getConfig().set("maxAttachmentStackSize", 64);
+        }
         getConfig().options().copyDefaults(true);
         mailboxes.saveConfig();
     }
@@ -67,7 +73,8 @@ public class ConfigService {
                 sender.sendMessage(ChatColor.RED + "Cannot set version.");
                 return;
             } else if (option.equalsIgnoreCase("maxMessageIDNumber")
-                    || option.equalsIgnoreCase("maxMailboxIDNumber")) { // no integers yet
+                    || option.equalsIgnoreCase("maxMailboxIDNumber")
+                    || option.equalsIgnoreCase("maxAttachmentStackSize")) {
                 getConfig().set(option, Integer.parseInt(value));
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
             } else if (option.equalsIgnoreCase("debugMode")
@@ -75,7 +82,8 @@ public class ConfigService {
                     || option.equalsIgnoreCase("assignmentAlertEnabled")
                     || option.equalsIgnoreCase("unreadMessagesAlertEnabled")
                     || option.equalsIgnoreCase("welcomeMessageEnabled")
-                    || option.equalsIgnoreCase("quotesEnabled")) {
+                    || option.equalsIgnoreCase("quotesEnabled")
+                    || option.equalsIgnoreCase("attachmentsEnabled")) {
                 getConfig().set(option, Boolean.parseBoolean(value));
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
             } else if (option.equalsIgnoreCase("")) {
@@ -104,7 +112,9 @@ public class ConfigService {
                 + ", assignmentAlertEnabled: " + getBoolean("assignmentAlertEnabled")
                 + ", unreadMessagesAlertEnabled: " + getBoolean("unreadMessagesAlertEnabled")
                 + ", welcomeMessageEnabled: " + getBoolean("welcomeMessageEnabled")
-                + ", quotesEnabled: " + getBoolean("quotesEnabled"));
+                + ", quotesEnabled: " + getBoolean("quotesEnabled")
+                + ", attachmentsEnabled: " + getBoolean("attachmentsEnabled")
+                + ", maxAttachmentStackSize: " + getInt("maxAttachmentStackSize"));
     }
 
     public boolean hasBeenAltered() {

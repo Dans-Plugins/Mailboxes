@@ -14,6 +14,8 @@ permissions:
     default: true
   mailboxes.send:
     default: true
+  mailboxes.send.attach:
+    default: true
   mailboxes.open:
     default: true
   mailboxes.delete:

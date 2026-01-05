@@ -1,7 +1,16 @@
 # Mailboxes
 
 ## Description
-Mailboxes is an open source plugin that allows players and plugins to send persistent messages to players.
+Mailboxes is an open source plugin that allows players and plugins to send persistent messages to players. Players can also attach items to their messages, making it easy to transfer items securely through in-game mail.
+
+## Features
+- **Persistent Messaging**: Send messages that persist across server restarts
+- **Item Attachments**: Attach items to messages for secure item transfer
+- **Configurable Limits**: Server admins can configure attachment limits
+- **Permission-Based**: Control who can use attachment features
+- **API Support**: External plugins can integrate with Mailboxes
+
+For more information about the item attachments feature, see [ATTACHMENTS.md](ATTACHMENTS.md).
 
 ## Server Software
 This plugin was developed using the Spigot API. Users may run into trouble using it with other available server softwares like Paper.
