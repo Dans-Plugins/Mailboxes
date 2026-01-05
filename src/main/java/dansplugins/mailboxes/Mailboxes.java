@@ -26,6 +26,7 @@ public final class Mailboxes extends JavaPlugin {
     private final String pluginVersion = "v" + getDescription().getVersion();
 
     // Config option names for tab completion (in camelCase to match config file)
+    // Note: 'version' is intentionally excluded as it cannot be set by users
     private static final List<String> CONFIG_OPTIONS = Arrays.asList(
         "debugMode",
         "maxMessageIDNumber",
@@ -40,6 +41,7 @@ public final class Mailboxes extends JavaPlugin {
     );
 
     // Boolean config options (stored in lowercase for case-insensitive comparison)
+    // These are derived from CONFIG_OPTIONS to maintain consistency
     private static final Set<String> BOOLEAN_CONFIG_OPTIONS = new HashSet<>(Arrays.asList(
         "debugmode",
         "preventsendingmessagestoself",
@@ -126,8 +128,15 @@ public final class Mailboxes extends JavaPlugin {
 
     private List<String> getTabCompletions(CommandSender sender, String[] args) {
         if (args.length == 1) {
-            // Main subcommands
-            List<String> subcommands = Arrays.asList("help", "config", "list", "send", "open", "delete", "archive");
+            // Main subcommands - filter by permissions
+            List<String> subcommands = new ArrayList<>();
+            if (sender.hasPermission("mailboxes.help")) subcommands.add("help");
+            if (sender.hasPermission("mailboxes.config")) subcommands.add("config");
+            if (sender.hasPermission("mailboxes.list")) subcommands.add("list");
+            if (sender.hasPermission("mailboxes.send")) subcommands.add("send");
+            if (sender.hasPermission("mailboxes.open")) subcommands.add("open");
+            if (sender.hasPermission("mailboxes.delete")) subcommands.add("delete");
+            if (sender.hasPermission("mailboxes.archive")) subcommands.add("archive");
             return filterCompletions(subcommands, args[0]);
         }
 
@@ -136,11 +145,20 @@ public final class Mailboxes extends JavaPlugin {
 
             switch (subcommand) {
                 case "config":
-                    return getConfigCompletions(args);
+                    if (sender.hasPermission("mailboxes.config")) {
+                        return getConfigCompletions(args);
+                    }
+                    break;
                 case "list":
-                    return getListCompletions(args);
+                    if (sender.hasPermission("mailboxes.list")) {
+                        return getListCompletions(args);
+                    }
+                    break;
                 case "send":
-                    return getSendCompletions(sender, args);
+                    if (sender.hasPermission("mailboxes.send")) {
+                        return getSendCompletions(sender, args);
+                    }
+                    break;
             }
         }
 
@@ -175,16 +193,13 @@ public final class Mailboxes extends JavaPlugin {
 
     private List<String> getSendCompletions(CommandSender sender, String[] args) {
         if (args.length == 2) {
-            // Player names and -attach flag
-            List<String> completions = filterCompletions(
+            // Player names only at position 2
+            return filterCompletions(
                 Bukkit.getOnlinePlayers().stream()
                     .map(Player::getName)
                     .collect(Collectors.toList()),
                 args[1]
             );
-            // Also suggest -attach flag if user has permission
-            completions.addAll(getAttachFlagSuggestion(sender, args, args[1]));
-            return completions;
         }
         // Suggest -attach flag for subsequent positions if not already present
         if (args.length >= 3) {
@@ -203,8 +218,9 @@ public final class Mailboxes extends JavaPlugin {
     }
 
     private List<String> filterCompletions(List<String> options, String input) {
+        String lowerInput = input.toLowerCase();
         return options.stream()
-            .filter(option -> option.toLowerCase().startsWith(input.toLowerCase()))
+            .filter(option -> option.toLowerCase().startsWith(lowerInput))
             .collect(Collectors.toList());
     }
 }
