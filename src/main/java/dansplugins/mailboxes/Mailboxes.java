@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public final class Mailboxes extends JavaPlugin {
     private final String pluginVersion = "v" + getDescription().getVersion();
 
-    // Config option names for tab completion
+    // Config option names for tab completion (in camelCase to match config file)
     private static final List<String> CONFIG_OPTIONS = Arrays.asList(
         "debugMode",
         "maxMessageIDNumber",
@@ -39,6 +39,7 @@ public final class Mailboxes extends JavaPlugin {
         "maxAttachmentStackSize"
     );
 
+    // Boolean config options (stored in lowercase for case-insensitive comparison)
     private static final Set<String> BOOLEAN_CONFIG_OPTIONS = new HashSet<>(Arrays.asList(
         "debugmode",
         "preventsendingmessagestoself",
@@ -186,18 +187,21 @@ public final class Mailboxes extends JavaPlugin {
                 args[1]
             ));
             // Also suggest -attach flag if user has permission
-            if (sender.hasPermission("mailboxes.send.attach")) {
-                completions.addAll(filterCompletions(Arrays.asList("-attach"), args[1]));
-            }
+            completions.addAll(getAttachFlagSuggestion(sender, args, args[1]));
             return completions;
         }
-        // Check if -attach flag is already present using stream
+        // Suggest -attach flag for subsequent positions if not already present
+        if (args.length >= 3) {
+            return getAttachFlagSuggestion(sender, args, args[args.length - 1]);
+        }
+        return new ArrayList<>();
+    }
+
+    private List<String> getAttachFlagSuggestion(CommandSender sender, String[] args, String input) {
+        // Check if -attach flag is already present
         boolean hasAttachFlag = Arrays.stream(args).anyMatch(arg -> arg.equalsIgnoreCase("-attach"));
-        if (!hasAttachFlag && args.length >= 3) {
-            // Suggest -attach flag if not already present and has permission
-            if (sender.hasPermission("mailboxes.send.attach")) {
-                return filterCompletions(Arrays.asList("-attach"), args[args.length - 1]);
-            }
+        if (!hasAttachFlag && sender.hasPermission("mailboxes.send.attach")) {
+            return filterCompletions(Arrays.asList("-attach"), input);
         }
         return new ArrayList<>();
     }
