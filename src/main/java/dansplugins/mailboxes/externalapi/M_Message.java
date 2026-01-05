@@ -4,6 +4,7 @@ import dansplugins.mailboxes.objects.Message;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
