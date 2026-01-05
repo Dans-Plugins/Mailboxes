@@ -125,8 +125,6 @@ public final class Mailboxes extends JavaPlugin {
     }
 
     private List<String> getTabCompletions(CommandSender sender, String[] args) {
-        List<String> completions = new ArrayList<>();
-
         if (args.length == 1) {
             // Main subcommands
             List<String> subcommands = Arrays.asList("help", "config", "list", "send", "open", "delete", "archive");
@@ -143,12 +141,10 @@ public final class Mailboxes extends JavaPlugin {
                     return getListCompletions(args);
                 case "send":
                     return getSendCompletions(sender, args);
-                default:
-                    return completions;
             }
         }
 
-        return completions;
+        return new ArrayList<>();
     }
 
     private List<String> getConfigCompletions(String[] args) {
@@ -179,13 +175,13 @@ public final class Mailboxes extends JavaPlugin {
 
     private List<String> getSendCompletions(CommandSender sender, String[] args) {
         if (args.length == 2) {
-            // Player names
-            List<String> completions = new ArrayList<>(filterCompletions(
+            // Player names and -attach flag
+            List<String> completions = filterCompletions(
                 Bukkit.getOnlinePlayers().stream()
                     .map(Player::getName)
                     .collect(Collectors.toList()),
                 args[1]
-            ));
+            );
             // Also suggest -attach flag if user has permission
             completions.addAll(getAttachFlagSuggestion(sender, args, args[1]));
             return completions;
