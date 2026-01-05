@@ -40,13 +40,13 @@ public final class Mailboxes extends JavaPlugin {
     );
 
     private static final Set<String> BOOLEAN_CONFIG_OPTIONS = new HashSet<>(Arrays.asList(
-        "debugMode",
-        "preventSendingMessagesToSelf",
-        "assignmentAlertEnabled",
-        "unreadMessagesAlertEnabled",
-        "welcomeMessageEnabled",
-        "quotesEnabled",
-        "attachmentsEnabled"
+        "debugmode",
+        "preventsendingmessagestoself",
+        "assignmentalertenabled",
+        "unreadmessagesalertenabled",
+        "welcomemessageenabled",
+        "quotesenabled",
+        "attachmentsenabled"
     ));
 
     private final ConfigService configService = new ConfigService(this);
@@ -162,7 +162,7 @@ public final class Mailboxes extends JavaPlugin {
         if (args.length == 4 && args[1].equalsIgnoreCase("set")) {
             // Suggest values based on the config option type
             String option = args[2];
-            if (BOOLEAN_CONFIG_OPTIONS.contains(option) || BOOLEAN_CONFIG_OPTIONS.contains(option.toLowerCase())) {
+            if (BOOLEAN_CONFIG_OPTIONS.contains(option.toLowerCase())) {
                 return filterCompletions(Arrays.asList("true", "false"), args[3]);
             }
         }
@@ -179,12 +179,17 @@ public final class Mailboxes extends JavaPlugin {
     private List<String> getSendCompletions(CommandSender sender, String[] args) {
         if (args.length == 2) {
             // Player names
-            return filterCompletions(
+            List<String> completions = new ArrayList<>(filterCompletions(
                 Bukkit.getOnlinePlayers().stream()
                     .map(Player::getName)
                     .collect(Collectors.toList()),
                 args[1]
-            );
+            ));
+            // Also suggest -attach flag if user has permission
+            if (sender.hasPermission("mailboxes.send.attach")) {
+                completions.addAll(filterCompletions(Arrays.asList("-attach"), args[1]));
+            }
+            return completions;
         }
         // Check if -attach flag is already present using stream
         boolean hasAttachFlag = Arrays.stream(args).anyMatch(arg -> arg.equalsIgnoreCase("-attach"));
