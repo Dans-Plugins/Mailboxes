@@ -8,11 +8,17 @@ import dansplugins.mailboxes.factories.MessageFactory;
 import dansplugins.mailboxes.services.*;
 import dansplugins.mailboxes.utils.*;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class Mailboxes extends JavaPlugin {
     private final String pluginVersion = "v" + getDescription().getVersion();
@@ -81,5 +87,117 @@ public final class Mailboxes extends JavaPlugin {
 
     private boolean isVersionMismatched() {
         return !getConfig().getString("version").equalsIgnoreCase(getVersion());
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+        if (label.equalsIgnoreCase("mailboxes") || label.equalsIgnoreCase("m")) {
+            return getTabCompletions(sender, args);
+        }
+        return null;
+    }
+
+    private List<String> getTabCompletions(CommandSender sender, String[] args) {
+        List<String> completions = new ArrayList<>();
+
+        if (args.length == 1) {
+            // Main subcommands
+            List<String> subcommands = Arrays.asList("help", "config", "list", "send", "open", "delete", "archive");
+            return filterCompletions(subcommands, args[0]);
+        }
+
+        if (args.length >= 2) {
+            String subcommand = args[0].toLowerCase();
+
+            switch (subcommand) {
+                case "config":
+                    return getConfigCompletions(args);
+                case "list":
+                    return getListCompletions(args);
+                case "send":
+                    return getSendCompletions(sender, args);
+                default:
+                    return completions;
+            }
+        }
+
+        return completions;
+    }
+
+    private List<String> getConfigCompletions(String[] args) {
+        if (args.length == 2) {
+            // Config subcommands
+            return filterCompletions(Arrays.asList("show", "set"), args[1]);
+        }
+        if (args.length == 3 && args[1].equalsIgnoreCase("set")) {
+            // Config options
+            List<String> options = Arrays.asList(
+                "debugMode",
+                "maxMessageIDNumber",
+                "maxMailboxIDNumber",
+                "preventSendingMessagesToSelf",
+                "assignmentAlertEnabled",
+                "unreadMessagesAlertEnabled",
+                "welcomeMessageEnabled",
+                "quotesEnabled",
+                "attachmentsEnabled",
+                "maxAttachmentStackSize"
+            );
+            return filterCompletions(options, args[2]);
+        }
+        if (args.length == 4 && args[1].equalsIgnoreCase("set")) {
+            // Suggest values based on the config option type
+            String option = args[2];
+            if (option.equalsIgnoreCase("debugMode") ||
+                option.equalsIgnoreCase("preventSendingMessagesToSelf") ||
+                option.equalsIgnoreCase("assignmentAlertEnabled") ||
+                option.equalsIgnoreCase("unreadMessagesAlertEnabled") ||
+                option.equalsIgnoreCase("welcomeMessageEnabled") ||
+                option.equalsIgnoreCase("quotesEnabled") ||
+                option.equalsIgnoreCase("attachmentsEnabled")) {
+                return filterCompletions(Arrays.asList("true", "false"), args[3]);
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private List<String> getListCompletions(String[] args) {
+        if (args.length == 2) {
+            return filterCompletions(Arrays.asList("active", "archived", "unread"), args[1]);
+        }
+        return new ArrayList<>();
+    }
+
+    private List<String> getSendCompletions(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            // Player names
+            return filterCompletions(
+                Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .collect(Collectors.toList()),
+                args[1]
+            );
+        }
+        // Check if -attach flag is already present
+        boolean hasAttachFlag = false;
+        for (String arg : args) {
+            if (arg.equalsIgnoreCase("-attach")) {
+                hasAttachFlag = true;
+                break;
+            }
+        }
+        if (!hasAttachFlag && args.length >= 3) {
+            // Suggest -attach flag if not already present and has permission
+            if (sender.hasPermission("mailboxes.send.attach")) {
+                return filterCompletions(Arrays.asList("-attach"), args[args.length - 1]);
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private List<String> filterCompletions(List<String> options, String input) {
+        return options.stream()
+            .filter(option -> option.toLowerCase().startsWith(input.toLowerCase()))
+            .collect(Collectors.toList());
     }
 }
