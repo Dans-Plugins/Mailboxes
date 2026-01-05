@@ -446,6 +446,9 @@ public void onPlayerDeath(PlayerDeathEvent event) {
 Send messages to multiple players:
 
 ```java
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public void sendServerAnnouncement(String announcement) {
     if (mailboxesAPI == null) return;
     
@@ -461,11 +464,16 @@ public void sendServerAnnouncement(String announcement) {
     // For offline players, maintain a list of UUIDs to notify
     // Note: Avoid using Bukkit.getOfflinePlayers() as it loads all player data
     // Instead, keep track of specific players you want to notify
+    
+    // Create a set of online player UUIDs for efficient lookup
+    Set<UUID> onlineUUIDs = Bukkit.getOnlinePlayers().stream()
+        .map(Player::getUniqueId)
+        .collect(Collectors.toSet());
+    
     List<UUID> playersToNotify = getTrackedPlayerUUIDs(); // Your method
     for (UUID playerUUID : playersToNotify) {
-        // Check if player is not online
-        Player player = Bukkit.getPlayer(playerUUID);
-        if (player == null || !player.isOnline()) {
+        // Check if player is not online using the set
+        if (!onlineUUIDs.contains(playerUUID)) {
             mailboxesAPI.sendPluginMessageToPlayer(
                 "AdminPlugin", 
                 playerUUID, 
@@ -570,8 +578,10 @@ Check the API version if you need specific features:
 
 ```java
 String apiVersion = mailboxesAPI.getAPIVersion();
+// Simple string comparison works for semantic versions like "v0.0.3"
+// For more complex version checking, consider a version parsing library
 if (apiVersion.compareTo("v0.0.3") >= 0) {
-    // Use newer features
+    // Use features available in v0.0.3 and later
 }
 ```
 
@@ -592,18 +602,23 @@ try {
 Avoid sending too many messages in quick succession:
 
 ```java
-// Consider batching or rate-limiting
-private long lastMessageTime = 0;
+// Consider batching or rate-limiting per player
+// Note: This is a simplified example showing the concept
+// For production use, implement proper per-player cooldown tracking
+private Map<UUID, Long> lastMessageTimes = new HashMap<>();
 private static final long MESSAGE_COOLDOWN = 60000; // 1 minute
 
 public void sendNotification(Player player, String message) {
+    UUID playerUUID = player.getUniqueId();
     long currentTime = System.currentTimeMillis();
-    if (currentTime - lastMessageTime < MESSAGE_COOLDOWN) {
+    
+    Long lastTime = lastMessageTimes.get(playerUUID);
+    if (lastTime != null && currentTime - lastTime < MESSAGE_COOLDOWN) {
         return; // Skip if too soon
     }
     
     mailboxesAPI.sendPluginMessageToPlayer("MyPlugin", player, message);
-    lastMessageTime = currentTime;
+    lastMessageTimes.put(playerUUID, currentTime);
 }
 ```
 
