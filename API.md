@@ -66,7 +66,7 @@ Then add to your `pom.xml`:
 
 #### Option 2: Gradle
 
-```gradle
+```groovy
 dependencies {
     compileOnly files('libs/Mailboxes-1.2.0.jar')
 }
@@ -107,15 +107,14 @@ public class YourPlugin extends JavaPlugin {
         // Get the Mailboxes plugin instance
         Plugin plugin = getServer().getPluginManager().getPlugin("Mailboxes");
         
-        if (plugin == null || !(plugin instanceof Mailboxes)) {
+        if (plugin != null && plugin instanceof Mailboxes) {
+            // Get the API instance
+            mailboxesAPI = ((Mailboxes) plugin).getAPI();
+            getLogger().info("Successfully hooked into Mailboxes API v" + mailboxesAPI.getAPIVersion());
+        } else {
             getLogger().warning("Mailboxes plugin not found!");
             return;
         }
-        
-        // Get the API instance
-        mailboxesAPI = ((Mailboxes) plugin).getAPI();
-        
-        getLogger().info("Successfully hooked into Mailboxes API v" + mailboxesAPI.getAPIVersion());
     }
     
     public MailboxesAPI getMailboxesAPI() {
@@ -409,15 +408,10 @@ public void checkPlayerMessages(Player player) {
     M_Mailbox mailbox = mailboxesAPI.getMailbox(player);
     ArrayList<Message> messages = mailbox.getActiveMessages();
     
-    int unreadCount = 0;
-    for (Message message : messages) {
-        if (message.isUnread()) {
-            unreadCount++;
-        }
-    }
+    int messageCount = messages.size();
     
-    if (unreadCount > 0) {
-        player.sendMessage(ChatColor.YELLOW + "You have " + unreadCount + " unread messages!");
+    if (messageCount > 0) {
+        player.sendMessage(ChatColor.YELLOW + "You have " + messageCount + " active messages!");
         player.sendMessage(ChatColor.YELLOW + "Use /m list to view them.");
     }
 }
@@ -455,6 +449,7 @@ Send messages to multiple players:
 public void sendServerAnnouncement(String announcement) {
     if (mailboxesAPI == null) return;
     
+    // Send to all online players
     for (Player player : Bukkit.getOnlinePlayers()) {
         mailboxesAPI.sendPluginMessageToPlayer(
             "AdminPlugin", 
@@ -463,12 +458,17 @@ public void sendServerAnnouncement(String announcement) {
         );
     }
     
-    // Also notify offline players via UUID
-    for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-        if (!offlinePlayer.isOnline()) {
+    // For offline players, maintain a list of UUIDs to notify
+    // Note: Avoid using Bukkit.getOfflinePlayers() as it loads all player data
+    // Instead, keep track of specific players you want to notify
+    List<UUID> playersToNotify = getTrackedPlayerUUIDs(); // Your method
+    for (UUID playerUUID : playersToNotify) {
+        // Check if player is not online
+        Player player = Bukkit.getPlayer(playerUUID);
+        if (player == null || !player.isOnline()) {
             mailboxesAPI.sendPluginMessageToPlayer(
                 "AdminPlugin", 
-                offlinePlayer.getUniqueId(), 
+                playerUUID, 
                 "Server Announcement: " + announcement
             );
         }

@@ -24,7 +24,7 @@ Download the Mailboxes JAR and place it in a `libs` folder in your project, then
 
 Place the Mailboxes JAR in a `libs` folder and add to your `build.gradle`:
 
-```gradle
+```groovy
 dependencies {
     compileOnly files('libs/Mailboxes-1.2.0.jar')
 }
@@ -59,7 +59,7 @@ public class YourPlugin extends JavaPlugin {
     public void onEnable() {
         // Get Mailboxes API
         Plugin plugin = getServer().getPluginManager().getPlugin("Mailboxes");
-        if (plugin instanceof Mailboxes) {
+        if (plugin != null && plugin instanceof Mailboxes) {
             mailboxesAPI = ((Mailboxes) plugin).getAPI();
             getLogger().info("Hooked into Mailboxes!");
         } else {
