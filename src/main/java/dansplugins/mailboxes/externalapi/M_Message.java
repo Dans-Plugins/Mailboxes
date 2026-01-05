@@ -53,8 +53,7 @@ public class M_Message {
     }
 
     public List<ItemStack> getAttachments() {
-        List<ItemStack> messageAttachments = message.getAttachments();
-        return messageAttachments == null ? null : new ArrayList<>(messageAttachments);
+        return message.getAttachments();
     }
 
 }

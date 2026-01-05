@@ -163,7 +163,7 @@ public class Message implements Savable {
     }
 
     public List<ItemStack> getAttachments() {
-        return attachments == null ? null : new ArrayList<>(attachments);
+        return attachments == null ? new ArrayList<>() : new ArrayList<>(attachments);
     }
 
     public void setAttachments(List<ItemStack> attachments) {
@@ -235,8 +235,8 @@ public class Message implements Savable {
                         for (Map.Entry<String, Object> entry : serializedItem.entrySet()) {
                             Object value = entry.getValue();
                             // Gson may deserialize numbers as Double, but ItemStack expects Integer
-                            if (value instanceof Double) {
-                                convertedMap.put(entry.getKey(), ((Double) value).intValue());
+                            if (value instanceof Number) {
+                                convertedMap.put(entry.getKey(), ((Number) value).intValue());
                             } else {
                                 convertedMap.put(entry.getKey(), value);
                             }
