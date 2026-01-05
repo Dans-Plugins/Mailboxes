@@ -231,14 +231,18 @@ public class Message implements Savable {
                     attachments = new ArrayList<>();
                     for (Map<String, Object> serializedItem : serializedAttachments) {
                         // Convert numeric values to proper types for ItemStack deserialization
+                        // Gson may deserialize numbers as Double, but ItemStack expects Integer for certain fields
                         Map<String, Object> convertedMap = new HashMap<>();
                         for (Map.Entry<String, Object> entry : serializedItem.entrySet()) {
                             Object value = entry.getValue();
-                            // Gson may deserialize numbers as Double, but ItemStack expects Integer
-                            if (value instanceof Number) {
-                                convertedMap.put(entry.getKey(), ((Number) value).intValue());
+                            String key = entry.getKey();
+                            // Convert known integer fields from Number to Integer
+                            if (value instanceof Number && 
+                                (key.equals("amount") || key.equals("damage") || key.equals("Data") || 
+                                 key.equals("Damage") || key.equals("RepairCost"))) {
+                                convertedMap.put(key, ((Number) value).intValue());
                             } else {
-                                convertedMap.put(entry.getKey(), value);
+                                convertedMap.put(key, value);
                             }
                         }
                         ItemStack item = ItemStack.deserialize(convertedMap);

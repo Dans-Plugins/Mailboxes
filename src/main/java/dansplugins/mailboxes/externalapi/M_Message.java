@@ -29,7 +29,7 @@ public class M_Message {
     }
 
     public String getContent() {
-        return message.getRecipient();
+        return message.getContent();
     }
 
     public Date getDate() {
