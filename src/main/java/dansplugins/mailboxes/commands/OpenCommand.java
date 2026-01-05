@@ -61,7 +61,7 @@ public class OpenCommand {
             
             if (failedItems.isEmpty()) {
                 player.sendMessage(ChatColor.GREEN + "All attached items have been added to your inventory.");
-                message.setAttachments(null); // Clear attachments after successful delivery
+                message.setAttachments(new ArrayList<>()); // Clear attachments after successful delivery
             } else {
                 player.sendMessage(ChatColor.YELLOW + "Some items couldn't fit in your inventory and remain attached to the message.");
                 player.sendMessage(ChatColor.YELLOW + "Please free up space and open the message again.");

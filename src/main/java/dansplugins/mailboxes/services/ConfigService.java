@@ -58,9 +58,6 @@ public class ConfigService {
         if (!getConfig().isSet("attachmentsEnabled")) {
             getConfig().set("attachmentsEnabled", true);
         }
-        if (!getConfig().isSet("maxAttachments")) {
-            getConfig().set("maxAttachments", 5);
-        }
         if (!getConfig().isSet("maxAttachmentStackSize")) {
             getConfig().set("maxAttachmentStackSize", 64);
         }
@@ -77,7 +74,6 @@ public class ConfigService {
                 return;
             } else if (option.equalsIgnoreCase("maxMessageIDNumber")
                     || option.equalsIgnoreCase("maxMailboxIDNumber")
-                    || option.equalsIgnoreCase("maxAttachments")
                     || option.equalsIgnoreCase("maxAttachmentStackSize")) {
                 getConfig().set(option, Integer.parseInt(value));
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
@@ -118,7 +114,6 @@ public class ConfigService {
                 + ", welcomeMessageEnabled: " + getBoolean("welcomeMessageEnabled")
                 + ", quotesEnabled: " + getBoolean("quotesEnabled")
                 + ", attachmentsEnabled: " + getBoolean("attachmentsEnabled")
-                + ", maxAttachments: " + getInt("maxAttachments")
                 + ", maxAttachmentStackSize: " + getInt("maxAttachmentStackSize"));
     }
 

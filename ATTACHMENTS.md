@@ -31,13 +31,13 @@ Messages with attachments are marked with a 📎 icon in the message list.
 The following configuration options are available in `config.yml`:
 
 - **attachmentsEnabled**: Enable or disable the attachments feature (default: `true`)
-- **maxAttachments**: Maximum number of items that can be attached to a single message (default: `5`)
 - **maxAttachmentStackSize**: Maximum stack size for each attachment (default: `64`)
+
+Note: Currently, only one item can be attached per message.
 
 ### Configuration Example
 ```yaml
 attachmentsEnabled: true
-maxAttachments: 5
 maxAttachmentStackSize: 64
 ```
 

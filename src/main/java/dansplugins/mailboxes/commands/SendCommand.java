@@ -100,13 +100,6 @@ public class SendCommand {
                 return false;
             }
 
-            // Check max attachments limit
-            int maxAttachments = configService.getInt("maxAttachments");
-            if (maxAttachments < 1) {
-                player.sendMessage(ChatColor.RED + "Attachments are currently disabled by the server.");
-                return false;
-            }
-
             // Check max stack size limit
             int maxStackSize = configService.getInt("maxAttachmentStackSize");
             if (itemInHand.getAmount() > maxStackSize) {
@@ -119,7 +112,7 @@ public class SendCommand {
             message.addAttachment(attachment);
 
             // Remove item from player's hand
-            player.getInventory().setItemInMainHand(null);
+            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
             
             player.sendMessage(ChatColor.GREEN + "Attached " + attachment.getAmount() + "x " + 
                              attachment.getType().toString().toLowerCase().replace("_", " "));
