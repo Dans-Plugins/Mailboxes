@@ -17,11 +17,37 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class Mailboxes extends JavaPlugin {
     private final String pluginVersion = "v" + getDescription().getVersion();
+
+    // Config option names for tab completion
+    private static final List<String> CONFIG_OPTIONS = Arrays.asList(
+        "debugMode",
+        "maxMessageIDNumber",
+        "maxMailboxIDNumber",
+        "preventSendingMessagesToSelf",
+        "assignmentAlertEnabled",
+        "unreadMessagesAlertEnabled",
+        "welcomeMessageEnabled",
+        "quotesEnabled",
+        "attachmentsEnabled",
+        "maxAttachmentStackSize"
+    );
+
+    private static final Set<String> BOOLEAN_CONFIG_OPTIONS = new HashSet<>(Arrays.asList(
+        "debugMode",
+        "preventSendingMessagesToSelf",
+        "assignmentAlertEnabled",
+        "unreadMessagesAlertEnabled",
+        "welcomeMessageEnabled",
+        "quotesEnabled",
+        "attachmentsEnabled"
+    ));
 
     private final ConfigService configService = new ConfigService(this);
     private final Logger logger = new Logger(this);
@@ -131,30 +157,12 @@ public final class Mailboxes extends JavaPlugin {
         }
         if (args.length == 3 && args[1].equalsIgnoreCase("set")) {
             // Config options
-            List<String> options = Arrays.asList(
-                "debugMode",
-                "maxMessageIDNumber",
-                "maxMailboxIDNumber",
-                "preventSendingMessagesToSelf",
-                "assignmentAlertEnabled",
-                "unreadMessagesAlertEnabled",
-                "welcomeMessageEnabled",
-                "quotesEnabled",
-                "attachmentsEnabled",
-                "maxAttachmentStackSize"
-            );
-            return filterCompletions(options, args[2]);
+            return filterCompletions(CONFIG_OPTIONS, args[2]);
         }
         if (args.length == 4 && args[1].equalsIgnoreCase("set")) {
             // Suggest values based on the config option type
             String option = args[2];
-            if (option.equalsIgnoreCase("debugMode") ||
-                option.equalsIgnoreCase("preventSendingMessagesToSelf") ||
-                option.equalsIgnoreCase("assignmentAlertEnabled") ||
-                option.equalsIgnoreCase("unreadMessagesAlertEnabled") ||
-                option.equalsIgnoreCase("welcomeMessageEnabled") ||
-                option.equalsIgnoreCase("quotesEnabled") ||
-                option.equalsIgnoreCase("attachmentsEnabled")) {
+            if (BOOLEAN_CONFIG_OPTIONS.contains(option) || BOOLEAN_CONFIG_OPTIONS.contains(option.toLowerCase())) {
                 return filterCompletions(Arrays.asList("true", "false"), args[3]);
             }
         }
@@ -178,14 +186,8 @@ public final class Mailboxes extends JavaPlugin {
                 args[1]
             );
         }
-        // Check if -attach flag is already present
-        boolean hasAttachFlag = false;
-        for (String arg : args) {
-            if (arg.equalsIgnoreCase("-attach")) {
-                hasAttachFlag = true;
-                break;
-            }
-        }
+        // Check if -attach flag is already present using stream
+        boolean hasAttachFlag = Arrays.stream(args).anyMatch(arg -> arg.equalsIgnoreCase("-attach"));
         if (!hasAttachFlag && args.length >= 3) {
             // Suggest -attach flag if not already present and has permission
             if (sender.hasPermission("mailboxes.send.attach")) {
