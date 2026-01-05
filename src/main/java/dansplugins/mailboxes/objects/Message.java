@@ -7,9 +7,12 @@ import dansplugins.mailboxes.services.ConfigService;
 import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Message implements Savable {
@@ -25,6 +28,7 @@ public class Message implements Savable {
     protected int mailboxID;
     protected boolean archived = false;
     protected boolean unread = true;
+    protected List<ItemStack> attachments = new ArrayList<>();
 
     public Message(Logger logger, ConfigService configService, int ID, String type, String sender, String recipient, String content) {
         this.logger = logger;
@@ -126,6 +130,17 @@ public class Message implements Savable {
             player.sendMessage(ChatColor.AQUA + content);
         }
 
+        if (hasAttachments()) {
+            player.sendMessage("\n");
+            player.sendMessage(ChatColor.GOLD + "Attachments (" + attachments.size() + "):");
+            for (ItemStack item : attachments) {
+                if (item != null) {
+                    String itemName = item.getType().toString().toLowerCase().replace("_", " ");
+                    player.sendMessage(ChatColor.YELLOW + "  - " + item.getAmount() + "x " + itemName);
+                }
+            }
+        }
+
         player.sendMessage(ChatColor.AQUA + "=============================");
     }
 
@@ -145,6 +160,25 @@ public class Message implements Savable {
         unread = b;
     }
 
+    public List<ItemStack> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<ItemStack> attachments) {
+        this.attachments = attachments;
+    }
+
+    public void addAttachment(ItemStack item) {
+        if (this.attachments == null) {
+            this.attachments = new ArrayList<>();
+        }
+        this.attachments.add(item);
+    }
+
+    public boolean hasAttachments() {
+        return attachments != null && !attachments.isEmpty();
+    }
+
     public Map<String, String> save() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -158,6 +192,17 @@ public class Message implements Savable {
         saveMap.put("mailboxID", gson.toJson(mailboxID));
         saveMap.put("archived", gson.toJson(archived));
         saveMap.put("unread", gson.toJson(unread));
+        
+        // Serialize attachments
+        if (attachments != null && !attachments.isEmpty()) {
+            List<Map<String, Object>> serializedAttachments = new ArrayList<>();
+            for (ItemStack item : attachments) {
+                if (item != null) {
+                    serializedAttachments.add(item.serialize());
+                }
+            }
+            saveMap.put("attachments", gson.toJson(serializedAttachments));
+        }
 
         return saveMap;
     }
@@ -174,5 +219,22 @@ public class Message implements Savable {
         mailboxID = Integer.parseInt(gson.fromJson(data.get("mailboxID"), String.class));
         archived = Boolean.parseBoolean(gson.fromJson(data.get("archived"), String.class));
         unread = Boolean.parseBoolean(gson.fromJson(data.get("unread"), String.class));
+        
+        // Deserialize attachments
+        if (data.containsKey("attachments")) {
+            try {
+                List<Map<String, Object>> serializedAttachments = gson.fromJson(data.get("attachments"), List.class);
+                if (serializedAttachments != null) {
+                    attachments = new ArrayList<>();
+                    for (Map<String, Object> serializedItem : serializedAttachments) {
+                        ItemStack item = ItemStack.deserialize(serializedItem);
+                        attachments.add(item);
+                    }
+                }
+            } catch (Exception e) {
+                logger.log("Error loading attachments: " + e.getMessage());
+                attachments = new ArrayList<>();
+            }
+        }
     }
 }
