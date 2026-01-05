@@ -402,8 +402,11 @@ public class EconomyPlugin extends JavaPlugin {
 Read a player's messages and perform actions based on them:
 
 ```java
+import dansplugins.mailboxes.externalapi.M_Mailbox;
+import dansplugins.mailboxes.objects.Message;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import java.util.ArrayList;
 
 public void checkPlayerMessages(Player player) {
     if (mailboxesAPI == null) return;
@@ -454,7 +457,11 @@ public void onPlayerDeath(PlayerDeathEvent event) {
 Send messages to multiple players:
 
 ```java
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public void sendServerAnnouncement(String announcement) {
