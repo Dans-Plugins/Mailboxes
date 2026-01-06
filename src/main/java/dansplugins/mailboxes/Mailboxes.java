@@ -9,6 +9,7 @@ import dansplugins.mailboxes.services.*;
 import dansplugins.mailboxes.utils.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -159,6 +160,21 @@ public final class Mailboxes extends JavaPlugin {
                         return getSendCompletions(sender, args);
                     }
                     break;
+                case "open":
+                    if (sender.hasPermission("mailboxes.open")) {
+                        return getMessageIdCompletions(sender, args);
+                    }
+                    break;
+                case "delete":
+                    if (sender.hasPermission("mailboxes.delete")) {
+                        return getMessageIdCompletions(sender, args);
+                    }
+                    break;
+                case "archive":
+                    if (sender.hasPermission("mailboxes.archive")) {
+                        return getMessageIdCompletions(sender, args);
+                    }
+                    break;
             }
         }
 
@@ -193,17 +209,50 @@ public final class Mailboxes extends JavaPlugin {
 
     private List<String> getSendCompletions(CommandSender sender, String[] args) {
         if (args.length == 2) {
-            // Player names only at position 2
-            return filterCompletions(
-                Bukkit.getOnlinePlayers().stream()
-                    .map(Player::getName)
-                    .collect(Collectors.toList()),
-                args[1]
-            );
+            // Player names (both online and offline) only at position 2
+            List<String> playerNames = new ArrayList<>();
+            
+            // Add online players
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                playerNames.add(player.getName());
+            }
+            
+            // Add offline players
+            for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+                if (player.getName() != null) {
+                    playerNames.add(player.getName());
+                }
+            }
+            
+            return filterCompletions(playerNames, args[1]);
         }
         // Suggest -attach flag for subsequent positions if not already present
         if (args.length >= 3) {
             return getAttachFlagSuggestion(sender, args, args[args.length - 1]);
+        }
+        return new ArrayList<>();
+    }
+
+    private List<String> getMessageIdCompletions(CommandSender sender, String[] args) {
+        if (args.length == 2 && sender instanceof Player) {
+            Player player = (Player) sender;
+            dansplugins.mailboxes.objects.Mailbox mailbox = persistentData.getMailbox(player);
+            
+            if (mailbox != null) {
+                List<String> messageIds = new ArrayList<>();
+                
+                // Add active message IDs
+                for (dansplugins.mailboxes.objects.Message message : mailbox.getActiveMessages()) {
+                    messageIds.add(String.valueOf(message.getID()));
+                }
+                
+                // Add archived message IDs
+                for (dansplugins.mailboxes.objects.Message message : mailbox.getArchivedMessages()) {
+                    messageIds.add(String.valueOf(message.getID()));
+                }
+                
+                return filterCompletions(messageIds, args[1]);
+            }
         }
         return new ArrayList<>();
     }
