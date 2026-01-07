@@ -3,6 +3,10 @@ package dansplugins.mailboxes.objects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dansplugins.mailboxes.utils.Logger;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -223,14 +227,34 @@ public class Mailbox implements Savable {
 
         // Show navigation info
         if (totalPages > 1) {
-            String navInfo = ChatColor.GRAY + "Page " + page + " of " + totalPages;
+            ComponentBuilder navigationBuilder = new ComponentBuilder("Page " + page + " of " + totalPages)
+                    .color(net.md_5.bungee.api.ChatColor.GRAY);
+            
             if (page > 1) {
-                navInfo += " | Previous: /m list " + listType + " " + (page - 1);
+                navigationBuilder.append(" | ", ComponentBuilder.FormatRetention.NONE)
+                        .color(net.md_5.bungee.api.ChatColor.GRAY);
+                TextComponent previousLink = new TextComponent("[Previous Page]");
+                previousLink.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+                previousLink.setBold(true);
+                previousLink.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/m list " + listType + " " + (page - 1)));
+                previousLink.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+                        new ComponentBuilder("Click to go to page " + (page - 1)).create()));
+                navigationBuilder.append(previousLink, ComponentBuilder.FormatRetention.NONE);
             }
+            
             if (page < totalPages) {
-                navInfo += " | Next: /m list " + listType + " " + (page + 1);
+                navigationBuilder.append(" | ", ComponentBuilder.FormatRetention.NONE)
+                        .color(net.md_5.bungee.api.ChatColor.GRAY);
+                TextComponent nextLink = new TextComponent("[Next Page]");
+                nextLink.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+                nextLink.setBold(true);
+                nextLink.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/m list " + listType + " " + (page + 1)));
+                nextLink.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+                        new ComponentBuilder("Click to go to page " + (page + 1)).create()));
+                navigationBuilder.append(nextLink, ComponentBuilder.FormatRetention.NONE);
             }
-            player.sendMessage(navInfo);
+            
+            player.spigot().sendMessage(navigationBuilder.create());
         }
     }
 
