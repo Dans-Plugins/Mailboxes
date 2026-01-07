@@ -6,6 +6,10 @@ import com.google.gson.reflect.TypeToken;
 
 import dansplugins.mailboxes.services.ConfigService;
 import dansplugins.mailboxes.utils.Logger;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -144,6 +148,34 @@ public class Message implements Savable {
         }
 
         player.sendMessage(ChatColor.AQUA + "=============================");
+        
+        // Add action buttons
+        player.sendMessage("\n");
+        ComponentBuilder actionBuilder = new ComponentBuilder("Actions: ")
+                .color(net.md_5.bungee.api.ChatColor.GRAY);
+        
+        // Archive button (only if not already archived)
+        if (!isArchived()) {
+            TextComponent archiveButton = new TextComponent("[Archive]");
+            archiveButton.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+            archiveButton.setBold(true);
+            archiveButton.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/m archive " + ID));
+            archiveButton.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+                    new ComponentBuilder("Click to archive this message").create()));
+            actionBuilder.append(archiveButton, ComponentBuilder.FormatRetention.NONE);
+            actionBuilder.append(" ", ComponentBuilder.FormatRetention.NONE);
+        }
+        
+        // Delete button
+        TextComponent deleteButton = new TextComponent("[Delete]");
+        deleteButton.setColor(net.md_5.bungee.api.ChatColor.RED);
+        deleteButton.setBold(true);
+        deleteButton.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/m delete " + ID));
+        deleteButton.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+                new ComponentBuilder("Click to delete this message").create()));
+        actionBuilder.append(deleteButton, ComponentBuilder.FormatRetention.NONE);
+        
+        player.spigot().sendMessage(actionBuilder.create());
     }
 
     public boolean isArchived() {

@@ -215,14 +215,33 @@ public class Mailbox implements Savable {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         for (int i = startIndex; i < endIndex; i++) {
             Message message = messages.get(i);
-            String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
+            
+            // Create clickable message ID
+            TextComponent idComponent = new TextComponent("ID: " + message.getID());
+            idComponent.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+            idComponent.setBold(message.isUnread());
+            idComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/m open " + message.getID()));
+            idComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+                    new ComponentBuilder("Click to open message").create()));
+            
+            // Create non-clickable message info
+            String messageInfo = " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
             if (message.hasAttachments()) {
-                toSend += " 📎";
+                messageInfo += " 📎";
             }
-            if (message.isUnread()) {
-                toSend = ChatColor.BOLD + toSend;
-            }
-            player.sendMessage(ChatColor.AQUA + toSend);
+            
+            TextComponent infoComponent = new TextComponent(messageInfo);
+            infoComponent.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+            infoComponent.setBold(message.isUnread());
+            
+            // Combine components
+            ComponentBuilder messageBuilder = new ComponentBuilder("* ")
+                    .color(net.md_5.bungee.api.ChatColor.AQUA)
+                    .bold(message.isUnread());
+            messageBuilder.append(idComponent, ComponentBuilder.FormatRetention.NONE);
+            messageBuilder.append(infoComponent, ComponentBuilder.FormatRetention.NONE);
+            
+            player.spigot().sendMessage(messageBuilder.create());
         }
 
         // Show navigation info
