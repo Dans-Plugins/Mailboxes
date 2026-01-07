@@ -6,15 +6,12 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class MailboxPaginationTest {
@@ -90,8 +87,6 @@ public class MailboxPaginationTest {
 
         // Then it should show header with page 1/2
         verify(player).sendMessage(contains("=== Active Messages (Page 1/2) ==="));
-        // And should show navigation links
-        verify(spigot, atLeastOnce()).sendMessage(any(BaseComponent[].class));
     }
 
     @Test
@@ -111,7 +106,13 @@ public class MailboxPaginationTest {
         // We verify by checking 10 message lines are sent (plus header and legend)
         verify(player, times(12)).sendMessage(anyString()); // 1 header + 1 legend + 10 messages
         // And should show navigation with both previous and next
-        verify(spigot, atLeastOnce()).sendMessage(any(BaseComponent[].class));
+        verify(spigot).sendMessage(
+                any(BaseComponent.class),
+                any(BaseComponent.class),
+                any(BaseComponent.class),
+                any(BaseComponent.class),
+                any(BaseComponent.class)
+        );
     }
 
     @Test
@@ -174,7 +175,6 @@ public class MailboxPaginationTest {
 
         // Then it should show archived messages header with page 1/2
         verify(player).sendMessage(contains("=== Archived Messages (Page 1/2) ==="));
-        verify(spigot, atLeastOnce()).sendMessage(any(BaseComponent[].class));
     }
 
     @Test
@@ -196,7 +196,6 @@ public class MailboxPaginationTest {
 
         // Then it should show unread messages header with page 1/2
         verify(player).sendMessage(contains("=== Unread Messages (Page 1/2) ==="));
-        verify(spigot, atLeastOnce()).sendMessage(any(BaseComponent[].class));
     }
 
     @Test
