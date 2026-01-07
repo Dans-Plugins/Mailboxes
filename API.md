@@ -18,8 +18,9 @@ The Mailboxes API allows your plugin to send persistent messages to players prog
 - Send messages from your plugin to any player
 - Messages persist across server restarts
 - Messages are delivered even if the player is offline
-- Support for item attachments (optional)
 - Access player mailboxes and messages
+
+**Note:** The plugin messaging API methods (e.g., `sendPluginMessageToPlayer`) currently accept only `String` content and do not support item attachments. Item attachments are a feature available through the main plugin interface for player-to-player messages.
 
 ## Setup
 
@@ -97,6 +98,7 @@ softdepend: [Mailboxes]
 import dansplugins.mailboxes.Mailboxes;
 import dansplugins.mailboxes.externalapi.MailboxesAPI;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class YourPlugin extends JavaPlugin {
     
@@ -267,6 +269,9 @@ A wrapper class representing a player's mailbox.
 ##### `getOwnerUUID()`
 **Returns:** `UUID` - The UUID of the mailbox owner
 
+##### `getMessage(int ID)`
+**Returns:** `Message` - A specific message by ID (searches both active and archived messages)
+
 ##### `getActiveMessages()`
 **Returns:** `ArrayList<Message>` - List of unarchived messages
 
@@ -337,6 +342,12 @@ Sends a formatted display of the message content to the player.
 Send a notification to a player when they complete a quest:
 
 ```java
+import dansplugins.mailboxes.Mailboxes;
+import dansplugins.mailboxes.externalapi.MailboxesAPI;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+
 public class QuestPlugin extends JavaPlugin {
     
     private MailboxesAPI mailboxesAPI;
@@ -371,6 +382,10 @@ public class QuestPlugin extends JavaPlugin {
 Send messages to offline players that they'll receive when they log in:
 
 ```java
+import dansplugins.mailboxes.externalapi.MailboxesAPI;
+import org.bukkit.plugin.java.JavaPlugin;
+import java.util.UUID;
+
 public class EconomyPlugin extends JavaPlugin {
     
     private MailboxesAPI mailboxesAPI;
@@ -428,26 +443,38 @@ public void checkPlayerMessages(Player player) {
 Notify players of important events:
 
 ```java
+import dansplugins.mailboxes.externalapi.MailboxesAPI;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-@EventHandler
-public void onPlayerDeath(PlayerDeathEvent event) {
-    Player player = event.getEntity();
-    Location deathLocation = player.getLocation();
+public class DeathNotifierListener implements Listener {
     
-    if (mailboxesAPI != null) {
-        String message = String.format(
-            "You died at coordinates: X=%.0f, Y=%.0f, Z=%.0f. Your items may still be there!",
-            deathLocation.getX(),
-            deathLocation.getY(),
-            deathLocation.getZ()
-        );
+    private final MailboxesAPI mailboxesAPI;
+    
+    public DeathNotifierListener(MailboxesAPI mailboxesAPI) {
+        this.mailboxesAPI = mailboxesAPI;
+    }
+    
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        Location deathLocation = player.getLocation();
         
-        // Send immediately
-        mailboxesAPI.sendPluginMessageToPlayer("DeathNotifier", player, message);
+        if (mailboxesAPI != null) {
+            String message = String.format(
+                "You died at coordinates: X=%.0f, Y=%.0f, Z=%.0f. Your items may still be there!",
+                deathLocation.getX(),
+                deathLocation.getY(),
+                deathLocation.getZ()
+            );
+            
+            // Send notification to the player's mailbox
+            // Using UUID to ensure delivery even if player is respawning
+            mailboxesAPI.sendPluginMessageToPlayer("DeathNotifier", player.getUniqueId(), message);
+        }
     }
 }
 ```
@@ -485,8 +512,10 @@ public void sendServerAnnouncement(String announcement) {
         .map(Player::getUniqueId)
         .collect(Collectors.toSet());
     
-    // getTrackedPlayerUUIDs() is a placeholder - implement this method to return
-    // the list of player UUIDs you want to notify (e.g., from a database or config)
+    // getTrackedPlayerUUIDs() is a placeholder method that YOU must implement
+    // in your own plugin code. It is NOT provided by the Mailboxes API.
+    // Implement this method to return the list of player UUIDs you want to notify
+    // (e.g., from a database, config file, or cached list of online players)
     List<UUID> playersToNotify = getTrackedPlayerUUIDs();
     for (UUID playerUUID : playersToNotify) {
         // Check if player is not online using the set
@@ -595,10 +624,13 @@ Check the API version if you need specific features:
 
 ```java
 String apiVersion = mailboxesAPI.getAPIVersion();
-// Simple string comparison works for semantic versions like "v0.0.3"
-// For more complex version checking, consider a version parsing library
+// Note: Basic lexicographical string comparison only works reliably for 
+// consistently formatted versions (e.g., zero-padded). For example, 
+// "v0.0.10" would incorrectly compare as less than "v0.0.3" with string comparison.
+// For proper semantic version comparison, use a dedicated version parsing library.
 if (apiVersion.compareTo("v0.0.3") >= 0) {
     // Use features available in v0.0.3 and later
+    // (only works if all versions follow the same padding scheme)
 }
 ```
 
@@ -621,14 +653,15 @@ try {
 Avoid sending too many messages in quick succession:
 
 ```java
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 // Consider batching or rate-limiting per player
 // Note: This is a simplified example showing the concept
 // For production use, implement proper per-player cooldown tracking
-private Map<UUID, Long> lastMessageTimes = new HashMap<>();
+// Using ConcurrentHashMap for thread safety in a multi-threaded Bukkit environment
+private Map<UUID, Long> lastMessageTimes = new ConcurrentHashMap<>();
 private static final long MESSAGE_COOLDOWN = 60000; // 1 minute
 
 public void sendNotification(Player player, String message) {
