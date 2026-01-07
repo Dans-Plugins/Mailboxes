@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Mailbox implements Savable {
+    private static final int DEFAULT_PAGE_SIZE = 10;
     private final Logger logger;
 
     private int ID;
@@ -97,55 +98,11 @@ public class Mailbox implements Savable {
     }
 
     public void sendListOfActiveMessagesToPlayer(Player player) {
-        sendListOfActiveMessagesToPlayer(player, 1, 10);
+        sendListOfActiveMessagesToPlayer(player, 1, DEFAULT_PAGE_SIZE);
     }
 
     public void sendListOfActiveMessagesToPlayer(Player player, int page, int pageSize) {
-        if (activeMessages.size() == 0) {
-            if (page > 1) {
-                player.sendMessage(ChatColor.RED + "Invalid page number. You don't have any active messages.");
-            } else {
-                player.sendMessage(ChatColor.AQUA + "You don't have any active messages at this time.");
-            }
-            return;
-        }
-
-        int totalPages = (int) Math.ceil((double) activeMessages.size() / pageSize);
-        if (page < 1 || page > totalPages) {
-            player.sendMessage(ChatColor.RED + "Invalid page number. Valid pages: 1-" + totalPages);
-            return;
-        }
-
-        player.sendMessage(ChatColor.AQUA + "=== Active Messages (Page " + page + "/" + totalPages + ") ===");
-        player.sendMessage(ChatColor.AQUA + "D: date, S: sender, 📎: has attachments");
-
-        int startIndex = (page - 1) * pageSize;
-        int endIndex = Math.min(startIndex + pageSize, activeMessages.size());
-
-        for (int i = startIndex; i < endIndex; i++) {
-            Message message = activeMessages.get(i);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
-            if (message.hasAttachments()) {
-                toSend += " 📎";
-            }
-            if (message.isUnread()) {
-                toSend = ChatColor.BOLD + toSend;
-            }
-            player.sendMessage(ChatColor.AQUA + toSend);
-        }
-
-        // Show navigation info
-        if (totalPages > 1) {
-            String navInfo = ChatColor.GRAY + "Page " + page + " of " + totalPages;
-            if (page > 1) {
-                navInfo += " | Previous: /m list active " + (page - 1);
-            }
-            if (page < totalPages) {
-                navInfo += " | Next: /m list active " + (page + 1);
-            }
-            player.sendMessage(navInfo);
-        }
+        sendPaginatedMessageList(player, activeMessages, page, pageSize, "Active Messages", "active");
     }
 
     public ArrayList<Message> getArchivedMessages() {
@@ -177,55 +134,11 @@ public class Mailbox implements Savable {
     }
 
     public void sendListOfArchivedMessagesToPlayer(Player player) {
-        sendListOfArchivedMessagesToPlayer(player, 1, 10);
+        sendListOfArchivedMessagesToPlayer(player, 1, DEFAULT_PAGE_SIZE);
     }
 
     public void sendListOfArchivedMessagesToPlayer(Player player, int page, int pageSize) {
-        if (archivedMessages.size() == 0) {
-            if (page > 1) {
-                player.sendMessage(ChatColor.RED + "Invalid page number. You don't have any archived messages.");
-            } else {
-                player.sendMessage(ChatColor.AQUA + "You don't have any archived messages at this time.");
-            }
-            return;
-        }
-
-        int totalPages = (int) Math.ceil((double) archivedMessages.size() / pageSize);
-        if (page < 1 || page > totalPages) {
-            player.sendMessage(ChatColor.RED + "Invalid page number. Valid pages: 1-" + totalPages);
-            return;
-        }
-
-        player.sendMessage(ChatColor.AQUA + "=== Archived Messages (Page " + page + "/" + totalPages + ") ===");
-        player.sendMessage(ChatColor.AQUA + "D: date, S: sender, 📎: has attachments");
-
-        int startIndex = (page - 1) * pageSize;
-        int endIndex = Math.min(startIndex + pageSize, archivedMessages.size());
-
-        for (int i = startIndex; i < endIndex; i++) {
-            Message message = archivedMessages.get(i);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
-            if (message.hasAttachments()) {
-                toSend += " 📎";
-            }
-            if (message.isUnread()) {
-                toSend = ChatColor.BOLD + toSend;
-            }
-            player.sendMessage(ChatColor.AQUA + toSend);
-        }
-
-        // Show navigation info
-        if (totalPages > 1) {
-            String navInfo = ChatColor.GRAY + "Page " + page + " of " + totalPages;
-            if (page > 1) {
-                navInfo += " | Previous: /m list archived " + (page - 1);
-            }
-            if (page < totalPages) {
-                navInfo += " | Next: /m list archived " + (page + 1);
-            }
-            player.sendMessage(navInfo);
-        }
+        sendPaginatedMessageList(player, archivedMessages, page, pageSize, "Archived Messages", "archived");
     }
 
     public void archiveMessage(Message message) {
@@ -265,40 +178,46 @@ public class Mailbox implements Savable {
     }
 
     public void sendListOfUnreadMessagesToPlayer(Player player) {
-        sendListOfUnreadMessagesToPlayer(player, 1, 10);
+        sendListOfUnreadMessagesToPlayer(player, 1, DEFAULT_PAGE_SIZE);
     }
 
     public void sendListOfUnreadMessagesToPlayer(Player player, int page, int pageSize) {
         ArrayList<Message> unreadMessages = getUnreadMessages();
-        if (unreadMessages.size() == 0) {
+        sendPaginatedMessageList(player, unreadMessages, page, pageSize, "Unread Messages", "unread");
+    }
+
+    private void sendPaginatedMessageList(Player player, ArrayList<Message> messages, int page, int pageSize, String listTitle, String listType) {
+        if (messages.size() == 0) {
             if (page > 1) {
-                player.sendMessage(ChatColor.RED + "Invalid page number. You don't have any unread messages.");
+                player.sendMessage(ChatColor.RED + "Invalid page number. You don't have any " + listType + " messages.");
             } else {
-                player.sendMessage(ChatColor.AQUA + "You don't have any unread messages at this time.");
+                player.sendMessage(ChatColor.AQUA + "You don't have any " + listType + " messages at this time.");
             }
             return;
         }
 
-        int totalPages = (int) Math.ceil((double) unreadMessages.size() / pageSize);
+        int totalPages = (int) Math.ceil((double) messages.size() / pageSize);
         if (page < 1 || page > totalPages) {
             player.sendMessage(ChatColor.RED + "Invalid page number. Valid pages: 1-" + totalPages);
             return;
         }
 
-        player.sendMessage(ChatColor.AQUA + "=== Unread Messages (Page " + page + "/" + totalPages + ") ===");
+        player.sendMessage(ChatColor.AQUA + "=== " + listTitle + " (Page " + page + "/" + totalPages + ") ===");
         player.sendMessage(ChatColor.AQUA + "D: date, S: sender, 📎: has attachments");
 
         int startIndex = (page - 1) * pageSize;
-        int endIndex = Math.min(startIndex + pageSize, unreadMessages.size());
+        int endIndex = Math.min(startIndex + pageSize, messages.size());
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         for (int i = startIndex; i < endIndex; i++) {
-            Message message = unreadMessages.get(i);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Message message = messages.get(i);
             String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
             if (message.hasAttachments()) {
                 toSend += " 📎";
             }
-            toSend = ChatColor.BOLD + toSend;
+            if (message.isUnread()) {
+                toSend = ChatColor.BOLD + toSend;
+            }
             player.sendMessage(ChatColor.AQUA + toSend);
         }
 
@@ -306,10 +225,10 @@ public class Mailbox implements Savable {
         if (totalPages > 1) {
             String navInfo = ChatColor.GRAY + "Page " + page + " of " + totalPages;
             if (page > 1) {
-                navInfo += " | Previous: /m list unread " + (page - 1);
+                navInfo += " | Previous: /m list " + listType + " " + (page - 1);
             }
             if (page < totalPages) {
-                navInfo += " | Next: /m list unread " + (page + 1);
+                navInfo += " | Next: /m list " + listType + " " + (page + 1);
             }
             player.sendMessage(navInfo);
         }

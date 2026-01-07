@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ListCommand {
+    private static final int DEFAULT_PAGE_SIZE = 10;
     private final Logger logger;
     private final PersistentData persistentData;
 
@@ -37,7 +38,7 @@ public class ListCommand {
         }
 
         int page = 1;
-        int pageSize = 10;
+        int pageSize = DEFAULT_PAGE_SIZE;
         String listType = "active";
 
         if (args.length > 0) {
