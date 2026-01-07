@@ -7,6 +7,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class DeleteCommand {
     private final PersistentData persistentData;
 
@@ -46,6 +52,38 @@ public class DeleteCommand {
         mailbox.removeMessage(message);
         player.sendMessage(ChatColor.GREEN + "Deleted.");
         return true;
+    }
+
+    public List<String> getTabCompletions(CommandSender sender, String[] args) {
+        if (args.length == 2 && sender instanceof Player) {
+            Player player = (Player) sender;
+            Mailbox mailbox = persistentData.getMailbox(player);
+            
+            if (mailbox != null) {
+                // Use Set to avoid duplicates (though unlikely based on design)
+                Set<String> messageIds = new HashSet<>();
+                
+                // Add active message IDs
+                for (Message message : mailbox.getActiveMessages()) {
+                    messageIds.add(String.valueOf(message.getID()));
+                }
+                
+                // Add archived message IDs
+                for (Message message : mailbox.getArchivedMessages()) {
+                    messageIds.add(String.valueOf(message.getID()));
+                }
+                
+                return filterCompletions(new ArrayList<>(messageIds), args[1]);
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private List<String> filterCompletions(List<String> options, String input) {
+        String lowerInput = input.toLowerCase();
+        return options.stream()
+            .filter(option -> option.toLowerCase().startsWith(lowerInput))
+            .collect(Collectors.toList());
     }
 
 }

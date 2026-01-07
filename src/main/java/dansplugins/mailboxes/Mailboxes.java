@@ -1,6 +1,7 @@
 package dansplugins.mailboxes;
 
 import dansplugins.mailboxes.bstats.Metrics;
+import dansplugins.mailboxes.commands.*;
 import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.externalapi.MailboxesAPI;
 import dansplugins.mailboxes.factories.MailboxFactory;
@@ -8,50 +9,17 @@ import dansplugins.mailboxes.factories.MessageFactory;
 import dansplugins.mailboxes.services.*;
 import dansplugins.mailboxes.utils.*;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class Mailboxes extends JavaPlugin {
     private final String pluginVersion = "v" + getDescription().getVersion();
-
-    // Config option names for tab completion (in camelCase to match config file)
-    // Note: 'version' is intentionally excluded as it cannot be set by users
-    private static final List<String> CONFIG_OPTIONS = Arrays.asList(
-        "debugMode",
-        "maxMessageIDNumber",
-        "maxMailboxIDNumber",
-        "preventSendingMessagesToSelf",
-        "assignmentAlertEnabled",
-        "unreadMessagesAlertEnabled",
-        "welcomeMessageEnabled",
-        "quotesEnabled",
-        "attachmentsEnabled",
-        "maxAttachmentStackSize"
-    );
-
-    // Boolean config options (stored in lowercase for case-insensitive comparison)
-    // These are derived from CONFIG_OPTIONS to maintain consistency
-    private static final Set<String> BOOLEAN_CONFIG_OPTIONS = new HashSet<>(Arrays.asList(
-        "debugmode",
-        "preventsendingmessagestoself",
-        "assignmentalertenabled",
-        "unreadmessagesalertenabled",
-        "welcomemessageenabled",
-        "quotesenabled",
-        "attachmentsenabled"
-    ));
 
     private final ConfigService configService = new ConfigService(this);
     private final Logger logger = new Logger(this);
@@ -147,122 +115,43 @@ public final class Mailboxes extends JavaPlugin {
             switch (subcommand) {
                 case "config":
                     if (sender.hasPermission("mailboxes.config")) {
-                        return getConfigCompletions(args);
+                        ConfigCommand configCommand = new ConfigCommand(configService);
+                        return configCommand.getTabCompletions(args);
                     }
                     break;
                 case "list":
                     if (sender.hasPermission("mailboxes.list")) {
-                        return getListCompletions(args);
+                        ListCommand listCommand = new ListCommand(logger, persistentData);
+                        return listCommand.getTabCompletions(args);
                     }
                     break;
                 case "send":
                     if (sender.hasPermission("mailboxes.send")) {
-                        return getSendCompletions(sender, args);
+                        SendCommand sendCommand = new SendCommand(logger, uuidChecker, configService, argumentParser, messageFactory, mailService);
+                        return sendCommand.getTabCompletions(sender, args);
                     }
                     break;
                 case "open":
                     if (sender.hasPermission("mailboxes.open")) {
-                        return getMessageIdCompletions(sender, args);
+                        OpenCommand openCommand = new OpenCommand(logger, persistentData);
+                        return openCommand.getTabCompletions(sender, args);
                     }
                     break;
                 case "delete":
                     if (sender.hasPermission("mailboxes.delete")) {
-                        return getMessageIdCompletions(sender, args);
+                        DeleteCommand deleteCommand = new DeleteCommand(persistentData);
+                        return deleteCommand.getTabCompletions(sender, args);
                     }
                     break;
                 case "archive":
                     if (sender.hasPermission("mailboxes.archive")) {
-                        return getMessageIdCompletions(sender, args);
+                        ArchiveCommand archiveCommand = new ArchiveCommand(persistentData);
+                        return archiveCommand.getTabCompletions(sender, args);
                     }
                     break;
             }
         }
 
-        return new ArrayList<>();
-    }
-
-    private List<String> getConfigCompletions(String[] args) {
-        if (args.length == 2) {
-            // Config subcommands
-            return filterCompletions(Arrays.asList("show", "set"), args[1]);
-        }
-        if (args.length == 3 && args[1].equalsIgnoreCase("set")) {
-            // Config options
-            return filterCompletions(CONFIG_OPTIONS, args[2]);
-        }
-        if (args.length == 4 && args[1].equalsIgnoreCase("set")) {
-            // Suggest values based on the config option type
-            String option = args[2];
-            if (BOOLEAN_CONFIG_OPTIONS.contains(option.toLowerCase())) {
-                return filterCompletions(Arrays.asList("true", "false"), args[3]);
-            }
-        }
-        return new ArrayList<>();
-    }
-
-    private List<String> getListCompletions(String[] args) {
-        if (args.length == 2) {
-            return filterCompletions(Arrays.asList("active", "archived", "unread"), args[1]);
-        }
-        return new ArrayList<>();
-    }
-
-    private List<String> getSendCompletions(CommandSender sender, String[] args) {
-        if (args.length == 2) {
-            // Player names (both online and offline) only at position 2
-            List<String> playerNames = new ArrayList<>();
-            
-            // Add online players
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                playerNames.add(player.getName());
-            }
-            
-            // Add offline players
-            for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-                if (player.getName() != null) {
-                    playerNames.add(player.getName());
-                }
-            }
-            
-            return filterCompletions(playerNames, args[1]);
-        }
-        // Suggest -attach flag for subsequent positions if not already present
-        if (args.length >= 3) {
-            return getAttachFlagSuggestion(sender, args, args[args.length - 1]);
-        }
-        return new ArrayList<>();
-    }
-
-    private List<String> getMessageIdCompletions(CommandSender sender, String[] args) {
-        if (args.length == 2 && sender instanceof Player) {
-            Player player = (Player) sender;
-            dansplugins.mailboxes.objects.Mailbox mailbox = persistentData.getMailbox(player);
-            
-            if (mailbox != null) {
-                List<String> messageIds = new ArrayList<>();
-                
-                // Add active message IDs
-                for (dansplugins.mailboxes.objects.Message message : mailbox.getActiveMessages()) {
-                    messageIds.add(String.valueOf(message.getID()));
-                }
-                
-                // Add archived message IDs
-                for (dansplugins.mailboxes.objects.Message message : mailbox.getArchivedMessages()) {
-                    messageIds.add(String.valueOf(message.getID()));
-                }
-                
-                return filterCompletions(messageIds, args[1]);
-            }
-        }
-        return new ArrayList<>();
-    }
-
-    private List<String> getAttachFlagSuggestion(CommandSender sender, String[] args, String input) {
-        // Check if -attach flag is already present
-        boolean hasAttachFlag = Arrays.stream(args).anyMatch(arg -> arg.equalsIgnoreCase("-attach"));
-        if (!hasAttachFlag && sender.hasPermission("mailboxes.send.attach")) {
-            return filterCompletions(Arrays.asList("-attach"), input);
-        }
         return new ArrayList<>();
     }
 
