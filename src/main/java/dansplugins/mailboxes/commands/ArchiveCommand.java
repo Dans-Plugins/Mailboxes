@@ -70,9 +70,7 @@ public class ArchiveCommand {
                 
                 // Add active message IDs (only active messages can be archived)
                 for (Message message : mailbox.getActiveMessages()) {
-                    if (!message.isArchived()) {
-                        messageIds.add(String.valueOf(message.getID()));
-                    }
+                    messageIds.add(String.valueOf(message.getID()));
                 }
                 
                 return filterCompletions(new ArrayList<>(messageIds), args[1]);
