@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -146,7 +148,7 @@ public class ListCommandTest {
     @Test
     public void testGetTabCompletionsForListType() {
         // When getting tab completions for second argument
-        var completions = listCommand.getTabCompletions(new String[]{"list", "ar"});
+        List<String> completions = listCommand.getTabCompletions(new String[]{"list", "ar"});
 
         // Then it should return matching list types
         assertNotNull(completions);
@@ -157,7 +159,7 @@ public class ListCommandTest {
     @Test
     public void testGetTabCompletionsReturnsAllTypesOnEmpty() {
         // When getting tab completions with empty input
-        var completions = listCommand.getTabCompletions(new String[]{"list", ""});
+        List<String> completions = listCommand.getTabCompletions(new String[]{"list", ""});
 
         // Then it should return all list types
         assertNotNull(completions);
@@ -170,7 +172,7 @@ public class ListCommandTest {
     @Test
     public void testGetTabCompletionsForOtherArguments() {
         // When getting tab completions for third argument
-        var completions = listCommand.getTabCompletions(new String[]{"list", "active", "1"});
+        List<String> completions = listCommand.getTabCompletions(new String[]{"list", "active", "1"});
 
         // Then it should return empty list
         assertNotNull(completions);
