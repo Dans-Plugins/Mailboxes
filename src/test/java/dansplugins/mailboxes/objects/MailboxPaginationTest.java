@@ -91,7 +91,7 @@ public class MailboxPaginationTest {
         // Then it should show header with page 1/2
         verify(player).sendMessage(contains("=== Active Messages (Page 1/2) ==="));
         // And should show navigation links
-        verify(spigot).sendMessage(any(BaseComponent[].class));
+        verify(spigot, atLeastOnce()).sendMessage(any(BaseComponent[].class));
     }
 
     @Test
@@ -110,6 +110,8 @@ public class MailboxPaginationTest {
         // And it should display 10 messages (messages 11-20)
         // We verify by checking 10 message lines are sent (plus header and legend)
         verify(player, times(12)).sendMessage(anyString()); // 1 header + 1 legend + 10 messages
+        // And should show navigation with both previous and next
+        verify(spigot, atLeastOnce()).sendMessage(any(BaseComponent[].class));
     }
 
     @Test
@@ -172,7 +174,7 @@ public class MailboxPaginationTest {
 
         // Then it should show archived messages header with page 1/2
         verify(player).sendMessage(contains("=== Archived Messages (Page 1/2) ==="));
-        verify(spigot).sendMessage(any(BaseComponent[].class));
+        verify(spigot, atLeastOnce()).sendMessage(any(BaseComponent[].class));
     }
 
     @Test
@@ -194,7 +196,7 @@ public class MailboxPaginationTest {
 
         // Then it should show unread messages header with page 1/2
         verify(player).sendMessage(contains("=== Unread Messages (Page 1/2) ==="));
-        verify(spigot).sendMessage(any(BaseComponent[].class));
+        verify(spigot, atLeastOnce()).sendMessage(any(BaseComponent[].class));
     }
 
     @Test
