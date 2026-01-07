@@ -471,8 +471,7 @@ public class DeathNotifierListener implements Listener {
                 deathLocation.getZ()
             );
             
-            // Send notification to the player's mailbox
-            // Using UUID to ensure delivery even if player is respawning
+            // Send notification using UUID for reliable delivery
             mailboxesAPI.sendPluginMessageToPlayer("DeathNotifier", player.getUniqueId(), message);
         }
     }
@@ -512,10 +511,10 @@ public void sendServerAnnouncement(String announcement) {
         .map(Player::getUniqueId)
         .collect(Collectors.toSet());
     
-    // getTrackedPlayerUUIDs() is a placeholder method that YOU must implement
-    // in your own plugin code. It is NOT provided by the Mailboxes API.
+    // Note: getTrackedPlayerUUIDs() is a placeholder method that must be implemented
+    // by the developer in their own plugin code. It is not provided by the Mailboxes API.
     // Implement this method to return the list of player UUIDs you want to notify
-    // (e.g., from a database, config file, or cached list of online players)
+    // (e.g., from a database, config file, or cached list of players)
     List<UUID> playersToNotify = getTrackedPlayerUUIDs();
     for (UUID playerUUID : playersToNotify) {
         // Check if player is not online using the set
