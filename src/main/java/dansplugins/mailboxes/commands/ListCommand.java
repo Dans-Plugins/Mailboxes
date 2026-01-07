@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ListCommand {
+    private static final int DEFAULT_PAGE_SIZE = 10;
     private final Logger logger;
     private final PersistentData persistentData;
 
@@ -36,25 +37,45 @@ public class ListCommand {
             return false;
         }
 
+        int page = 1;
+        int pageSize = DEFAULT_PAGE_SIZE;
+        String listType = "active";
+
         if (args.length > 0) {
-            String list = args[0];
-            if (list.equalsIgnoreCase("active")) {
-                mailbox.sendListOfActiveMessagesToPlayer(player);
+            listType = args[0].toLowerCase();
+            
+            // Parse page number if provided
+            if (args.length > 1) {
+                try {
+                    page = Integer.parseInt(args[1]);
+                    if (page < 1) {
+                        player.sendMessage(ChatColor.RED + "Page number must be 1 or greater.");
+                        return false;
+                    }
+                } catch (NumberFormatException e) {
+                    player.sendMessage(ChatColor.RED + "Invalid page number: " + args[1]);
+                    return false;
+                }
             }
-            else if (list.equalsIgnoreCase("archived")) {
-                mailbox.sendListOfArchivedMessagesToPlayer(player);
+
+            if (listType.equals("active")) {
+                mailbox.sendListOfActiveMessagesToPlayer(player, page, pageSize);
             }
-            else if (list.equalsIgnoreCase("unread")) {
-                mailbox.sendListOfUnreadMessagesToPlayer(player);
+            else if (listType.equals("archived")) {
+                mailbox.sendListOfArchivedMessagesToPlayer(player, page, pageSize);
+            }
+            else if (listType.equals("unread")) {
+                mailbox.sendListOfUnreadMessagesToPlayer(player, page, pageSize);
             }
             else {
                 player.sendMessage(ChatColor.RED + "Sub-commands: active, archived, unread");
+                player.sendMessage(ChatColor.AQUA + "Usage: /m list [type] [page]");
                 return false;
             }
             return true;
         }
 
-        mailbox.sendListOfActiveMessagesToPlayer(player);
+        mailbox.sendListOfActiveMessagesToPlayer(player, page, pageSize);
         return true;
     }
 

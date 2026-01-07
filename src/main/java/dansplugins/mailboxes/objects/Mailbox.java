@@ -3,6 +3,10 @@ package dansplugins.mailboxes.objects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dansplugins.mailboxes.utils.Logger;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -13,6 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Mailbox implements Savable {
+    private static final int DEFAULT_PAGE_SIZE = 10;
     private final Logger logger;
 
     private int ID;
@@ -97,23 +102,11 @@ public class Mailbox implements Savable {
     }
 
     public void sendListOfActiveMessagesToPlayer(Player player) {
-        if (activeMessages.size() == 0) {
-            player.sendMessage(ChatColor.AQUA + "You don't have any active messages at this time.");
-            return;
-        }
-        player.sendMessage(ChatColor.AQUA + "=== Active Messages ===");
-        player.sendMessage(ChatColor.AQUA + "D: date, S: sender, 📎: has attachments");
-        for (Message message : activeMessages) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
-            if (message.hasAttachments()) {
-                toSend += " 📎";
-            }
-            if (message.isUnread()) {
-                toSend = ChatColor.BOLD + toSend;
-            }
-            player.sendMessage(ChatColor.AQUA + toSend);
-        }
+        sendListOfActiveMessagesToPlayer(player, 1, DEFAULT_PAGE_SIZE);
+    }
+
+    public void sendListOfActiveMessagesToPlayer(Player player, int page, int pageSize) {
+        sendPaginatedMessageList(player, activeMessages, page, pageSize, "Active Messages", "active");
     }
 
     public ArrayList<Message> getArchivedMessages() {
@@ -145,23 +138,11 @@ public class Mailbox implements Savable {
     }
 
     public void sendListOfArchivedMessagesToPlayer(Player player) {
-        if (archivedMessages.size() == 0) {
-            player.sendMessage(ChatColor.AQUA + "You don't have any archived messages at this time.");
-            return;
-        }
-        player.sendMessage(ChatColor.AQUA + "=== Archived Messages ===");
-        player.sendMessage(ChatColor.AQUA + "D: date, S: sender, 📎: has attachments");
-        for (Message message : archivedMessages) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
-            if (message.hasAttachments()) {
-                toSend += " 📎";
-            }
-            if (message.isUnread()) {
-                toSend = ChatColor.BOLD + toSend;
-            }
-            player.sendMessage(ChatColor.AQUA + toSend);
-        }
+        sendListOfArchivedMessagesToPlayer(player, 1, DEFAULT_PAGE_SIZE);
+    }
+
+    public void sendListOfArchivedMessagesToPlayer(Player player, int page, int pageSize) {
+        sendPaginatedMessageList(player, archivedMessages, page, pageSize, "Archived Messages", "archived");
     }
 
     public void archiveMessage(Message message) {
@@ -201,21 +182,79 @@ public class Mailbox implements Savable {
     }
 
     public void sendListOfUnreadMessagesToPlayer(Player player) {
+        sendListOfUnreadMessagesToPlayer(player, 1, DEFAULT_PAGE_SIZE);
+    }
+
+    public void sendListOfUnreadMessagesToPlayer(Player player, int page, int pageSize) {
         ArrayList<Message> unreadMessages = getUnreadMessages();
-        if (unreadMessages.size() == 0) {
-            player.sendMessage(ChatColor.AQUA + "You don't have any unread messages at this time.");
+        sendPaginatedMessageList(player, unreadMessages, page, pageSize, "Unread Messages", "unread");
+    }
+
+    private void sendPaginatedMessageList(Player player, ArrayList<Message> messages, int page, int pageSize, String listTitle, String listType) {
+        if (messages.size() == 0) {
+            if (page > 1) {
+                player.sendMessage(ChatColor.RED + "Invalid page number. You don't have any " + listType + " messages.");
+            } else {
+                player.sendMessage(ChatColor.AQUA + "You don't have any " + listType + " messages at this time.");
+            }
             return;
         }
-        player.sendMessage(ChatColor.AQUA + "=== Unread Messages ===");
+
+        int totalPages = (int) Math.ceil((double) messages.size() / pageSize);
+        if (page < 1 || page > totalPages) {
+            player.sendMessage(ChatColor.RED + "Invalid page number. Valid pages: 1-" + totalPages);
+            return;
+        }
+
+        player.sendMessage(ChatColor.AQUA + "=== " + listTitle + " (Page " + page + "/" + totalPages + ") ===");
         player.sendMessage(ChatColor.AQUA + "D: date, S: sender, 📎: has attachments");
-        for (Message message : getUnreadMessages()) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, messages.size());
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        for (int i = startIndex; i < endIndex; i++) {
+            Message message = messages.get(i);
             String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
             if (message.hasAttachments()) {
                 toSend += " 📎";
             }
-            toSend = ChatColor.BOLD + toSend;
+            if (message.isUnread()) {
+                toSend = ChatColor.BOLD + toSend;
+            }
             player.sendMessage(ChatColor.AQUA + toSend);
+        }
+
+        // Show navigation info
+        if (totalPages > 1) {
+            ComponentBuilder navigationBuilder = new ComponentBuilder("Page " + page + " of " + totalPages)
+                    .color(net.md_5.bungee.api.ChatColor.GRAY);
+            
+            if (page > 1) {
+                navigationBuilder.append(" | ", ComponentBuilder.FormatRetention.NONE)
+                        .color(net.md_5.bungee.api.ChatColor.GRAY);
+                TextComponent previousLink = new TextComponent("[Previous Page]");
+                previousLink.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+                previousLink.setBold(true);
+                previousLink.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/m list " + listType + " " + (page - 1)));
+                previousLink.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+                        new ComponentBuilder("Click to go to page " + (page - 1)).create()));
+                navigationBuilder.append(previousLink, ComponentBuilder.FormatRetention.NONE);
+            }
+            
+            if (page < totalPages) {
+                navigationBuilder.append(" | ", ComponentBuilder.FormatRetention.NONE)
+                        .color(net.md_5.bungee.api.ChatColor.GRAY);
+                TextComponent nextLink = new TextComponent("[Next Page]");
+                nextLink.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+                nextLink.setBold(true);
+                nextLink.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/m list " + listType + " " + (page + 1)));
+                nextLink.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+                        new ComponentBuilder("Click to go to page " + (page + 1)).create()));
+                navigationBuilder.append(nextLink, ComponentBuilder.FormatRetention.NONE);
+            }
+            
+            player.spigot().sendMessage(navigationBuilder.create());
         }
     }
 
