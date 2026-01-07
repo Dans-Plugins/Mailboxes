@@ -7,6 +7,14 @@ import dansplugins.mailboxes.utils.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class OpenCommand {
     private final Logger logger;
@@ -48,7 +56,60 @@ public class OpenCommand {
 
         message.sendContentToPlayer(player);
         message.setUnread(false);
+
+        // Deliver attachments to player
+        if (message.hasAttachments()) {
+            List<ItemStack> attachments = message.getAttachments();
+            HashMap<Integer, ItemStack> failedItems = player.getInventory().addItem(attachments.toArray(new ItemStack[0]));
+            
+            if (failedItems.isEmpty()) {
+                player.sendMessage(ChatColor.GREEN + "All attached items have been added to your inventory.");
+                message.setAttachments(new ArrayList<>()); // Clear attachments after successful delivery
+            } else {
+                player.sendMessage(ChatColor.YELLOW + "Some items couldn't fit in your inventory and remain attached to the message.");
+                player.sendMessage(ChatColor.YELLOW + "Please free up space and open the message again.");
+                // Keep failed items as attachments
+                List<ItemStack> remainingItems = new ArrayList<>();
+                for (ItemStack item : failedItems.values()) {
+                    remainingItems.add(item);
+                }
+                message.setAttachments(remainingItems);
+            }
+        }
+
         return true;
+    }
+
+    public List<String> getTabCompletions(CommandSender sender, String[] args) {
+        if (args.length == 2 && sender instanceof Player) {
+            Player player = (Player) sender;
+            Mailbox mailbox = persistentData.getMailbox(player);
+            
+            if (mailbox != null) {
+                // Use Set to avoid duplicates (though unlikely based on design)
+                Set<String> messageIds = new HashSet<>();
+                
+                // Add active message IDs
+                for (Message message : mailbox.getActiveMessages()) {
+                    messageIds.add(String.valueOf(message.getID()));
+                }
+                
+                // Add archived message IDs
+                for (Message message : mailbox.getArchivedMessages()) {
+                    messageIds.add(String.valueOf(message.getID()));
+                }
+                
+                return filterCompletions(new ArrayList<>(messageIds), args[1]);
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private List<String> filterCompletions(List<String> options, String input) {
+        String lowerInput = input.toLowerCase();
+        return options.stream()
+            .filter(option -> option.toLowerCase().startsWith(lowerInput))
+            .collect(Collectors.toList());
     }
 
 }

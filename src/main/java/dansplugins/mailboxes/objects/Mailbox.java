@@ -117,7 +117,7 @@ public class Mailbox implements Savable {
         }
 
         player.sendMessage(ChatColor.AQUA + "=== Active Messages (Page " + page + "/" + totalPages + ") ===");
-        player.sendMessage(ChatColor.AQUA + "D: date, S: sender");
+        player.sendMessage(ChatColor.AQUA + "D: date, S: sender, 📎: has attachments");
 
         int startIndex = (page - 1) * pageSize;
         int endIndex = Math.min(startIndex + pageSize, activeMessages.size());
@@ -126,6 +126,9 @@ public class Mailbox implements Savable {
             Message message = activeMessages.get(i);
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
+            if (message.hasAttachments()) {
+                toSend += " 📎";
+            }
             if (message.isUnread()) {
                 toSend = ChatColor.BOLD + toSend;
             }
@@ -194,7 +197,7 @@ public class Mailbox implements Savable {
         }
 
         player.sendMessage(ChatColor.AQUA + "=== Archived Messages (Page " + page + "/" + totalPages + ") ===");
-        player.sendMessage(ChatColor.AQUA + "D: date, S: sender");
+        player.sendMessage(ChatColor.AQUA + "D: date, S: sender, 📎: has attachments");
 
         int startIndex = (page - 1) * pageSize;
         int endIndex = Math.min(startIndex + pageSize, archivedMessages.size());
@@ -203,6 +206,9 @@ public class Mailbox implements Savable {
             Message message = archivedMessages.get(i);
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
+            if (message.hasAttachments()) {
+                toSend += " 📎";
+            }
             if (message.isUnread()) {
                 toSend = ChatColor.BOLD + toSend;
             }
@@ -280,7 +286,7 @@ public class Mailbox implements Savable {
         }
 
         player.sendMessage(ChatColor.AQUA + "=== Unread Messages (Page " + page + "/" + totalPages + ") ===");
-        player.sendMessage(ChatColor.AQUA + "D: date, S: sender");
+        player.sendMessage(ChatColor.AQUA + "D: date, S: sender, 📎: has attachments");
 
         int startIndex = (page - 1) * pageSize;
         int endIndex = Math.min(startIndex + pageSize, unreadMessages.size());
@@ -289,6 +295,9 @@ public class Mailbox implements Savable {
             Message message = unreadMessages.get(i);
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String toSend = "* ID: " + message.getID() + " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
+            if (message.hasAttachments()) {
+                toSend += " 📎";
+            }
             toSend = ChatColor.BOLD + toSend;
             player.sendMessage(ChatColor.AQUA + toSend);
         }
