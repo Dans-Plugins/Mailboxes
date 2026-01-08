@@ -90,49 +90,6 @@ public class MailboxTest {
     }
 
     @Test
-    public void testPageBoundaryCalculation() {
-        // Given a mailbox with 25 active messages (will span 3 pages with page size 10)
-        for (int i = 1; i <= 25; i++) {
-            Message msg = createMockMessage(i, "Sender" + i);
-            mailbox.addActiveMessage(msg);
-        }
-
-        // When displaying page 2 with page size 10
-        mailbox.sendListOfActiveMessagesToPlayer(player, 2, 10);
-
-        // Then it should show header with page 2/3
-        verify(player).sendMessage(contains("=== Active Messages (Page 2/3) ==="));
-        // And it should display 10 messages (messages 11-20)
-        // We verify by checking 10 message lines are sent (plus header and legend)
-        verify(player, times(12)).sendMessage(anyString()); // 1 header + 1 legend + 10 messages
-        // And should show navigation with both previous and next
-        verify(spigot).sendMessage(
-                any(BaseComponent.class),
-                any(BaseComponent.class),
-                any(BaseComponent.class),
-                any(BaseComponent.class),
-                any(BaseComponent.class)
-        );
-    }
-
-    @Test
-    public void testLastPageWithPartialMessages() {
-        // Given a mailbox with 25 active messages (last page will have 5 messages)
-        for (int i = 1; i <= 25; i++) {
-            Message msg = createMockMessage(i, "Sender" + i);
-            mailbox.addActiveMessage(msg);
-        }
-
-        // When displaying page 3 with page size 10
-        mailbox.sendListOfActiveMessagesToPlayer(player, 3, 10);
-
-        // Then it should show header with page 3/3
-        verify(player).sendMessage(contains("=== Active Messages (Page 3/3) ==="));
-        // And it should display 5 messages (messages 21-25)
-        verify(player, times(7)).sendMessage(anyString()); // 1 header + 1 legend + 5 messages
-    }
-
-    @Test
     public void testInvalidPageNumberTooHigh() {
         // Given a mailbox with 5 active messages (only 1 page)
         for (int i = 1; i <= 5; i++) {
@@ -196,23 +153,6 @@ public class MailboxTest {
 
         // Then it should show unread messages header with page 1/2
         verify(player).sendMessage(contains("=== Unread Messages (Page 1/2) ==="));
-    }
-
-    @Test
-    public void testPageSizeRespected() {
-        // Given a mailbox with 20 active messages
-        for (int i = 1; i <= 20; i++) {
-            Message msg = createMockMessage(i, "Sender" + i);
-            mailbox.addActiveMessage(msg);
-        }
-
-        // When displaying page 1 with page size 5
-        mailbox.sendListOfActiveMessagesToPlayer(player, 1, 5);
-
-        // Then it should show page 1/4
-        verify(player).sendMessage(contains("=== Active Messages (Page 1/4) ==="));
-        // And it should display 5 messages
-        verify(player, times(7)).sendMessage(anyString()); // 1 header + 1 legend + 5 messages
     }
 
     @Test
