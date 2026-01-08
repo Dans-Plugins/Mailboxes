@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
-public class MailboxPaginationTest {
+public class MailboxTest {
 
     @Mock
     private Logger logger;
