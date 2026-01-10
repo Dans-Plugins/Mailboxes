@@ -12,6 +12,18 @@ Mailboxes is an open source plugin that allows players and plugins to send persi
 
 For more information about the item attachments feature, see [ATTACHMENTS.md](ATTACHMENTS.md).
 
+## For Plugin Developers
+Want to integrate Mailboxes into your plugin? Get started in minutes!
+
+- **[Quick Start Guide](QUICKSTART.md)** - Send your first message in 5 minutes
+- **[Complete API Documentation](API.md)** - Full API reference with examples
+
+### Key Features for Developers
+- Simple API - send messages with just a few lines of code
+- Support for online and offline players
+- Messages persist across server restarts
+- No complex setup required
+
 ## Server Software
 This plugin was developed using the Spigot API. Users may run into trouble using it with other available server softwares like Paper.
 
@@ -39,6 +51,7 @@ Please fill out a bug report [here](https://github.com/dmccoystephenson/Mailboxe
 - [Planned Improvements](https://github.com/dmccoystephenson/Mailboxes/issues?q=is%3Aopen+is%3Aissue+label%3Aimprovement)
 
 ## Contributing
+- [API Documentation for Plugin Developers](API.md)
 - [Notes for Developers](https://github.com/dmccoystephenson/Mailboxes/wiki/Developer-Notes) (coming soon)
 
 ## Authors and acknowledgement
