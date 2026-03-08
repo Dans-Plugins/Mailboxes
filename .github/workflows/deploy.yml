@@ -44,6 +44,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '8'
+          cache: maven
 
       - name: Build plugin JAR
         run: mvn --batch-mode package
@@ -77,9 +78,19 @@ jobs:
             exit 1
           fi
 
+          if [ -z "${DEPLOY_URL}" ]; then
+            echo "❌ OMCSI_DEPLOY_URL secret is not set or is empty"
+            exit 1
+          fi
+
+          if [ -z "${DEPLOY_TOKEN}" ]; then
+            echo "❌ OMCSI_DEPLOY_TOKEN secret is not set or is empty"
+            exit 1
+          fi
+
           RESPONSE_BODY=$(mktemp)
           trap 'rm -f "${RESPONSE_BODY}"' EXIT
-          HTTP_STATUS=$(curl --silent --write-out "%{http_code}" \
+          HTTP_STATUS=$(curl --silent --show-error --write-out "%{http_code}" \
             --output "${RESPONSE_BODY}" \
             --request POST \
             --header "Authorization: Bearer ${DEPLOY_TOKEN}" \
