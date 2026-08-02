@@ -12,3 +12,4 @@ All commands use `/m` or `/mailboxes` as the base.
 | `/m delete` | Delete a message. | `mailboxes.delete` |
 | `/m archive` | Archive a message. | `mailboxes.archive` |
 | `/m config` | View or set config options (operators). | `mailboxes.config` |
+| `/m stats` | View the total, active, archived, and unread message counts for your mailbox. | `mailboxes.stats` |
