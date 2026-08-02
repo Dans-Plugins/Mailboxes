@@ -30,6 +30,7 @@ Mailboxes is a Spigot plugin that gives players an in-game messaging system. Pla
 | `mailboxes.delete` | `true` | Delete a message. |
 | `mailboxes.archive` | `true` | Archive a message. |
 | `mailboxes.config` | `op` | View or change config options. |
+| `mailboxes.stats` | `true` | View your mailbox statistics. |
 
 ## Support
 

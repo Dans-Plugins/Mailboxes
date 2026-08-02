@@ -24,3 +24,5 @@ permissions:
     default: true
   mailboxes.config:
     default: op
+  mailboxes.stats:
+    default: true

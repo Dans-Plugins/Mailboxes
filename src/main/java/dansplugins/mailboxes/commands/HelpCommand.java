@@ -15,6 +15,7 @@ public class HelpCommand {
         sender.sendMessage(ChatColor.AQUA + "/m delete - Delete a message.");
         sender.sendMessage(ChatColor.AQUA + "/m archive - Archive a message.");
         sender.sendMessage(ChatColor.AQUA + "/m config - View or set config options.");
+        sender.sendMessage(ChatColor.AQUA + "/m stats - View your mailbox statistics.");
         return true;
     }
 

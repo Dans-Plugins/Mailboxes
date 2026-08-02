@@ -90,6 +90,12 @@ public class CommandInterpreter {
                 return command.execute(sender, arguments);
             }
 
+            if (secondaryLabel.equalsIgnoreCase("stats")) {
+                if (!permissionChecker.checkPermission(sender, "mailboxes.stats")) { return false; }
+                StatsCommand command = new StatsCommand(logger, persistentData);
+                return command.execute(sender);
+            }
+
             sender.sendMessage(ChatColor.RED + "Mailboxes doesn't recognize that command.");
         }
         return false;

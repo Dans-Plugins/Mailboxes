@@ -106,6 +106,7 @@ public final class Mailboxes extends JavaPlugin {
             if (sender.hasPermission("mailboxes.open")) subcommands.add("open");
             if (sender.hasPermission("mailboxes.delete")) subcommands.add("delete");
             if (sender.hasPermission("mailboxes.archive")) subcommands.add("archive");
+            if (sender.hasPermission("mailboxes.stats")) subcommands.add("stats");
             return filterCompletions(subcommands, args[0]);
         }
 
