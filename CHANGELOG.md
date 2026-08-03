@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - `/m stats` command to view total, active, archived, and unread message counts
 
+### Fixed
+- `/m delete` and `/m archive` no longer crash on a non-numeric message ID or when the sender has no mailbox; they now show a friendly error message instead
+
 ## [1.3.0]
 
 ### Added

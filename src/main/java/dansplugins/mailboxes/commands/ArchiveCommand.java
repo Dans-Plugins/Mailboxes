@@ -33,9 +33,20 @@ public class ArchiveCommand {
             return false;
         }
 
-        int ID = Integer.parseInt(args[0]); // TODO: fix error here
+        int ID;
+        try {
+            ID = Integer.parseInt(args[0]);
+        } catch (NumberFormatException e) {
+            player.sendMessage(ChatColor.RED + "Invalid message ID: " + args[0]);
+            return false;
+        }
 
         Mailbox mailbox = persistentData.getMailbox(player);
+
+        if (mailbox == null) {
+            player.sendMessage(ChatColor.RED + "Error: Mailbox wasn't found.");
+            return false;
+        }
 
         Message message = mailbox.getMessage(ID);
 
