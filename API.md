@@ -246,16 +246,19 @@ Retrieves a specific message by its ID. Only **active** (unarchived) messages ac
 **Parameters:**
 - `ID` (int) - The unique ID of the message
 
-**Returns:** `M_Message` - The message wrapper object. A wrapper is **always** returned, even when no message with that ID exists; in that case the wrapper holds `null` and calling any of its methods throws a `NullPointerException`. A `null` check on the returned wrapper is therefore not sufficient — guard the call instead.
+**Returns:** `M_Message` - The message wrapper object. A wrapper is **always** returned, even when no message with that ID exists; in that case the wrapper holds `null` and calling any of its methods throws a `NullPointerException`. A `null` check on the returned wrapper therefore never fires. To test whether a message exists, look it up through the owning mailbox instead: `M_Mailbox.getActiveMessage(int)` and `M_Mailbox.getArchivedMessage(int)` do return `null` when no such message is present.
 
 **Example:**
 ```java
-try {
-    M_Message message = mailboxesAPI.getMessage(123);
-    String content = message.getContent();
-    String sender = message.getSender();
-} catch (NullPointerException e) {
-    getLogger().warning("No active message with that ID exists");
+// Safe when the ID is known to belong to an active message
+M_Message message = mailboxesAPI.getMessage(123);
+String content = message.getContent();
+String sender = message.getSender();
+
+// Safe when the message may not exist
+Message maybeMessage = mailboxesAPI.getMailbox(player).getActiveMessage(123);
+if (maybeMessage != null) {
+    String otherContent = maybeMessage.getContent();
 }
 ```
 
