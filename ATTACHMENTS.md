@@ -50,7 +50,7 @@ maxAttachmentStackSize: 64
 - **Secure Transfer**: Items are stored securely with the message and delivered to the recipient
 - **Inventory Management**: Handles full inventory scenarios gracefully
 - **Visual Indicators**: Shows attachment information in message lists and when opening messages
-- **Configurable Limits**: Server admins can configure max attachments and stack sizes
+- **Configurable Limits**: Server admins can enable or disable the feature and cap the attached stack size
 - **Persistent Storage**: Attachments are saved and persist through server restarts
 
 ## Technical Details
