@@ -36,9 +36,9 @@ First, add the Mailboxes JAR to your local Maven repository or use a local file 
     <dependency>
         <groupId>dansplugins</groupId>
         <artifactId>Mailboxes</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
         <scope>system</scope>
-        <systemPath>${project.basedir}/libs/Mailboxes-1.2.0.jar</systemPath>
+        <systemPath>${project.basedir}/libs/Mailboxes-1.3.0.jar</systemPath>
     </dependency>
 </dependencies>
 ```
@@ -46,10 +46,10 @@ First, add the Mailboxes JAR to your local Maven repository or use a local file 
 **Or install to local Maven repository:**
 ```bash
 mvn install:install-file \
-  -Dfile=Mailboxes-1.2.0.jar \
+  -Dfile=Mailboxes-1.3.0.jar \
   -DgroupId=dansplugins \
   -DartifactId=Mailboxes \
-  -Dversion=1.2.0 \
+  -Dversion=1.3.0 \
   -Dpackaging=jar
 ```
 
@@ -59,7 +59,7 @@ Then add to your `pom.xml`:
     <dependency>
         <groupId>dansplugins</groupId>
         <artifactId>Mailboxes</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
         <scope>provided</scope>
     </dependency>
 </dependencies>
@@ -69,7 +69,7 @@ Then add to your `pom.xml`:
 
 ```groovy
 dependencies {
-    compileOnly files('libs/Mailboxes-1.2.0.jar')
+    compileOnly files('libs/Mailboxes-1.3.0.jar')
 }
 ```
 
@@ -164,7 +164,7 @@ System.out.println("Using Mailboxes API: " + apiVersion);
 ##### `getVersion()`
 Returns the Mailboxes plugin version.
 
-**Returns:** `String` - The plugin version (e.g., "v1.2.0")
+**Returns:** `String` - The plugin version, prefixed with `v` (e.g., "v1.3.0")
 
 **Example:**
 ```java
@@ -227,7 +227,7 @@ Retrieves a player's mailbox.
 **Parameters:**
 - `player` (Player) - The player whose mailbox to retrieve
 
-**Returns:** `M_Mailbox` - The player's mailbox wrapper object
+**Returns:** `M_Mailbox` - The player's mailbox wrapper object. A wrapper is **always** returned, even for a player who has not been assigned a mailbox yet; in that case the wrapper holds `null` and calling any of its methods throws a `NullPointerException`. Mailboxes are assigned on join, so this only affects players who have never joined the server.
 
 **Example:**
 ```java
@@ -241,19 +241,24 @@ if (player != null) {
 ```
 
 ##### `getMessage(int ID)`
-Retrieves a specific message by its ID.
+Retrieves a specific message by its ID. Only **active** (unarchived) messages across all mailboxes are searched; archived messages are not found by this method.
 
 **Parameters:**
 - `ID` (int) - The unique ID of the message
 
-**Returns:** `M_Message` - The message wrapper object, or `null` if not found
+**Returns:** `M_Message` - The message wrapper object. A wrapper is **always** returned, even when no message with that ID exists; in that case the wrapper holds `null` and calling any of its methods throws a `NullPointerException`. A `null` check on the returned wrapper therefore never fires. To test whether a message exists, look it up through the owning mailbox instead: `M_Mailbox.getActiveMessage(int)` and `M_Mailbox.getArchivedMessage(int)` do return `null` when no such message is present.
 
 **Example:**
 ```java
+// Safe when the ID is known to belong to an active message
 M_Message message = mailboxesAPI.getMessage(123);
-if (message != null) {
-    String content = message.getContent();
-    String sender = message.getSender();
+String content = message.getContent();
+String sender = message.getSender();
+
+// Safe when the message may not exist
+Message maybeMessage = mailboxesAPI.getMailbox(player).getActiveMessage(123);
+if (maybeMessage != null) {
+    String otherContent = maybeMessage.getContent();
 }
 ```
 
@@ -261,7 +266,7 @@ if (message != null) {
 
 A wrapper class representing a player's mailbox.
 
-#### Methods
+#### Accessors
 
 ##### `getID()`
 **Returns:** `int` - The unique mailbox ID
@@ -285,16 +290,42 @@ A wrapper class representing a player's mailbox.
 **Returns:** `Message` - A specific archived message by ID
 
 ##### `sendListOfActiveMessagesToPlayer(Player player)`
-Sends a formatted list of active messages to the player.
+Sends a formatted list of active messages to the player. Only the first page (10 messages) is sent; the paginated form is not exposed through the API.
 
 **Parameters:**
 - `player` (Player) - The player to send the list to
 
 ##### `sendListOfArchivedMessagesToPlayer(Player player)`
-Sends a formatted list of archived messages to the player.
+Sends a formatted list of archived messages to the player. Only the first page (10 messages) is sent; the paginated form is not exposed through the API.
 
 **Parameters:**
 - `player` (Player) - The player to send the list to
+
+#### Mutators
+
+##### `addActiveMessage(Message message)`
+Adds a message to the mailbox's active messages. Ignored if a message with the same ID is already active.
+
+##### `removeActiveMessage(Message message)`
+Removes the given message from the mailbox's active messages.
+
+##### `removeActiveMessage(int ID)`
+Removes the active message with the given ID. Does nothing if no active message has that ID.
+
+##### `addArchivedMessage(Message message)`
+Adds a message to the mailbox's archived messages. Ignored if a message with the same ID is already archived.
+
+##### `removeArchivedMessage(Message message)`
+Removes the given message from the mailbox's archived messages.
+
+##### `removeArchivedMessage(int ID)`
+Removes the archived message with the given ID. Does nothing if no archived message has that ID.
+
+##### `removeMessage(Message message)`
+Removes the given message from both the active and archived lists.
+
+##### `archiveMessage(Message message)`
+Marks the message archived and moves it from the active list to the archived list.
 
 ### M_Message Class
 

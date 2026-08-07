@@ -13,9 +13,9 @@ Download the Mailboxes JAR and place it in a `libs` folder in your project, then
     <dependency>
         <groupId>dansplugins</groupId>
         <artifactId>Mailboxes</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
         <scope>system</scope>
-        <systemPath>${project.basedir}/libs/Mailboxes-1.2.0.jar</systemPath>
+        <systemPath>${project.basedir}/libs/Mailboxes-1.3.0.jar</systemPath>
     </dependency>
 </dependencies>
 ```
@@ -26,7 +26,7 @@ Place the Mailboxes JAR in a `libs` folder and add to your `build.gradle`:
 
 ```groovy
 dependencies {
-    compileOnly files('libs/Mailboxes-1.2.0.jar')
+    compileOnly files('libs/Mailboxes-1.3.0.jar')
 }
 ```
 

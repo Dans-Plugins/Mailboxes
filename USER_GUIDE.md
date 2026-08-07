@@ -14,9 +14,9 @@ Mailboxes is a Spigot plugin that gives players an in-game messaging system. Pla
 
 1. Send a message: `/m send <player> "Hello!"`
 2. Attach an item to a message: hold the item and add `-attach`: `/m send <player> "Here is a gift" -attach`
-3. List your messages: `/m list`
-4. Open a message: `/m open`
-5. Archive or delete messages you no longer need.
+3. List your messages: `/m list` (each listed message shows its ID)
+4. Open a message by its ID: `/m open <ID>`
+5. Archive or delete messages you no longer need: `/m archive <ID>` or `/m delete <ID>`.
 
 ## Permissions
 
