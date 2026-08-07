@@ -310,7 +310,7 @@ Adds a message to the mailbox's active messages. Ignored if a message with the s
 Removes the given message from the mailbox's active messages.
 
 ##### `removeActiveMessage(int ID)`
-Removes the active message with the given ID.
+Removes the active message with the given ID. Does nothing if no active message has that ID.
 
 ##### `addArchivedMessage(Message message)`
 Adds a message to the mailbox's archived messages. Ignored if a message with the same ID is already archived.
@@ -319,7 +319,7 @@ Adds a message to the mailbox's archived messages. Ignored if a message with the
 Removes the given message from the mailbox's archived messages.
 
 ##### `removeArchivedMessage(int ID)`
-Removes the archived message with the given ID.
+Removes the archived message with the given ID. Does nothing if no archived message has that ID.
 
 ##### `removeMessage(Message message)`
 Removes the given message from both the active and archived lists.
