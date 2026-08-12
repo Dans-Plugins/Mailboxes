@@ -56,7 +56,7 @@ public class MessageFactory {
     }
 
     private boolean isMessageIDTaken(int messageID) {
-        return persistentData.getMessage(messageID) != null;
+        return persistentData.isMessageIDInUse(messageID);
     }
 
 }
