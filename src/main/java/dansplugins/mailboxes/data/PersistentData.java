@@ -65,6 +65,24 @@ public class PersistentData {
         return null;
     }
 
+    /**
+     * Checks whether a message ID is already in use by any message, active or archived.
+     *
+     * This is broader than {@link #getMessage(int)}, which only searches active messages,
+     * and exists so that newly generated IDs don't collide with archived ones.
+     *
+     * @param messageID the ID to check
+     * @return true if a message with the given ID exists in any mailbox
+     */
+    public boolean isMessageIDInUse(int messageID) {
+        for (Mailbox mailbox : mailboxes) {
+            if (mailbox.getMessage(messageID) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public LookupService getLookupService() {
         return lookupService;
     }

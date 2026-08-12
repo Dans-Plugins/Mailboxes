@@ -10,6 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - A `Dev Release` workflow, which republishes a rolling `dev` prerelease of `main` on every non-documentation push. This is what Dan's Plugin Manager's experimental channel installs from: `/dpm get mailboxes --experimental` reads `releases/tags/dev`, so without it there is nothing for that command to download. The prerelease is unreleased, unreviewed code and is marked as such.
 
+### Fixed
+
+- New messages are no longer given an ID that an archived message already holds. The uniqueness check only searched active messages, so an archived message's ID counted as free; once reissued, `/m open`, `/m delete`, and `/m archive` could no longer reach the archived message
+- The in-game help menu now shows the message-ID argument on `/m open`, `/m delete`, and `/m archive`, and lists the `active`, `archived`, and `unread` values accepted by `/m list`
+- The `/m config set` usage string no longer refers to a `/c` command, which the plugin does not register
+- The `/m send` usage string now shows the double quotes the command actually requires around the message, rather than single quotes
+
 ## [2.0.0-SNAPSHOT-8-8-2026] – 2026-08-08
 
 ### Changed

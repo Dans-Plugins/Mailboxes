@@ -49,7 +49,7 @@ public class SendCommand {
         Player player = (Player) sender;
 
         if (args.length < 2) {
-            player.sendMessage(ChatColor.RED + "Usage: /m send (playerName) 'message' [-attach]");
+            player.sendMessage(ChatColor.RED + "Usage: /m send (playerName) \"message\" [-attach]");
             return false;
         }
 
