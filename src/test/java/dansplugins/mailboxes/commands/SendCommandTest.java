@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -89,5 +90,20 @@ public class SendCommandTest {
 
         assertFalse(result);
         verify(player).sendMessage(contains("Message must be designated between double quotes."));
+    }
+
+    @Test
+    public void testExecuteWhenMessageCouldNotBeCreated() {
+        when(uuidChecker.findUUIDBasedOnPlayerName("Notch")).thenReturn(UUID.randomUUID());
+        when(argumentParser.getArgumentsInsideDoubleQuotes(any(String[].class)))
+                .thenReturn(new ArrayList<>(Arrays.asList("hello")));
+        // The factory hands back null when every message ID in the configured range is taken.
+        when(messageFactory.createPlayerMessage(any(UUID.class), any(UUID.class), anyString())).thenReturn(null);
+
+        boolean result = sendCommand.execute(player, new String[]{"Notch", "\"hello\""});
+
+        assertFalse(result);
+        verify(player).sendMessage(contains("Your message couldn't be created."));
+        verify(mailService, never()).sendMessage(any());
     }
 }

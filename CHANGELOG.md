@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- A new message is no longer given an ID that another message already holds when the random draws for a free ID keep landing on taken ones. A bounded number of draws was attempted and the last candidate was then handed out without being re-checked, which on a server whose message count approaches `maxMessageIDNumber` is the expected outcome rather than an unlikely one. The lowest free ID in the configured range is now used once the draws are exhausted. Where the whole range is in use, the message is refused instead of a duplicate ID being issued: an error is logged to the console, `/m send` tells the sender the message could not be created, and `MailboxesAPI.sendPluginMessageToPlayer` returns `false`
 - The `Dev Release` workflow now retries publishing the `dev` prerelease before giving up. The release and its tag have to be deleted and recreated for the tag to move to the new commit, and a transient API failure inside that window previously left the repository with no `dev` release at all until the workflow was re-run by hand. Each attempt now starts from a clean slate, and an exhausted retry fails loudly.
 
 ### Added

@@ -88,6 +88,11 @@ public class SendCommand {
 
         PlayerMessage message = messageFactory.createPlayerMessage(player.getUniqueId(), recipientUUID, messageContent);
 
+        if (message == null) {
+            player.sendMessage(ChatColor.RED + "Your message couldn't be created. Please let a server administrator know.");
+            return false;
+        }
+
         // Handle attachments
         if (shouldAttach) {
             if (!player.hasPermission("mailboxes.send.attach")) {
