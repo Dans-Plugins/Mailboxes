@@ -9,6 +9,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -86,5 +89,23 @@ public class PersistentDataTest {
         PersistentData empty = new PersistentData(logger);
 
         assertFalse(empty.isMessageIDInUse(1));
+    }
+
+    @Test
+    public void testGetMessageIDsInUseCollectsActiveAndArchivedIDsFromEveryMailbox() {
+        mailbox.addActiveMessage(createMessage(40));
+        mailbox.addArchivedMessage(createMessage(41));
+        Mailbox otherMailbox = new Mailbox(logger, 2, UUID.randomUUID());
+        persistentData.addMailbox(otherMailbox);
+        otherMailbox.addActiveMessage(createMessage(42));
+
+        Set<Integer> messageIDs = persistentData.getMessageIDsInUse();
+
+        assertEquals(new HashSet<>(Arrays.asList(40, 41, 42)), messageIDs);
+    }
+
+    @Test
+    public void testGetMessageIDsInUseWithNoMessages() {
+        assertTrue(persistentData.getMessageIDsInUse().isEmpty());
     }
 }

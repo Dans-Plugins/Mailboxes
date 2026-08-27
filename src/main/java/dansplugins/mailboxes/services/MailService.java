@@ -31,6 +31,11 @@ public class MailService {
     }
 
     public boolean sendMessage(Message message) {
+        if (message == null) {
+            logger.log("Message was null.");
+            return false;
+        }
+
         logger.log("Attempting to send message with ID " + message.getID());
         logger.log("Message Sender: " + message.getSender());
         logger.log("Message Recipient: " + message.getRecipient());

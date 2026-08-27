@@ -728,6 +728,7 @@ public void sendNotification(Player player, String message) {
 - Check server logs for Mailboxes errors
 - Ensure the message content is not empty
 - Verify Mailboxes plugin is enabled
+- Check whether the server has run out of message IDs. When every ID below `maxMessageIDNumber` is held by an existing message, no further message can be created and an error is logged to the console; raising `maxMessageIDNumber` or deleting messages frees the ID space back up
 
 ### Dependency Not Found at Compile Time
 

@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -91,6 +92,92 @@ public class MessageFactoryTest {
             Message message = messageFactory.createMessage("sender", "recipient", "content");
             assertNotEquals("A new message was given the ID of an active message", ARCHIVED_ID, message.getID());
         }
+    }
+
+    /**
+     * A factory whose random draws always land on ID 0 — taken in every setup below — so that the
+     * behaviour once random draws are exhausted can be exercised deterministically.
+     */
+    private MessageFactory messageFactoryAlwaysDrawingTakenID() {
+        Random alwaysDrawsZero = new Random() {
+            @Override
+            public int nextInt(int bound) {
+                return 0;
+            }
+        };
+        return new MessageFactory(uuidChecker, configService, persistentData, logger, alwaysDrawsZero);
+    }
+
+    private void fillIDSpaceExceptFor(int freeID, int idSpace) {
+        Mailbox mailbox = new Mailbox(logger, 1, UUID.randomUUID());
+        persistentData.addMailbox(mailbox);
+        for (int ID = 0; ID < idSpace; ID++) {
+            if (ID != freeID) {
+                mailbox.addActiveMessage(new Message(logger, configService, ID, "Default Message", "sender", "recipient", "content"));
+            }
+        }
+    }
+
+    @Test
+    public void testCreateMessageFallsBackToAFreeIDWhenRandomDrawsKeepColliding() {
+        int idSpace = 3;
+        int freeID = 2;
+        when(configService.getInt("maxMessageIDNumber")).thenReturn(idSpace);
+        fillIDSpaceExceptFor(freeID, idSpace);
+
+        Message message = messageFactoryAlwaysDrawingTakenID().createMessage("sender", "recipient", "content");
+
+        assertNotNull("A free ID was available, so a message should have been created", message);
+        assertEquals("The one free ID should have been used instead of the repeatedly drawn taken one", freeID, message.getID());
+    }
+
+    @Test
+    public void testCreatePlayerMessageFallsBackToAFreeIDWhenRandomDrawsKeepColliding() {
+        int idSpace = 3;
+        int freeID = 2;
+        when(configService.getInt("maxMessageIDNumber")).thenReturn(idSpace);
+        fillIDSpaceExceptFor(freeID, idSpace);
+
+        PlayerMessage message = messageFactoryAlwaysDrawingTakenID().createPlayerMessage(UUID.randomUUID(), UUID.randomUUID(), "content");
+
+        assertNotNull(message);
+        assertEquals(freeID, message.getID());
+    }
+
+    @Test
+    public void testCreatePluginMessageFallsBackToAFreeIDWhenRandomDrawsKeepColliding() {
+        int idSpace = 3;
+        int freeID = 2;
+        when(configService.getInt("maxMessageIDNumber")).thenReturn(idSpace);
+        fillIDSpaceExceptFor(freeID, idSpace);
+
+        PluginMessage message = messageFactoryAlwaysDrawingTakenID().createPluginMessage("SomePlugin", UUID.randomUUID(), "content");
+
+        assertNotNull(message);
+        assertEquals(freeID, message.getID());
+    }
+
+    @Test
+    public void testCreateMessageReturnsNullWhenEveryIDIsTaken() {
+        fillIDSpaceExceptFor(-1, ID_SPACE);
+
+        assertNull("A saturated ID space should refuse creation rather than reuse an ID",
+                messageFactory.createMessage("sender", "recipient", "content"));
+        verify(logger).logError(contains("in use"));
+    }
+
+    @Test
+    public void testCreatePlayerMessageReturnsNullWhenEveryIDIsTaken() {
+        fillIDSpaceExceptFor(-1, ID_SPACE);
+
+        assertNull(messageFactory.createPlayerMessage(UUID.randomUUID(), UUID.randomUUID(), "content"));
+    }
+
+    @Test
+    public void testCreatePluginMessageReturnsNullWhenEveryIDIsTaken() {
+        fillIDSpaceExceptFor(-1, ID_SPACE);
+
+        assertNull(messageFactory.createPluginMessage("SomePlugin", UUID.randomUUID(), "content"));
     }
 
     @Test

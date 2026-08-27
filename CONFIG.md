@@ -6,7 +6,7 @@ Configuration can be viewed and changed in-game with `/m config show` and `/m co
 |--------|------|---------|-------------|
 | `version` | String | *(plugin version)* | Plugin version. Do not edit manually. |
 | `debugMode` | Boolean | `false` | Enables verbose debug logging to the console. |
-| `maxMessageIDNumber` | Integer | `10000` | Maximum ID number assigned to messages. |
+| `maxMessageIDNumber` | Integer | `10000` | Maximum ID number assigned to messages. This also caps how many messages can exist at once: once every ID below it is in use, no further message can be created until messages are deleted or the limit is raised. |
 | `maxMailboxIDNumber` | Integer | `10000` | Maximum ID number assigned to mailboxes. |
 | `maxAttachmentStackSize` | Integer | `64` | Maximum stack size allowed for item attachments. |
 | `preventSendingMessagesToSelf` | Boolean | `true` | Whether players can send messages to themselves. |

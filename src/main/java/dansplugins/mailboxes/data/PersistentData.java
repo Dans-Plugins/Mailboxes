@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class PersistentData {
@@ -81,6 +82,27 @@ public class PersistentData {
             }
         }
         return false;
+    }
+
+    /**
+     * Collects every message ID currently in use, active or archived.
+     *
+     * This is the bulk counterpart to {@link #isMessageIDInUse(int)}, and exists so that a sweep
+     * for a free ID doesn't rescan every mailbox once per candidate.
+     *
+     * @return the set of IDs held by messages in any mailbox
+     */
+    public Set<Integer> getMessageIDsInUse() {
+        Set<Integer> messageIDs = new HashSet<>();
+        for (Mailbox mailbox : mailboxes) {
+            for (Message message : mailbox.getActiveMessages()) {
+                messageIDs.add(message.getID());
+            }
+            for (Message message : mailbox.getArchivedMessages()) {
+                messageIDs.add(message.getID());
+            }
+        }
+        return messageIDs;
     }
 
     public LookupService getLookupService() {
