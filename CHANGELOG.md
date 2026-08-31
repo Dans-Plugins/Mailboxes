@@ -6,17 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Fixed
-
-- A new message is no longer given an ID that another message already holds when the random draws for a free ID keep landing on taken ones. A bounded number of draws was attempted and the last candidate was then handed out without being re-checked, which on a server whose message count approaches `maxMessageIDNumber` is the expected outcome rather than an unlikely one. The lowest free ID in the configured range is now used once the draws are exhausted. Where the whole range is in use, the message is refused instead of a duplicate ID being issued: an error is logged to the console, `/m send` tells the sender the message could not be created, and `MailboxesAPI.sendPluginMessageToPlayer` returns `false`
-- The `Dev Release` workflow now retries publishing the `dev` prerelease before giving up. The release and its tag have to be deleted and recreated for the tag to move to the new commit, and a transient API failure inside that window previously left the repository with no `dev` release at all until the workflow was re-run by hand. Each attempt now starts from a clean slate, and an exhausted retry fails loudly.
-
 ### Added
 
 - A `Dev Release` workflow, which republishes a rolling `dev` prerelease of `main` on every non-documentation push. This is what Dan's Plugin Manager's experimental channel installs from: `/dpm get mailboxes --experimental` reads `releases/tags/dev`, so without it there is nothing for that command to download. The prerelease is unreleased, unreviewed code and is marked as such.
 
 ### Fixed
 
+- `/m config set` now rejects an unusable value for `maxMessageIDNumber`, `maxMailboxIDNumber`, or `maxAttachmentStackSize` instead of storing it. A value of `0` or below was accepted, after which every attempt to create a message or a mailbox threw out of `Random.nextInt` and message creation was disabled server-wide until `config.yml` was corrected by hand; a non-numeric value threw a `NumberFormatException` at the command sender in place of a usage message. Such a value is now refused with an explanation and the option is left unchanged. Values already present in `config.yml` are still read as-is, so a hand-edited file can still hold an unusable one
+- A new message is no longer given an ID that another message already holds when the random draws for a free ID keep landing on taken ones. A bounded number of draws was attempted and the last candidate was then handed out without being re-checked, which on a server whose message count approaches `maxMessageIDNumber` is the expected outcome rather than an unlikely one. The lowest free ID in the configured range is now used once the draws are exhausted. Where the whole range is in use, the message is refused instead of a duplicate ID being issued: an error is logged to the console, `/m send` tells the sender the message could not be created, and `MailboxesAPI.sendPluginMessageToPlayer` returns `false`
+- The `Dev Release` workflow now retries publishing the `dev` prerelease before giving up. The release and its tag have to be deleted and recreated for the tag to move to the new commit, and a transient API failure inside that window previously left the repository with no `dev` release at all until the workflow was re-run by hand. Each attempt now starts from a clean slate, and an exhausted retry fails loudly.
 - New messages are no longer given an ID that an archived message already holds. The uniqueness check only searched active messages, so an archived message's ID counted as free; once reissued, `/m open`, `/m delete`, and `/m archive` could no longer reach the archived message
 - The in-game help menu now shows the message-ID argument on `/m open`, `/m delete`, and `/m archive`, and lists the `active`, `archived`, and `unread` values accepted by `/m list`
 - The `/m config set` usage string no longer refers to a `/c` command, which the plugin does not register

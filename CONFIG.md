@@ -2,6 +2,8 @@
 
 Configuration can be viewed and changed in-game with `/m config show` and `/m config set <option> <value>`. A `config.yml` is generated in `plugins/Mailboxes/` on first run.
 
+Integer options are validated before being stored: a value that is not a whole number, or one below `1`, is rejected with an explanation and the option is left unchanged. Values in `config.yml` are not validated — a `config.yml` edited by hand is read as-is.
+
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `version` | String | *(plugin version)* | Plugin version. Do not edit manually. |
