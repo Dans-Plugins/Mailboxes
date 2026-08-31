@@ -13,6 +13,14 @@ import org.bukkit.configuration.file.FileConfiguration;
  */
 
 public class ConfigService {
+    /**
+     * The smallest value accepted for an integer config option.
+     *
+     * Every integer option is either an exclusive upper bound handed to {@code Random.nextInt}
+     * (which throws below one) or a stack size, so nothing below one is usable.
+     */
+    private static final int MINIMUM_INTEGER_OPTION_VALUE = 1;
+
     private final Mailboxes mailboxes;
 
     private boolean altered = false;
@@ -62,7 +70,7 @@ public class ConfigService {
             getConfig().set("maxAttachmentStackSize", 64);
         }
         getConfig().options().copyDefaults(true);
-        mailboxes.saveConfig();
+        saveConfig();
     }
 
     public void setConfigOption(String option, String value, CommandSender sender) {
@@ -75,7 +83,11 @@ public class ConfigService {
             } else if (option.equalsIgnoreCase("maxMessageIDNumber")
                     || option.equalsIgnoreCase("maxMailboxIDNumber")
                     || option.equalsIgnoreCase("maxAttachmentStackSize")) {
-                getConfig().set(option, Integer.parseInt(value));
+                Integer parsedValue = parseIntegerOptionValue(option, value, sender);
+                if (parsedValue == null) {
+                    return;
+                }
+                getConfig().set(option, parsedValue);
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
             } else if (option.equalsIgnoreCase("debugMode")
                     || option.equalsIgnoreCase("preventSendingMessagesToSelf")
@@ -95,11 +107,37 @@ public class ConfigService {
             }
 
             // save
-            mailboxes.saveConfig();
+            saveConfig();
             altered = true;
         } else {
             sender.sendMessage(ChatColor.RED + "That config option wasn't found.");
         }
+    }
+
+    /**
+     * Parses and range-checks the value given for an integer config option.
+     *
+     * Storing an unchecked value used to be enough to disable the plugin server-wide: a zero or
+     * negative maxMessageIDNumber makes every message creation throw out of
+     * {@code Random.nextInt}, and a non-numeric value threw a NumberFormatException at the
+     * command sender instead of a usage message.
+     *
+     * @return the validated value, or null if it was rejected — in which case the sender has
+     *         already been told why and the option must be left unchanged
+     */
+    private Integer parseIntegerOptionValue(String option, String value, CommandSender sender) {
+        int parsedValue;
+        try {
+            parsedValue = Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(ChatColor.RED + "The value given for " + option + " must be a whole number.");
+            return null;
+        }
+        if (parsedValue < MINIMUM_INTEGER_OPTION_VALUE) {
+            sender.sendMessage(ChatColor.RED + option + " must be at least " + MINIMUM_INTEGER_OPTION_VALUE + ".");
+            return null;
+        }
+        return parsedValue;
     }
 
     public void sendConfigList(CommandSender sender) {
@@ -123,6 +161,14 @@ public class ConfigService {
 
     public FileConfiguration getConfig() {
         return mailboxes.getConfig();
+    }
+
+    /**
+     * Persists the configuration. Kept alongside {@link #getConfig()} as the second seam onto the
+     * plugin instance, so that tests can exercise a config change without a live Mailboxes.
+     */
+    void saveConfig() {
+        mailboxes.saveConfig();
     }
 
     public int getInt(String option) {
