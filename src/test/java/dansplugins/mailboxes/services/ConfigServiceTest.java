@@ -127,4 +127,54 @@ public class ConfigServiceTest {
         verify(sender).sendMessage(contains("That config option wasn't found."));
         assertFalse(configService.hasBeenAltered());
     }
+
+    // The usage-reporting getters must use the one-argument FileConfiguration
+    // calls: a config.yml written before the block existed is never rewritten,
+    // and only the one-argument getters fall through to the jar's bundled
+    // defaults. The two-argument forms would return their fallback instead and
+    // turn reporting off on every existing installation.
+
+    @Test
+    public void testUsageReportingEnabledIsReadWithTheOneArgumentGetter() {
+        when(config.getBoolean("usage-reporting.enabled")).thenReturn(true);
+
+        assertTrue(configService.isUsageReportingEnabled());
+
+        verify(config).getBoolean("usage-reporting.enabled");
+        verify(config, never()).getBoolean(eq("usage-reporting.enabled"), anyBoolean());
+    }
+
+    @Test
+    public void testUsageReportingEndpointIsReadWithTheOneArgumentGetter() {
+        when(config.getString("usage-reporting.endpoint")).thenReturn("http://localhost:8080");
+
+        assertEquals("http://localhost:8080", configService.getUsageReportingEndpoint());
+
+        verify(config).getString("usage-reporting.endpoint");
+        verify(config, never()).getString(eq("usage-reporting.endpoint"), anyString());
+    }
+
+    @Test
+    public void testUsageReportingEndpointFallsBackToTheTraceServerWhenAbsent() {
+        when(config.getString("usage-reporting.endpoint")).thenReturn(null);
+
+        assertEquals("https://trace.danielstephenson.dev", configService.getUsageReportingEndpoint());
+    }
+
+    @Test
+    public void testUsageReportingKeyIsReadWithTheOneArgumentGetter() {
+        when(config.getString("usage-reporting.key")).thenReturn("abc");
+
+        assertEquals("abc", configService.getUsageReportingKey());
+
+        verify(config).getString("usage-reporting.key");
+        verify(config, never()).getString(eq("usage-reporting.key"), anyString());
+    }
+
+    @Test
+    public void testUsageReportingKeyIsEmptyWhenAbsent() {
+        when(config.getString("usage-reporting.key")).thenReturn(null);
+
+        assertEquals("", configService.getUsageReportingKey());
+    }
 }
