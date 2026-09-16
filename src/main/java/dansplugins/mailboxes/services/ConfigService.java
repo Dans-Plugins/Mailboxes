@@ -192,15 +192,15 @@ public class ConfigService {
         return getConfig().getString(option);
     }
 
-    // The one-argument getters, deliberately. saveDefaultConfig() never touches a
-    // config.yml that already exists, and saveMissingConfigDefaultsIfNotPresent()
-    // only runs when the file is missing or the version changed, so a server
-    // upgraded from a version before usage reporting has no usage-reporting block
-    // on disk. Bukkit registers the jar's config.yml as the defaults for that
-    // file, and the one-argument getters fall through to them -- but the
-    // two-argument getters return their explicit fallback instead, which for the
-    // key would be "" and would turn reporting off on every existing
-    // installation. Verified against YamlConfiguration, not assumed.
+    // The one-argument getters, deliberately. Bukkit registers the jar's
+    // config.yml as the defaults for the file on disk, and the one-argument
+    // getters fall through to them for any key the file lacks -- the
+    // two-argument getters return their explicit fallback instead, which for
+    // the key would be "" and would read as "off". Mailboxes#onEnable rewrites
+    // a config.yml that lacks the usage-reporting block (copyDefaults(true) in
+    // saveMissingConfigDefaultsIfNotPresent copies it in), so on a normal enable
+    // the file has the keys; the fall-through only matters if that write
+    // failed. Verified against YamlConfiguration, not assumed.
 
     public boolean isUsageReportingEnabled() {
         return getConfig().getBoolean(USAGE_REPORTING_ENABLED_KEY);
