@@ -21,7 +21,7 @@ Integer options are validated before being stored: a value that is not a whole n
 | `usage-reporting.endpoint` | String | `https://trace.danielstephenson.dev` | The trace server events are sent to. |
 | `usage-reporting.key` | String | the plugin's key | Identifies this plugin to the trace server so reports are attributed to it. Not a secret: it ships in the default config and can only report as Mailboxes. Empty means reporting is off regardless of `enabled`. |
 
-The `usage-reporting` options are read from `config.yml` only and cannot be changed with `/m config set`. A `config.yml` written by a version of the plugin from before the block existed is not rewritten; the bundled defaults are used for any key the file lacks, so reporting is active on upgraded servers unless it is turned off.
+The `usage-reporting` options are read from `config.yml` only and cannot be changed with `/m config set`. A `config.yml` written by a version of the plugin from before the block existed is rewritten with the block, using the bundled values, the next time the plugin starts, so the switch is visible in the file; until then the bundled defaults are used for any key the file lacks.
 
 ## Usage reporting
 
@@ -30,4 +30,15 @@ author's [trace](https://github.com/Stephenson-Software/trace-client-java) serve
 plugins are actually in use. An event carries the plugin's name, the event name (`startup` or
 `command`), and either the plugin version or the command name — nothing about players, the world, or
 the server. Sending happens off the main thread, never delays a tick, and is dropped silently if the
-server cannot be reached. Set `usage-reporting.enabled` to `false` to turn it off.
+server cannot be reached. The plugin says on the console at every start whether reporting is on.
+
+To turn it off, in order of precedence:
+
+- the environment variable `TRACE_USAGE_REPORTING=off` (or `DO_NOT_TRACK=1`) turns it off for every
+  program in the server process;
+- `enabled: false` in `plugins/trace/config.yml` turns it off for every plugin on the server that
+  reports to trace — the file is created with `enabled: true` by the first such plugin to start and
+  is never turned back on by a plugin;
+- `usage-reporting.enabled: false` in this plugin's `config.yml` turns it off for Mailboxes alone.
+
+Details: https://github.com/Stephenson-Software/trace#usage-reporting
