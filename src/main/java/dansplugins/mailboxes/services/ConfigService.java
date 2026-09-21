@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 /*
     To add a new config option, the following methods must be altered:
     - saveMissingConfigDefaultsIfNotPresent
+    - replaceUnusableConfigValues()
     - setConfigOption()
     - sendConfigList()
  */
@@ -20,6 +21,17 @@ public class ConfigService {
      * (which throws below one) or a stack size, so nothing below one is usable.
      */
     private static final int MINIMUM_INTEGER_OPTION_VALUE = 1;
+
+    private static final boolean DEFAULT_DEBUG_MODE = false;
+    private static final int DEFAULT_MAX_MESSAGE_ID_NUMBER = 10000;
+    private static final int DEFAULT_MAX_MAILBOX_ID_NUMBER = 10000;
+    private static final boolean DEFAULT_PREVENT_SENDING_MESSAGES_TO_SELF = true;
+    private static final boolean DEFAULT_ASSIGNMENT_ALERT_ENABLED = false;
+    private static final boolean DEFAULT_UNREAD_MESSAGES_ALERT_ENABLED = true;
+    private static final boolean DEFAULT_WELCOME_MESSAGE_ENABLED = true;
+    private static final boolean DEFAULT_QUOTES_ENABLED = false;
+    private static final boolean DEFAULT_ATTACHMENTS_ENABLED = true;
+    private static final int DEFAULT_MAX_ATTACHMENT_STACK_SIZE = 64;
 
     private static final String USAGE_REPORTING_ENABLED_KEY = "usage-reporting.enabled";
     private static final String USAGE_REPORTING_ENDPOINT_KEY = "usage-reporting.endpoint";
@@ -45,37 +57,102 @@ public class ConfigService {
 
         // save config options
         if (!getConfig().isSet("debugMode")) {
-            getConfig().set("debugMode", false);
+            getConfig().set("debugMode", DEFAULT_DEBUG_MODE);
         }
         if (!getConfig().isSet("maxMessageIDNumber")) {
-            getConfig().set("maxMessageIDNumber", 10000);
+            getConfig().set("maxMessageIDNumber", DEFAULT_MAX_MESSAGE_ID_NUMBER);
         }
         if (!getConfig().isSet("maxMailboxIDNumber")) {
-            getConfig().set("maxMailboxIDNumber", 10000);
+            getConfig().set("maxMailboxIDNumber", DEFAULT_MAX_MAILBOX_ID_NUMBER);
         }
         if (!getConfig().isSet("preventSendingMessagesToSelf")) {
-            getConfig().set("preventSendingMessagesToSelf", true);
+            getConfig().set("preventSendingMessagesToSelf", DEFAULT_PREVENT_SENDING_MESSAGES_TO_SELF);
         }
         if (!getConfig().isSet("assignmentAlertEnabled")) {
-            getConfig().set("assignmentAlertEnabled", false);
+            getConfig().set("assignmentAlertEnabled", DEFAULT_ASSIGNMENT_ALERT_ENABLED);
         }
         if (!getConfig().isSet("unreadMessagesAlertEnabled")) {
-            getConfig().set("unreadMessagesAlertEnabled", true);
+            getConfig().set("unreadMessagesAlertEnabled", DEFAULT_UNREAD_MESSAGES_ALERT_ENABLED);
         }
         if (!getConfig().isSet("welcomeMessageEnabled")) {
-            getConfig().set("welcomeMessageEnabled", true);
+            getConfig().set("welcomeMessageEnabled", DEFAULT_WELCOME_MESSAGE_ENABLED);
         }
         if (!getConfig().isSet("quotesEnabled")) {
-            getConfig().set("quotesEnabled", false);
+            getConfig().set("quotesEnabled", DEFAULT_QUOTES_ENABLED);
         }
         if (!getConfig().isSet("attachmentsEnabled")) {
-            getConfig().set("attachmentsEnabled", true);
+            getConfig().set("attachmentsEnabled", DEFAULT_ATTACHMENTS_ENABLED);
         }
         if (!getConfig().isSet("maxAttachmentStackSize")) {
-            getConfig().set("maxAttachmentStackSize", 64);
+            getConfig().set("maxAttachmentStackSize", DEFAULT_MAX_ATTACHMENT_STACK_SIZE);
         }
         getConfig().options().copyDefaults(true);
         saveConfig();
+    }
+
+    /**
+     * Range-checks the values loaded from config.yml and replaces each unusable one with its
+     * default, logging a warning that names the option and both values.
+     *
+     * Only {@link #setConfigOption} used to be validated, so a config.yml edited by hand (or
+     * written before that validation existed) could still hold {@code maxMessageIDNumber: 0},
+     * which throws out of {@code Random.nextInt} on the first attempt to create a message. A
+     * value the file cannot be read as an integer lands in the same place, because
+     * {@code FileConfiguration.getInt} returns zero for it. Startup is where this is checked,
+     * because a console warning at boot names the cause where a stack trace on the first
+     * {@code /m send} does not.
+     *
+     * This runs on every enable, not only when the defaults are written, because the defaults
+     * are only written to a file that is absent or out of date.
+     */
+    public void replaceUnusableConfigValues() {
+        boolean replaced = false;
+        replaced |= replaceUnusableIntegerValue("maxMessageIDNumber", DEFAULT_MAX_MESSAGE_ID_NUMBER);
+        replaced |= replaceUnusableIntegerValue("maxMailboxIDNumber", DEFAULT_MAX_MAILBOX_ID_NUMBER);
+        replaced |= replaceUnusableIntegerValue("maxAttachmentStackSize", DEFAULT_MAX_ATTACHMENT_STACK_SIZE);
+        replaced |= replaceUnusableBooleanValue("debugMode", DEFAULT_DEBUG_MODE);
+        replaced |= replaceUnusableBooleanValue("preventSendingMessagesToSelf", DEFAULT_PREVENT_SENDING_MESSAGES_TO_SELF);
+        replaced |= replaceUnusableBooleanValue("assignmentAlertEnabled", DEFAULT_ASSIGNMENT_ALERT_ENABLED);
+        replaced |= replaceUnusableBooleanValue("unreadMessagesAlertEnabled", DEFAULT_UNREAD_MESSAGES_ALERT_ENABLED);
+        replaced |= replaceUnusableBooleanValue("welcomeMessageEnabled", DEFAULT_WELCOME_MESSAGE_ENABLED);
+        replaced |= replaceUnusableBooleanValue("quotesEnabled", DEFAULT_QUOTES_ENABLED);
+        replaced |= replaceUnusableBooleanValue("attachmentsEnabled", DEFAULT_ATTACHMENTS_ENABLED);
+        if (replaced) {
+            saveConfig();
+        }
+    }
+
+    /**
+     * @return true if the option held a value that is not an integer, or one below
+     *         {@link #MINIMUM_INTEGER_OPTION_VALUE}, and was replaced with its default
+     */
+    private boolean replaceUnusableIntegerValue(String option, int defaultValue) {
+        if (!getConfig().isSet(option)) {
+            return false;
+        }
+        if (getConfig().isInt(option) && getConfig().getInt(option) >= MINIMUM_INTEGER_OPTION_VALUE) {
+            return false;
+        }
+        Object loadedValue = getConfig().get(option);
+        getConfig().set(option, defaultValue);
+        logWarning(option + " is set to " + loadedValue + " in config.yml, which is not a whole number of at least "
+                + MINIMUM_INTEGER_OPTION_VALUE + "; the default of " + defaultValue + " has been used instead.");
+        return true;
+    }
+
+    /**
+     * @return true if the option held a value that is not a boolean and was replaced with its
+     *         default
+     */
+    private boolean replaceUnusableBooleanValue(String option, boolean defaultValue) {
+        if (!getConfig().isSet(option) || getConfig().isBoolean(option)) {
+            return false;
+        }
+        Object loadedValue = getConfig().get(option);
+        getConfig().set(option, defaultValue);
+        logWarning(option + " is set to " + loadedValue + " in config.yml, which is not true or false; the default of "
+                + defaultValue + " has been used instead.");
+        return true;
     }
 
     public void setConfigOption(String option, String value, CommandSender sender) {
@@ -101,7 +178,11 @@ public class ConfigService {
                     || option.equalsIgnoreCase("welcomeMessageEnabled")
                     || option.equalsIgnoreCase("quotesEnabled")
                     || option.equalsIgnoreCase("attachmentsEnabled")) {
-                getConfig().set(option, Boolean.parseBoolean(value));
+                Boolean parsedValue = parseBooleanOptionValue(option, value, sender);
+                if (parsedValue == null) {
+                    return;
+                }
+                getConfig().set(option, parsedValue);
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
             } else if (option.equalsIgnoreCase("")) {
                 getConfig().set(option, Double.parseDouble(value)); // no doubles yet
@@ -145,6 +226,29 @@ public class ConfigService {
         return parsedValue;
     }
 
+    /**
+     * Parses the value given for a boolean config option, accepting only {@code true} and
+     * {@code false} in any case.
+     *
+     * {@code Boolean.parseBoolean} used to be called directly, and it returns false for every
+     * string other than "true", so {@code yes}, {@code 1} and a typo of {@code true} were all
+     * stored as false under a "Boolean set." success message. Tab completion offers only
+     * {@code true} and {@code false}, which is the accepted set.
+     *
+     * @return the parsed value, or null if it was rejected — in which case the sender has
+     *         already been told why and the option must be left unchanged
+     */
+    private Boolean parseBooleanOptionValue(String option, String value, CommandSender sender) {
+        if (value.equalsIgnoreCase("true")) {
+            return true;
+        }
+        if (value.equalsIgnoreCase("false")) {
+            return false;
+        }
+        sender.sendMessage(ChatColor.RED + "The value given for " + option + " must be true or false.");
+        return null;
+    }
+
     public void sendConfigList(CommandSender sender) {
         sender.sendMessage(ChatColor.AQUA + "=== Config List ===");
         sender.sendMessage(ChatColor.AQUA + "version: " + getConfig().getString("version")
@@ -174,6 +278,15 @@ public class ConfigService {
      */
     void saveConfig() {
         mailboxes.saveConfig();
+    }
+
+    /**
+     * Warns on the server console regardless of debug mode. The plugin's own {@code Logger} is
+     * constructed after this service and gates everything but errors behind debug mode, so the
+     * server logger is used directly; kept as a seam for the same reason as {@link #saveConfig()}.
+     */
+    void logWarning(String message) {
+        mailboxes.getLogger().warning(message);
     }
 
     public int getInt(String option) {

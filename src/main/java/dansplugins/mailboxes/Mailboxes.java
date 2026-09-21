@@ -68,6 +68,11 @@ public final class Mailboxes extends JavaPlugin {
         // should the generated file ever stop being written first.
         saveDefaultConfig();
 
+        // A hand-edited config.yml is read as-is by the block above, so an unusable value (a
+        // maxMessageIDNumber of 0, say) is caught here, on every enable, rather than on the
+        // first /m send.
+        configService.replaceUnusableConfigValues();
+
         storageService.load();
 
         eventRegistry.registerEvents();

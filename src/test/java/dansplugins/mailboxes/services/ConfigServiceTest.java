@@ -7,6 +7,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -20,10 +23,13 @@ public class ConfigServiceTest {
 
     private ConfigService configService;
 
+    private final List<String> warnings = new ArrayList<>();
+    private int saveCount = 0;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        // Mailboxes is final and so cannot be mocked; the two members ConfigService reads from it
+        // Mailboxes is final and so cannot be mocked; the members ConfigService reads from it
         // are overridden here so that a config change can be exercised without a live plugin.
         configService = new ConfigService(null) {
             @Override
@@ -33,8 +39,45 @@ public class ConfigServiceTest {
 
             @Override
             void saveConfig() {
+                saveCount++;
+            }
+
+            @Override
+            void logWarning(String message) {
+                warnings.add(message);
             }
         };
+    }
+
+    /** Stubs the mock to hold an integer for the option, as YamlConfiguration would after loading it. */
+    private void givenLoadedInteger(String option, int value) {
+        when(config.isSet(option)).thenReturn(true);
+        when(config.isInt(option)).thenReturn(true);
+        when(config.getInt(option)).thenReturn(value);
+        when(config.get(option)).thenReturn(value);
+    }
+
+    /** Stubs the mock to hold a value that is not an integer for the option (a string, say). */
+    private void givenLoadedNonInteger(String option, Object value) {
+        when(config.isSet(option)).thenReturn(true);
+        when(config.isInt(option)).thenReturn(false);
+        // FileConfiguration.getInt returns 0 for a value it cannot coerce, which is the value
+        // that reaches Random.nextInt if the option is not caught here.
+        when(config.getInt(option)).thenReturn(0);
+        when(config.get(option)).thenReturn(value);
+    }
+
+    private void givenLoadedBoolean(String option, boolean value) {
+        when(config.isSet(option)).thenReturn(true);
+        when(config.isBoolean(option)).thenReturn(true);
+        when(config.getBoolean(option)).thenReturn(value);
+        when(config.get(option)).thenReturn(value);
+    }
+
+    private void givenLoadedNonBoolean(String option, Object value) {
+        when(config.isSet(option)).thenReturn(true);
+        when(config.isBoolean(option)).thenReturn(false);
+        when(config.get(option)).thenReturn(value);
     }
 
     @Test
@@ -104,6 +147,159 @@ public class ConfigServiceTest {
 
         verify(config).set("debugMode", true);
         verify(sender).sendMessage(contains("Boolean set."));
+    }
+
+    @Test
+    public void testSetBooleanOptionStoresFalse() {
+        when(config.isSet("attachmentsEnabled")).thenReturn(true);
+
+        configService.setConfigOption("attachmentsEnabled", "false", sender);
+
+        verify(config).set("attachmentsEnabled", false);
+        verify(sender).sendMessage(contains("Boolean set."));
+        assertTrue(configService.hasBeenAltered());
+    }
+
+    @Test
+    public void testSetBooleanOptionAcceptsTrueInAnyCase() {
+        when(config.isSet("quotesEnabled")).thenReturn(true);
+
+        configService.setConfigOption("quotesEnabled", "TRUE", sender);
+
+        verify(config).set("quotesEnabled", true);
+        verify(sender).sendMessage(contains("Boolean set."));
+    }
+
+    @Test
+    public void testSetBooleanOptionRejectsYes() {
+        when(config.isSet("attachmentsEnabled")).thenReturn(true);
+
+        // Boolean.parseBoolean("yes") is false, so this used to disable attachments under a
+        // success message when the sender meant to enable them.
+        configService.setConfigOption("attachmentsEnabled", "yes", sender);
+
+        verify(config, never()).set(eq("attachmentsEnabled"), any());
+        verify(sender).sendMessage(contains("The value given for attachmentsEnabled must be true or false."));
+        verify(sender, never()).sendMessage(contains("Boolean set."));
+        assertFalse(configService.hasBeenAltered());
+    }
+
+    @Test
+    public void testSetBooleanOptionRejectsANumber() {
+        when(config.isSet("debugMode")).thenReturn(true);
+
+        configService.setConfigOption("debugMode", "1", sender);
+
+        verify(config, never()).set(eq("debugMode"), any());
+        verify(sender).sendMessage(contains("The value given for debugMode must be true or false."));
+        assertFalse(configService.hasBeenAltered());
+    }
+
+    @Test
+    public void testSetBooleanOptionRejectsAMisspelling() {
+        when(config.isSet("quotesEnabled")).thenReturn(true);
+
+        configService.setConfigOption("quotesEnabled", "ture", sender);
+
+        verify(config, never()).set(eq("quotesEnabled"), any());
+        verify(sender).sendMessage(contains("The value given for quotesEnabled must be true or false."));
+        assertFalse(configService.hasBeenAltered());
+    }
+
+    // Values loaded from config.yml are checked on every enable, because the /m config set
+    // validation above cannot reach a file edited by hand or written before it existed.
+
+    @Test
+    public void testReplaceUnusableConfigValuesLeavesUsableValuesAlone() {
+        givenLoadedInteger("maxMessageIDNumber", 10000);
+        givenLoadedInteger("maxMailboxIDNumber", 1);
+        givenLoadedInteger("maxAttachmentStackSize", 64);
+        givenLoadedBoolean("debugMode", true);
+        givenLoadedBoolean("attachmentsEnabled", false);
+
+        configService.replaceUnusableConfigValues();
+
+        verify(config, never()).set(anyString(), any());
+        assertTrue(warnings.isEmpty());
+        assertEquals(0, saveCount);
+    }
+
+    @Test
+    public void testReplaceUnusableConfigValuesSkipsAbsentOptions() {
+        // Nothing is stubbed, so every isSet call answers false: a file the defaults have not
+        // yet been written to is not the concern of this check.
+        configService.replaceUnusableConfigValues();
+
+        verify(config, never()).set(anyString(), any());
+        assertTrue(warnings.isEmpty());
+        assertEquals(0, saveCount);
+    }
+
+    @Test
+    public void testReplaceUnusableConfigValuesReplacesAZeroMaxMessageIDNumber() {
+        // The value that makes every message creation throw out of Random.nextInt.
+        givenLoadedInteger("maxMessageIDNumber", 0);
+
+        configService.replaceUnusableConfigValues();
+
+        verify(config).set("maxMessageIDNumber", 10000);
+        assertEquals(1, warnings.size());
+        assertTrue(warnings.get(0), warnings.get(0).contains("maxMessageIDNumber is set to 0 in config.yml"));
+        assertTrue(warnings.get(0), warnings.get(0).contains("the default of 10000 has been used instead"));
+        assertEquals(1, saveCount);
+    }
+
+    @Test
+    public void testReplaceUnusableConfigValuesReplacesANegativeMaxMailboxIDNumber() {
+        givenLoadedInteger("maxMailboxIDNumber", -5);
+
+        configService.replaceUnusableConfigValues();
+
+        verify(config).set("maxMailboxIDNumber", 10000);
+        assertEquals(1, warnings.size());
+        assertTrue(warnings.get(0), warnings.get(0).contains("maxMailboxIDNumber is set to -5 in config.yml"));
+    }
+
+    @Test
+    public void testReplaceUnusableConfigValuesReplacesANonIntegerMaxAttachmentStackSize() {
+        givenLoadedNonInteger("maxAttachmentStackSize", "sixty-four");
+
+        configService.replaceUnusableConfigValues();
+
+        verify(config).set("maxAttachmentStackSize", 64);
+        assertEquals(1, warnings.size());
+        assertTrue(warnings.get(0), warnings.get(0).contains("maxAttachmentStackSize is set to sixty-four in config.yml"));
+        assertTrue(warnings.get(0), warnings.get(0).contains("the default of 64 has been used instead"));
+    }
+
+    @Test
+    public void testReplaceUnusableConfigValuesReplacesANonBooleanOption() {
+        givenLoadedNonBoolean("attachmentsEnabled", "yes please");
+
+        configService.replaceUnusableConfigValues();
+
+        verify(config).set("attachmentsEnabled", true);
+        assertEquals(1, warnings.size());
+        assertTrue(warnings.get(0), warnings.get(0).contains("attachmentsEnabled is set to yes please in config.yml"));
+        assertTrue(warnings.get(0), warnings.get(0).contains("the default of true has been used instead"));
+        assertEquals(1, saveCount);
+    }
+
+    @Test
+    public void testReplaceUnusableConfigValuesReportsEveryUnusableValueAndSavesOnce() {
+        givenLoadedInteger("maxMessageIDNumber", 0);
+        givenLoadedNonInteger("maxMailboxIDNumber", 2.5);
+        givenLoadedInteger("maxAttachmentStackSize", 64);
+        givenLoadedNonBoolean("debugMode", "on");
+
+        configService.replaceUnusableConfigValues();
+
+        verify(config).set("maxMessageIDNumber", 10000);
+        verify(config).set("maxMailboxIDNumber", 10000);
+        verify(config, never()).set(eq("maxAttachmentStackSize"), any());
+        verify(config).set("debugMode", false);
+        assertEquals(3, warnings.size());
+        assertEquals(1, saveCount);
     }
 
     @Test
