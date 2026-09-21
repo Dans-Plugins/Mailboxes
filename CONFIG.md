@@ -2,7 +2,9 @@
 
 Configuration can be viewed and changed in-game with `/m config show` and `/m config set <option> <value>`. A `config.yml` is generated in `plugins/Mailboxes/` on first run.
 
-Integer options are validated before being stored: a value that is not a whole number, or one below `1`, is rejected with an explanation and the option is left unchanged. Values in `config.yml` are not validated — a `config.yml` edited by hand is read as-is.
+Values given to `/m config set` are validated before being stored: an integer option rejects a value that is not a whole number or one below `1`, and a boolean option rejects anything other than `true` or `false` (in any case). A rejected value is answered with an explanation and the option is left unchanged.
+
+Values in `config.yml` are checked each time the plugin is enabled. An integer option holding a value that is not a whole number of at least `1`, or a boolean option holding a value that is not `true` or `false`, is replaced by its default, a warning naming the option and both values is printed to the console, and the corrected file is saved. The `version` and `usage-reporting` options are not checked.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
