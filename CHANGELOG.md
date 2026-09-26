@@ -10,10 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Unusable values in `config.yml` are now replaced by their defaults when the plugin is enabled, with a console warning naming the option, the value found, and the default used. An integer option holding a value that is not a whole number of at least `1`, or a boolean option holding a value that is not `true` or `false`, was previously read as-is: a hand-edited `maxMessageIDNumber: 0` (or a file written before `/m config set` validated it) made every attempt to create a message throw out of `Random.nextInt`, with nothing on the console pointing at the configuration as the cause
 - `/m config set` now rejects a value for a boolean option that is not `true` or `false`. Any other value — `yes`, `1`, a misspelling of `true` — was accepted, stored as `false`, and reported as `Boolean set.`, so an operator meaning to enable an option was told the change succeeded while the opposite was written; for `attachmentsEnabled` that silently disabled item attachments. Such a value is now refused with an explanation and the option is left unchanged
-
-### Changed
-
-- The dependency examples in `API.md` now reference the `1.4.0` release instead of the `2.0.0-SNAPSHOT-8-8-2026` snapshot
+- Dependency examples in `API.md` still pinned to the `2.0.0-SNAPSHOT-8-8-2026` snapshot rather than the `1.4.0` release
 
 ## [1.4.0] – 2026-09-19
 
