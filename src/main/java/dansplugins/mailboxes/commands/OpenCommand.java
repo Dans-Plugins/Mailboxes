@@ -38,7 +38,13 @@ public class OpenCommand {
             return false;
         }
 
-        int ID = Integer.parseInt(args[0]); // TODO: handle error
+        int ID;
+        try {
+            ID = Integer.parseInt(args[0]);
+        } catch (NumberFormatException e) {
+            player.sendMessage(ChatColor.RED + "Invalid message ID: " + args[0]);
+            return false;
+        }
 
         Mailbox mailbox = persistentData.getMailbox(player);
 
