@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The vendored trace client is now 0.3.0: `plugins/trace/config.yml` can carry a `tags:` block whose entries are added to every event reported by every plugin on the server (the release gates write `ci: "true"` there so that test-server boots are left out of real-installation figures). Nothing changes for a server without a `tags:` block. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.3.0
+
 ### Fixed
 
 - Unusable values in `config.yml` are now replaced by their defaults when the plugin is enabled, with a console warning naming the option, the value found, and the default used. An integer option holding a value that is not a whole number of at least `1`, or a boolean option holding a value that is not `true` or `false`, was previously read as-is: a hand-edited `maxMessageIDNumber: 0` (or a file written before `/m config set` validated it) made every attempt to create a message throw out of `Random.nextInt`, with nothing on the console pointing at the configuration as the cause
