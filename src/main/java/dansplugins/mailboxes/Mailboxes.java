@@ -81,7 +81,7 @@ public final class Mailboxes extends JavaPlugin {
 
         // usage reporting: one event now, one per command; see config.yml. The server-wide
         // switch in plugins/trace/config.yml is created if absent and honoured.
-        trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName())
+        trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName(), getDescription().getVersion())
                 .key(configService.getUsageReportingKey())
                 .enabled(configService.isUsageReportingEnabled())
                 .serverWideConfig(getDataFolder().getParentFile())
@@ -96,7 +96,7 @@ public final class Mailboxes extends JavaPlugin {
         } else {
             getLogger().info("Usage reporting is off (" + trace.disabledReason() + ").");
         }
-        trace.report("startup", null, Collections.singletonMap("version", getDescription().getVersion()));
+        trace.report("startup");
     }
 
     @Override
