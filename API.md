@@ -227,7 +227,7 @@ Retrieves a player's mailbox.
 **Parameters:**
 - `player` (Player) - The player whose mailbox to retrieve
 
-**Returns:** `M_Mailbox` - The player's mailbox wrapper object. A wrapper is **always** returned, even for a player who has not been assigned a mailbox yet; in that case the wrapper holds `null` and calling any of its methods throws a `NullPointerException`. Mailboxes are assigned on join, so this only affects players who have never joined the server.
+**Returns:** `M_Mailbox` - The player's mailbox wrapper object. A wrapper is **always** returned, even for a player who has not been assigned a mailbox yet; in that case the wrapper holds `null` and calling any of its methods throws a `NullPointerException`. Mailboxes are assigned on join, so this only affects players who have never joined the server, or who joined while every mailbox ID up to `maxMailboxIDNumber` was in use.
 
 **Example:**
 ```java
