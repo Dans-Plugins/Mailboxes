@@ -121,6 +121,23 @@ public class MailboxServiceTest {
     }
 
     @Test
+    public void testAssignMailboxStoresNothingWhenNoMailboxCanBeCreated() {
+        // Given every mailbox ID is in use, so the factory refuses to create a mailbox
+        when(persistentData.getMailbox(playerUUID)).thenReturn(null);
+        when(mailboxFactory.createMailbox(player)).thenReturn(null);
+        when(configService.getBoolean("assignmentAlertEnabled")).thenReturn(true);
+        when(configService.getBoolean("welcomeMessageEnabled")).thenReturn(true);
+
+        // When assignment is attempted
+        mailboxService.assignMailboxToPlayerIfNecessary(player);
+
+        // Then nothing is stored, no welcome message is sent, and the player is told why
+        verify(persistentData, never()).addMailbox(any());
+        verifyNoInteractions(mailService);
+        verify(player).sendMessage(ChatColor.RED + "A mailbox couldn't be assigned to you. Please let a server administrator know.");
+    }
+
+    @Test
     public void testUnreadAlertDoesNothingWhenDisabled() {
         // Given the unread-messages alert is disabled
         when(configService.getBoolean("unreadMessagesAlertEnabled")).thenReturn(false);

@@ -30,6 +30,10 @@ public class MailboxService {
 
         // player doesn't have a mailbox
         Mailbox newMailbox = mailboxFactory.createMailbox(player);
+        if (newMailbox == null) {
+            player.sendMessage(ChatColor.RED + "A mailbox couldn't be assigned to you. Please let a server administrator know.");
+            return;
+        }
         persistentData.addMailbox(newMailbox);
         if (configService.getBoolean("assignmentAlertEnabled")) {
             player.sendMessage(ChatColor.AQUA + "You have been assigned a mailbox. Type /m help for help.");
