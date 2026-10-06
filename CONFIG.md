@@ -45,4 +45,4 @@ To turn it off, in order of precedence:
   is never turned back on by a plugin;
 - `usage-reporting.enabled: false` in this plugin's `config.yml` turns it off for Mailboxes alone.
 
-Details: https://github.com/Stephenson-Software/trace#usage-reporting
+Details: https://danielstephenson.dev/usage-reporting
