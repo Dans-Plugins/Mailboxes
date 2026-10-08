@@ -3,6 +3,8 @@ package dansplugins.mailboxes.externalapi;
 import dansplugins.mailboxes.Mailboxes;
 import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.factories.MessageFactory;
+import dansplugins.mailboxes.objects.Mailbox;
+import dansplugins.mailboxes.objects.Message;
 import dansplugins.mailboxes.objects.PluginMessage;
 import dansplugins.mailboxes.services.MailService;
 import org.bukkit.entity.Player;
@@ -15,7 +17,7 @@ public class MailboxesAPI {
     private final MessageFactory messageFactory;
     private final MailService mailService;
 
-    private String APIVersion = "v0.0.3";
+    private String APIVersion = "v0.0.4";
 
     public MailboxesAPI(Mailboxes mailboxes, PersistentData persistentData, MessageFactory messageFactory, MailService mailService) {
         this.mailboxes = mailboxes;
@@ -33,11 +35,13 @@ public class MailboxesAPI {
     }
 
     public M_Mailbox getMailbox(Player player) {
-        return new M_Mailbox(persistentData.getMailbox(player));
+        Mailbox mailbox = persistentData.getMailbox(player);
+        return mailbox == null ? null : new M_Mailbox(mailbox);
     }
 
     public M_Message getMessage(int ID) {
-        return new M_Message(persistentData.getMessage(ID));
+        Message message = persistentData.getMessage(ID);
+        return message == null ? null : new M_Message(message);
     }
 
     public boolean sendPluginMessageToPlayer(String pluginName, Player player, String content) {
