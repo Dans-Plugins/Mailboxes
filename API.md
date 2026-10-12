@@ -153,7 +153,7 @@ The main API class providing methods to interact with the Mailboxes plugin.
 ##### `getAPIVersion()`
 Returns the current API version string.
 
-**Returns:** `String` - The API version (e.g., "v0.0.3")
+**Returns:** `String` - The API version (e.g., "v0.0.4")
 
 **Example:**
 ```java
@@ -227,16 +227,18 @@ Retrieves a player's mailbox.
 **Parameters:**
 - `player` (Player) - The player whose mailbox to retrieve
 
-**Returns:** `M_Mailbox` - The player's mailbox wrapper object. A wrapper is **always** returned, even for a player who has not been assigned a mailbox yet; in that case the wrapper holds `null` and calling any of its methods throws a `NullPointerException`. Mailboxes are assigned on join, so this only affects players who have never joined the server, or who joined while every mailbox ID up to `maxMailboxIDNumber` was in use.
+**Returns:** `M_Mailbox` - The player's mailbox wrapper object, or `null` if the player has not been assigned a mailbox. Mailboxes are assigned on join, so `null` is only returned for players who have never joined the server, or who joined while every mailbox ID up to `maxMailboxIDNumber` was in use.
 
 **Example:**
 ```java
 Player player = Bukkit.getPlayer("Steve");
 if (player != null) {
     M_Mailbox mailbox = mailboxesAPI.getMailbox(player);
-    ArrayList<Message> activeMessages = mailbox.getActiveMessages();
-    
-    player.sendMessage("You have " + activeMessages.size() + " active messages.");
+    if (mailbox != null) {
+        ArrayList<Message> activeMessages = mailbox.getActiveMessages();
+
+        player.sendMessage("You have " + activeMessages.size() + " active messages.");
+    }
 }
 ```
 
@@ -246,19 +248,14 @@ Retrieves a specific message by its ID. Only **active** (unarchived) messages ac
 **Parameters:**
 - `ID` (int) - The unique ID of the message
 
-**Returns:** `M_Message` - The message wrapper object. A wrapper is **always** returned, even when no message with that ID exists; in that case the wrapper holds `null` and calling any of its methods throws a `NullPointerException`. A `null` check on the returned wrapper therefore never fires. To test whether a message exists, look it up through the owning mailbox instead: `M_Mailbox.getActiveMessage(int)` and `M_Mailbox.getArchivedMessage(int)` do return `null` when no such message is present.
+**Returns:** `M_Message` - The message wrapper object, or `null` if no active message with that ID exists.
 
 **Example:**
 ```java
-// Safe when the ID is known to belong to an active message
 M_Message message = mailboxesAPI.getMessage(123);
-String content = message.getContent();
-String sender = message.getSender();
-
-// Safe when the message may not exist
-Message maybeMessage = mailboxesAPI.getMailbox(player).getActiveMessage(123);
-if (maybeMessage != null) {
-    String otherContent = maybeMessage.getContent();
+if (message != null) {
+    String content = message.getContent();
+    String sender = message.getSender();
 }
 ```
 
@@ -458,6 +455,8 @@ public void checkPlayerMessages(Player player) {
     if (mailboxesAPI == null) return;
     
     M_Mailbox mailbox = mailboxesAPI.getMailbox(player);
+    if (mailbox == null) return;
+
     ArrayList<Message> messages = mailbox.getActiveMessages();
     
     int messageCount = messages.size();
@@ -749,7 +748,9 @@ For additional help:
 
 ## Version History
 
-- **v0.0.3** - Current API version
+- **v0.0.4** - Current API version
+  - `getMailbox(Player)` and `getMessage(int)` return `null` when nothing is found, instead of a wrapper around `null`
+- **v0.0.3**
   - Support for plugin messages with UUID
   - Access to mailboxes and messages
   - Attachment support in messages
