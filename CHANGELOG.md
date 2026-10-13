@@ -6,15 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `MailboxesAPI.getMailbox(Player)` and `MailboxesAPI.getMessage(int)` now return `null` when the player has no mailbox or no active message has that ID. A wrapper around `null` was returned instead, so a `null` check by the calling plugin never fired and the failure surfaced later as a `NullPointerException` from whichever wrapper method was called first. This changes the return value callers see for a failed lookup, so the API version is now `v0.0.4`
+- `CHANGELOG.md` had no `[1.5.0]` or `[1.5.1]` section although both versions were published; their entries sat under Unreleased
+- Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.4.0` and `1.3.0` respectively rather than the `1.5.1` release
+- The README's Usage, bug-report, Roadmap and developer-notes links pointed at wiki pages on the old `dmccoystephenson/Mailboxes` repository, several marked "coming soon"; they now point at the guides in this repository and at its issue tracker
+
+## [1.5.1] – 2026-10-07
+
 ### Changed
 
 - The usage-reporting "Details" link (startup notice, `config.yml` and the docs) now points at https://danielstephenson.dev/usage-reporting, a public page; the previous link led to a private repository and returned 404 for everyone. The vendored trace client is now 0.6.1, which carries the same link in the `plugins/trace/config.yml` header it writes. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.6.1.
+
+## [1.5.0] – 2026-10-06
+
+### Changed
+
 - The vendored trace client is now 0.4.0, and every usage event now carries the plugin version, `command` events included; before, only `startup` did.
 - The vendored trace client is now 0.3.0: `plugins/trace/config.yml` can carry a `tags:` block whose entries are added to every event reported by every plugin on the server (the release gates write `ci: "true"` there so that test-server boots are left out of real-installation figures). Nothing changes for a server without a `tags:` block. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.3.0
 
 ### Fixed
 
-- `MailboxesAPI.getMailbox(Player)` and `MailboxesAPI.getMessage(int)` now return `null` when the player has no mailbox or no active message has that ID. A wrapper around `null` was returned instead, so a `null` check by the calling plugin never fired and the failure surfaced later as a `NullPointerException` from whichever wrapper method was called first. This changes the return value callers see for a failed lookup, so the API version is now `v0.0.4`
 - Unusable values in `config.yml` are now replaced by their defaults when the plugin is enabled, with a console warning naming the option, the value found, and the default used. An integer option holding a value that is not a whole number of at least `1`, or a boolean option holding a value that is not `true` or `false`, was previously read as-is: a hand-edited `maxMessageIDNumber: 0` (or a file written before `/m config set` validated it) made every attempt to create a message throw out of `Random.nextInt`, with nothing on the console pointing at the configuration as the cause
 - `/m config set` now rejects a value for a boolean option that is not `true` or `false`. Any other value — `yes`, `1`, a misspelling of `true` — was accepted, stored as `false`, and reported as `Boolean set.`, so an operator meaning to enable an option was told the change succeeded while the opposite was written; for `attachmentsEnabled` that silently disabled item attachments. Such a value is now refused with an explanation and the option is left unchanged
 - `/m open` with a message ID that is not a number (e.g. `/m open abc`) now replies `Invalid message ID: abc`, matching `/m delete` and `/m archive`. The argument was parsed without a guard, so the command threw a `NumberFormatException`: the player saw Bukkit's generic "An internal error occurred" and a stack trace was written to the console
