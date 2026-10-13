@@ -50,24 +50,25 @@ Mailboxes is part of the **medieval roleplay** set of Dan's Plugins. These plugi
 Every plugin above is listed on [dansplugins.com](https://dansplugins.com). Mailboxes is listed at [dansplugins.com/resources/mailboxes](https://dansplugins.com/resources/mailboxes) and can be installed in game with [Dan's Plugin Manager](https://github.com/Dans-Plugins/Dans-Plugin-Manager): `/dpm get mailboxes`.
 
 ## Usage
-- [User Guide](https://github.com/dmccoystephenson/Mailboxes/wiki/Guide) (coming soon)
-- [List of Commands](https://github.com/dmccoystephenson/Mailboxes/wiki/Commands)
-- [FAQ](https://github.com/dmccoystephenson/Mailboxes/wiki/FAQ) (coming soon)
+- [User Guide](USER_GUIDE.md)
+- [List of Commands](COMMANDS.md)
+- [Configuration](CONFIG.md)
+- [Item Attachments](ATTACHMENTS.md)
 
 ## Support
 You can find the support discord server [here](https://discord.gg/xXtuAQ2).
 
 ### Experiencing a bug?
-Please fill out a bug report [here](https://github.com/dmccoystephenson/Mailboxes/issues?q=is%3Aissue+is%3Aopen+label%3Abug).
+Please open a bug report [here](https://github.com/Dans-Plugins/Mailboxes/issues/new).
 
 ## Roadmap
-- [Known Bugs](https://github.com/dmccoystephenson/Mailboxes/issues?q=is%3Aopen+is%3Aissue+label%3Abug)
-- [Planned Features](https://github.com/dmccoystephenson/Mailboxes/issues?q=is%3Aopen+is%3Aissue+label%3AEpic)
-- [Planned Improvements](https://github.com/dmccoystephenson/Mailboxes/issues?q=is%3Aopen+is%3Aissue+label%3Aimprovement)
+- [Known Bugs](https://github.com/Dans-Plugins/Mailboxes/issues?q=is%3Aopen+is%3Aissue+label%3Abug)
+- [Planned Features](https://github.com/Dans-Plugins/Mailboxes/issues?q=is%3Aopen+is%3Aissue+label%3AEpic)
+- [Planned Improvements](https://github.com/Dans-Plugins/Mailboxes/issues?q=is%3Aopen+is%3Aissue+label%3Aimprovement)
 
 ## Contributing
 - [API Documentation for Plugin Developers](API.md)
-- [Notes for Developers](https://github.com/dmccoystephenson/Mailboxes/wiki/Developer-Notes) (coming soon)
+- [Contributing Guide](CONTRIBUTING.md)
 
 ## Authors and acknowledgement
 Name | Main Contributions
