@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `/m config set` now refuses any key in `config.yml` that is not one of the settable options listed in `CONFIG.md`, replying `That config option can't be changed with /m config set.` Such a key used to be stored as a string under a `String set.` reply: `/m config set usage-reporting.enabled false` wrote the string `"false"`, which is not read as a boolean, so reporting stayed on although the change was reported as made, and `/m config set usage-reporting x` replaced the whole `usage-reporting` block with a string
+- `CHANGELOG.md` `[1.5.0]` had no entries for the supported-Minecraft-versions declaration, the random server ID added by trace client 0.5.0, the startup-notice wording that discloses it, or Minecraft 26.3 support
+
 - `MailboxesAPI.getMailbox(Player)` and `MailboxesAPI.getMessage(int)` now return `null` when the player has no mailbox or no active message has that ID. A wrapper around `null` was returned instead, so a `null` check by the calling plugin never fired and the failure surfaced later as a `NullPointerException` from whichever wrapper method was called first. This changes the return value callers see for a failed lookup, so the API version is now `v0.0.4`
 - `CHANGELOG.md` had no `[1.5.0]` or `[1.5.1]` section although both versions were published; their entries sat under Unreleased
 - Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.4.0` and `1.3.0` respectively rather than the `1.5.1` release
@@ -21,7 +24,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [1.5.0] – 2026-10-06
 
+### Added
+
+- Supported Minecraft versions are declared in `minecraft-versions.json`: 1.19.4, 1.21.11, 26.2 and 26.3. Every stable release is booted on a real server of each listed version before it is published, and every build runs the release-gates API-compatibility check, which fails the build if the jar uses a Bukkit class, field or method missing from any listed version or bytecode newer than that version's Java. The README has a *Supported Minecraft Versions* section
+- Minecraft 26.3 support: it was added to `minecraft-versions.json` after the current stable release passed the boot gate on a real 26.3 server
+
 ### Changed
+
+- The vendored trace client is now 0.5.0. The first time an enabled client starts, it appends a random `server-id` line to `plugins/trace/config.yml`, and every usage event carries that value as the `install` tag so that active servers can be counted. The ID identifies no person, account or IP address; deleting the line gets a new one, and every existing opt-out stops it. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.5.0
+- The startup notice, the default `config.yml` comment and `CONFIG.md` now mention the random server ID; they previously said nothing about the server was sent
 
 - The vendored trace client is now 0.4.0, and every usage event now carries the plugin version, `command` events included; before, only `startup` did.
 - The vendored trace client is now 0.3.0: `plugins/trace/config.yml` can carry a `tags:` block whose entries are added to every event reported by every plugin on the server (the release gates write `ci: "true"` there so that test-server boots are left out of real-installation figures). Nothing changes for a server without a `tags:` block. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.3.0

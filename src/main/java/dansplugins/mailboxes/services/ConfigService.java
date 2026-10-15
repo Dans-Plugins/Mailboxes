@@ -184,12 +184,13 @@ public class ConfigService {
                 }
                 getConfig().set(option, parsedValue);
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
-            } else if (option.equalsIgnoreCase("")) {
-                getConfig().set(option, Double.parseDouble(value)); // no doubles yet
-                sender.sendMessage(ChatColor.GREEN + "Double set.");
             } else {
-                getConfig().set(option, value);
-                sender.sendMessage(ChatColor.GREEN + "String set.");
+                // Any other key present in config.yml (the usage-reporting block, say) used to
+                // fall through to a generic string setter: "usage-reporting.enabled false" was
+                // stored as the string "false", which getBoolean does not read as false, and
+                // "usage-reporting" alone replaced the whole section with a string.
+                sender.sendMessage(ChatColor.RED + "That config option can't be changed with /m config set.");
+                return;
             }
 
             // save
