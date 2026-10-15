@@ -324,6 +324,31 @@ public class ConfigServiceTest {
         assertFalse(configService.hasBeenAltered());
     }
 
+    @Test
+    public void testSetUsageReportingEnabledIsRefused() {
+        // MemorySection resolves dotted paths, so the key is "set" in a loaded config.yml.
+        when(config.isSet("usage-reporting.enabled")).thenReturn(true);
+
+        configService.setConfigOption("usage-reporting.enabled", "false", sender);
+
+        verify(config, never()).set(eq("usage-reporting.enabled"), any());
+        verify(sender).sendMessage(contains("can't be changed with /m config set"));
+        assertEquals(0, saveCount);
+        assertFalse(configService.hasBeenAltered());
+    }
+
+    @Test
+    public void testSetUsageReportingSectionIsRefused() {
+        when(config.isSet("usage-reporting")).thenReturn(true);
+
+        configService.setConfigOption("usage-reporting", "x", sender);
+
+        verify(config, never()).set(eq("usage-reporting"), any());
+        verify(sender).sendMessage(contains("can't be changed with /m config set"));
+        assertEquals(0, saveCount);
+        assertFalse(configService.hasBeenAltered());
+    }
+
     // The usage-reporting getters must use the one-argument FileConfiguration
     // calls: a config.yml written before the block existed is never rewritten,
     // and only the one-argument getters fall through to the jar's bundled
