@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `CHANGELOG.md` had no `[1.5.0]` or `[1.5.1]` section although both versions were published; their entries sat under Unreleased
 - Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.4.0` and `1.3.0` respectively rather than the `1.5.1` release
 - The README's Usage, bug-report, Roadmap and developer-notes links pointed at wiki pages on the old `dmccoystephenson/Mailboxes` repository, several marked "coming soon"; they now point at the guides in this repository and at its issue tracker
+- `src/test/java/README.md` described only the pagination tests and named a `MailboxPaginationTest` class that does not exist; it now gives a per-package overview of the whole test suite
 
 ## [1.5.1] – 2026-10-07
 

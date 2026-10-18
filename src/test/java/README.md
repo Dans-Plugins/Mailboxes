@@ -1,41 +1,19 @@
-# Unit Tests for Pagination Feature
+# Unit Tests
 
-This directory contains unit tests for the pagination system implemented for the `/m list` command.
+This directory contains the plugin's JUnit test suite. Test classes mirror the package of the class they cover under `src/test/java/dansplugins/mailboxes/`.
 
 ## Test Coverage
 
-### ListCommandTest
-Tests the command parsing and execution logic for the ListCommand class:
-
-- **testExecuteWithNonPlayerSender**: Verifies that non-player senders cannot use the command
-- **testExecuteWithNoMailbox**: Verifies proper error handling when player has no mailbox
-- **testExecuteWithNoArgsDefaultsToActivePage1**: Verifies default behavior (active messages, page 1)
-- **testExecuteWithActiveListType**: Verifies "active" list type navigation
-- **testExecuteWithArchivedListType**: Verifies "archived" list type navigation
-- **testExecuteWithUnreadListType**: Verifies "unread" list type navigation
-- **testExecuteWithPageNumber**: Verifies page number parsing and navigation
-- **testExecuteWithInvalidPageNumber**: Verifies error handling for non-numeric page numbers
-- **testExecuteWithNegativePageNumber**: Verifies error handling for page numbers < 1
-- **testExecuteWithInvalidListType**: Verifies error handling for invalid list types
-- **testGetTabCompletionsForListType**: Verifies tab completion filtering
-- **testGetTabCompletionsReturnsAllTypesOnEmpty**: Verifies tab completion with empty input
-- **testGetTabCompletionsForOtherArguments**: Verifies tab completion for other arguments
-
-### MailboxPaginationTest
-Tests the pagination logic and message display for the Mailbox class:
-
-- **testEmptyActiveMessagesShowsAppropriateMessage**: Verifies message for empty mailbox
-- **testEmptyActiveMessagesWithHighPageShowsError**: Verifies error for high page on empty mailbox
-- **testSinglePageOfMessages**: Verifies display when all messages fit on one page
-- **testMultiplePagesShowsNavigation**: Verifies navigation links appear for multiple pages
-- **testPageBoundaryCalculation**: Verifies correct page boundaries for middle pages
-- **testLastPageWithPartialMessages**: Verifies correct display for last page with fewer messages
-- **testInvalidPageNumberTooHigh**: Verifies error handling for page numbers exceeding total pages
-- **testInvalidPageNumberNegative**: Verifies error handling for negative page numbers
-- **testArchivedMessagesPagination**: Verifies pagination works for archived messages
-- **testUnreadMessagesPagination**: Verifies pagination works for unread messages (cross-list)
-- **testPageSizeRespected**: Verifies custom page size is correctly applied
-- **testDefaultPageSizeUsedByOverloadedMethod**: Verifies default page size (10) is used by convenience methods
+| Package | Test classes | What they cover |
+|---------|--------------|-----------------|
+| `dansplugins.mailboxes` | `CommandInterpreterTest` | `/m` subcommand dispatch, per-subcommand permission checks and label/subcommand case handling |
+| `commands` | `ArchiveCommandTest`, `ConfigCommandTest`, `DeleteCommandTest`, `HelpCommandTest`, `ListCommandTest`, `OpenCommandTest`, `SendCommandTest`, `StatsCommandTest` | Argument handling and replies for each subcommand, plus tab completion for `list` and `open` |
+| `data` | `PersistentDataTest` | Message lookup and message-ID usage across every mailbox |
+| `externalapi` | `MailboxesAPITest` | The `MailboxesAPI` lookups other plugins call (see `API.md`) |
+| `factories` | `MailboxFactoryTest`, `MessageFactoryTest` | Mailbox and message creation, including free-ID selection when random IDs collide or run out |
+| `objects` | `MailboxTest` | Pagination of active, archived and unread message lists |
+| `services` | `ConfigServiceTest`, `MailboxServiceTest`, `MailServiceTest` | Config option validation and repair, mailbox assignment and alerts, and rejection of unsendable messages |
+| `utils` | `ArgumentParserTest`, `PermissionCheckerTest` | Argument dropping and quoted-argument parsing, and the missing-permission reply |
 
 ## Running the Tests
 
@@ -47,7 +25,7 @@ mvn test
 To run a specific test class:
 ```bash
 mvn test -Dtest=ListCommandTest
-mvn test -Dtest=MailboxPaginationTest
+mvn test -Dtest=MailboxTest
 ```
 
 To run a specific test method:
@@ -63,7 +41,5 @@ The tests use:
 
 ## Notes
 
-- Tests use Mockito to mock Bukkit/Spigot API objects (Player, CommandSender, etc.)
-- Tests verify both happy path and error handling scenarios
-- Tests ensure backward compatibility with existing command usage
-- Tests validate the clickable navigation components are being sent to players
+- Tests use Mockito to mock Bukkit/Spigot API objects (`Player`, `CommandSender`, etc.) and the plugin's own services, so no server is needed
+- New tests should follow the `@Mock` field setup used by sibling tests in the same package
