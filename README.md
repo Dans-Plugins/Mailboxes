@@ -1,5 +1,9 @@
 # Mailboxes
 
+![A new-mail notice, then /m open showing a message from another player with Archive and Delete actions](docs/images/reading-mail.png)
+
+*Real in-game output from Mailboxes 1.5.2 on a local throwaway Paper 1.21.11 test server: the commands were typed by a scripted bot client, and the chat it received is drawn as Minecraft-style chat (typed commands appear in the input bars; grey lines say what happened between commands).*
+
 ## Description
 Mailboxes is an open source plugin that allows players and plugins to send persistent messages to players. Players can also attach items to their messages, making it easy to transfer items securely through in-game mail.
 
