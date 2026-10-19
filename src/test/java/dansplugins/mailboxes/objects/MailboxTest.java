@@ -4,14 +4,17 @@ import dansplugins.mailboxes.services.ConfigService;
 import dansplugins.mailboxes.utils.Logger;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Date;
 import java.util.UUID;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class MailboxTest {
@@ -168,6 +171,35 @@ public class MailboxTest {
 
         // Then it should show page 1 with default page size (10)
         verify(player).sendMessage(contains("=== Active Messages (Page 1/2) ==="));
+    }
+
+    @Test
+    public void testLegendUsesAsciiAttachmentMarker() {
+        // Given a mailbox with one active message
+        mailbox.addActiveMessage(createMockMessage(1, "Sender1"));
+
+        // When displaying page 1
+        mailbox.sendListOfActiveMessagesToPlayer(player, 1, 10);
+
+        // Then the legend uses a marker the Minecraft chat font can render
+        verify(player).sendMessage(endsWith("D: date, S: sender, [A]: has attachments"));
+    }
+
+    @Test
+    public void testMessageWithAttachmentsIsMarkedWithAsciiMarker() {
+        // Given a mailbox with one active message that has an attachment
+        Message msg = createMockMessage(1, "Sender1");
+        msg.addAttachment(mock(ItemStack.class));
+        mailbox.addActiveMessage(msg);
+
+        // When displaying page 1
+        mailbox.sendListOfActiveMessagesToPlayer(player, 1, 10);
+
+        // Then the message info component ends with the ASCII attachment marker
+        ArgumentCaptor<BaseComponent> infoCaptor = ArgumentCaptor.forClass(BaseComponent.class);
+        verify(spigot).sendMessage(any(BaseComponent.class), any(BaseComponent.class), infoCaptor.capture());
+        String info = infoCaptor.getValue().toPlainText();
+        assertTrue(info, info.endsWith(" - S: Sender1 [A]"));
     }
 
     // Helper method to create mock messages
