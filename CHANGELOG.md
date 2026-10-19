@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `/m list` (and the archived/unread lists) marked messages that have attachments, and its legend, with a 📎 emoji that the Minecraft chat font cannot render, so players saw garbled characters. The marker is now `[A]`, and the legend reads `D: date, S: sender, [A]: has attachments`
 - `/m config set` now refuses any key in `config.yml` that is not one of the settable options listed in `CONFIG.md`, replying `That config option can't be changed with /m config set.` Such a key used to be stored as a string under a `String set.` reply: `/m config set usage-reporting.enabled false` wrote the string `"false"`, which is not read as a boolean, so reporting stayed on although the change was reported as made, and `/m config set usage-reporting x` replaced the whole `usage-reporting` block with a string
 - `CHANGELOG.md` `[1.5.0]` had no entries for the supported-Minecraft-versions declaration, the random server ID added by trace client 0.5.0, the startup-notice wording that discloses it, or Minecraft 26.3 support
 
