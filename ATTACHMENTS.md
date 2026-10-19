@@ -24,7 +24,7 @@ When you open a message with attachments:
 3. If your inventory is full, the items will remain attached to the message until you have space
 
 ### Viewing Messages with Attachments
-Messages with attachments are marked with a 📎 icon in the message list.
+Messages with attachments are marked with `[A]` in the message list.
 
 ## Configuration
 

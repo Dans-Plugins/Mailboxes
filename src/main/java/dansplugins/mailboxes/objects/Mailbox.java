@@ -207,7 +207,7 @@ public class Mailbox implements Savable {
         }
 
         player.sendMessage(ChatColor.AQUA + "=== " + listTitle + " (Page " + page + "/" + totalPages + ") ===");
-        player.sendMessage(ChatColor.AQUA + "D: date, S: sender, 📎: has attachments");
+        player.sendMessage(ChatColor.AQUA + "D: date, S: sender, [A]: has attachments");
 
         int startIndex = (page - 1) * pageSize;
         int endIndex = Math.min(startIndex + pageSize, messages.size());
@@ -227,7 +227,7 @@ public class Mailbox implements Savable {
             // Create non-clickable message info
             String messageInfo = " - D: " + dateFormat.format(message.getDate()) + " - S: " + message.getSender();
             if (message.hasAttachments()) {
-                messageInfo += " 📎";
+                messageInfo += " [A]";
             }
             
             TextComponent infoComponent = new TextComponent(messageInfo);
