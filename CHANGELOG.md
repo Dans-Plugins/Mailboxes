@@ -9,14 +9,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - `/m list` (and the archived/unread lists) marked messages that have attachments, and its legend, with a 📎 emoji that the Minecraft chat font cannot render, so players saw garbled characters. The marker is now `[A]`, and the legend reads `D: date, S: sender, [A]: has attachments`
+- `src/test/java/README.md` described only the pagination tests and named a `MailboxPaginationTest` class that does not exist; it now gives a per-package overview of the whole test suite
+- `CHANGELOG.md` had no `[1.5.2]` section although 1.5.2 was published; its entries sat under Unreleased. Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.5.1`, which predates the `null`-returning API lookups those docs describe; they now pin `1.5.2`
+
+## [1.5.2] – 2026-10-17
+
+### Fixed
+
 - `/m config set` now refuses any key in `config.yml` that is not one of the settable options listed in `CONFIG.md`, replying `That config option can't be changed with /m config set.` Such a key used to be stored as a string under a `String set.` reply: `/m config set usage-reporting.enabled false` wrote the string `"false"`, which is not read as a boolean, so reporting stayed on although the change was reported as made, and `/m config set usage-reporting x` replaced the whole `usage-reporting` block with a string
 - `CHANGELOG.md` `[1.5.0]` had no entries for the supported-Minecraft-versions declaration, the random server ID added by trace client 0.5.0, the startup-notice wording that discloses it, or Minecraft 26.3 support
-
 - `MailboxesAPI.getMailbox(Player)` and `MailboxesAPI.getMessage(int)` now return `null` when the player has no mailbox or no active message has that ID. A wrapper around `null` was returned instead, so a `null` check by the calling plugin never fired and the failure surfaced later as a `NullPointerException` from whichever wrapper method was called first. This changes the return value callers see for a failed lookup, so the API version is now `v0.0.4`
 - `CHANGELOG.md` had no `[1.5.0]` or `[1.5.1]` section although both versions were published; their entries sat under Unreleased
 - Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.4.0` and `1.3.0` respectively rather than the `1.5.1` release
 - The README's Usage, bug-report, Roadmap and developer-notes links pointed at wiki pages on the old `dmccoystephenson/Mailboxes` repository, several marked "coming soon"; they now point at the guides in this repository and at its issue tracker
-- `src/test/java/README.md` described only the pagination tests and named a `MailboxPaginationTest` class that does not exist; it now gives a per-package overview of the whole test suite
 
 ## [1.5.1] – 2026-10-07
 
