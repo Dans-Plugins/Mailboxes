@@ -11,7 +11,7 @@ This directory contains the plugin's JUnit test suite. Test classes mirror the p
 | `data` | `PersistentDataTest` | Message lookup and message-ID usage across every mailbox |
 | `externalapi` | `MailboxesAPITest` | The `MailboxesAPI` lookups other plugins call (see `API.md`) |
 | `factories` | `MailboxFactoryTest`, `MessageFactoryTest` | Mailbox and message creation, including free-ID selection when random IDs collide or run out |
-| `objects` | `MailboxTest` | Pagination of active, archived and unread message lists |
+| `objects` | `MailboxTest`, `MessageTest` | Pagination of active, archived and unread message lists; message save/load round trips (including `PlayerMessage` and `PluginMessage` UUIDs), attachment accessors, and the `/m open` message display with its action buttons |
 | `services` | `ConfigServiceTest`, `MailboxServiceTest`, `MailServiceTest` | Config option validation and repair, mailbox assignment and alerts, and rejection of unsendable messages |
 | `utils` | `ArgumentParserTest`, `PermissionCheckerTest` | Argument dropping and quoted-argument parsing, and the missing-permission reply |
 
