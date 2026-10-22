@@ -9,7 +9,7 @@ This directory contains the plugin's JUnit test suite. Test classes mirror the p
 | `dansplugins.mailboxes` | `CommandInterpreterTest` | `/m` subcommand dispatch, per-subcommand permission checks and label/subcommand case handling |
 | `commands` | `ArchiveCommandTest`, `ConfigCommandTest`, `DeleteCommandTest`, `HelpCommandTest`, `ListCommandTest`, `OpenCommandTest`, `SendCommandTest`, `StatsCommandTest` | Argument handling and replies for each subcommand, plus tab completion for `list` and `open` |
 | `data` | `PersistentDataTest` | Message lookup and message-ID usage across every mailbox |
-| `externalapi` | `MailboxesAPITest` | The `MailboxesAPI` lookups other plugins call (see `API.md`) |
+| `externalapi` | `MailboxesAPITest`, `M_MailboxTest`, `M_MessageTest` | The `MailboxesAPI` lookups other plugins call (see `API.md`), and the `M_Mailbox`/`M_Message` wrappers forwarding each accessor and mutator to the mailbox or message they wrap |
 | `factories` | `MailboxFactoryTest`, `MessageFactoryTest` | Mailbox and message creation, including free-ID selection when random IDs collide or run out |
 | `objects` | `MailboxTest`, `MessageTest` | Pagination of active, archived and unread message lists; message save/load round trips (including `PlayerMessage` and `PluginMessage` UUIDs), attachment accessors, and the `/m open` message display with its action buttons |
 | `services` | `ConfigServiceTest`, `MailboxServiceTest`, `MailServiceTest` | Config option validation and repair, mailbox assignment and alerts, and rejection of unsendable messages |
