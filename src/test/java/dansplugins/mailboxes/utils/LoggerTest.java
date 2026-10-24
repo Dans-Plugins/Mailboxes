@@ -6,14 +6,10 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * Only {@link Logger#logError(String)} is covered here: {@link Logger#log(String)} consults
- * {@code Mailboxes#isDebugEnabled()}, and {@code Mailboxes} is a final class that Mockito 3.12.4
- * (without the inline mock maker) cannot mock.
- */
 public class LoggerTest {
 
     private PrintStream originalOut;
@@ -32,9 +28,40 @@ public class LoggerTest {
     }
 
     @Test
+    public void testLogPrintsPrefixedMessageWhenDebugModeIsEnabled() {
+        Logger logger = new Logger(() -> true);
+
+        logger.log("loaded 3 mailboxes");
+
+        assertEquals("[Mailboxes] loaded 3 mailboxes" + System.lineSeparator(), capturedOut.toString());
+    }
+
+    @Test
+    public void testLogPrintsNothingWhenDebugModeIsDisabled() {
+        Logger logger = new Logger(() -> false);
+
+        logger.log("loaded 3 mailboxes");
+
+        assertEquals("", capturedOut.toString());
+    }
+
+    @Test
+    public void testLogConsultsDebugModeOnEveryCall() {
+        AtomicBoolean debugMode = new AtomicBoolean(false);
+        Logger logger = new Logger(debugMode::get);
+
+        logger.log("before toggle");
+        debugMode.set(true);
+        logger.log("after toggle");
+
+        assertEquals("[Mailboxes] after toggle" + System.lineSeparator(), capturedOut.toString());
+    }
+
+    @Test
     public void testLogErrorPrintsPrefixedMessageWithoutConsultingDebugMode() {
-        // A null plugin would throw if logError checked isDebugEnabled() the way log() does.
-        Logger logger = new Logger(null);
+        Logger logger = new Logger(() -> {
+            throw new AssertionError("logError must not consult debug mode");
+        });
 
         logger.logError("could not write mailboxes.json");
 

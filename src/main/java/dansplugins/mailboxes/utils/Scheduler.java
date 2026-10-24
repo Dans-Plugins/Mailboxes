@@ -16,13 +16,13 @@ public class Scheduler {
     }
 
     public void scheduleAutosave() {
-        logger.log("[Currencies] Scheduling hourly autosave.");
+        logger.log("Scheduling hourly autosave.");
         int delay = 60 * 60; // 1 hour
         int secondsUntilRepeat = 60 * 60; // 1 hour
         Bukkit.getScheduler().scheduleSyncRepeatingTask(mailboxes, new Runnable() {
             @Override
             public void run() {
-                logger.log("[Mailboxes] Saving. This will happen hourly.");
+                logger.log("Saving. This will happen hourly.");
                 storageService.save();
             }
         }, delay * 20, secondsUntilRepeat * 20);
