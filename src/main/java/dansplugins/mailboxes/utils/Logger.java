@@ -1,16 +1,20 @@
 package dansplugins.mailboxes.utils;
 
-import dansplugins.mailboxes.Mailboxes;
+import java.util.function.BooleanSupplier;
 
 public class Logger {
-    private final Mailboxes mailboxes;
+    private final BooleanSupplier debugEnabled;
 
-    public Logger(Mailboxes mailboxes) {
-        this.mailboxes = mailboxes;
+    /**
+     * @param debugEnabled consulted on every {@link #log(String)} call, so a change to the
+     *                     {@code debugMode} config option takes effect without a restart
+     */
+    public Logger(BooleanSupplier debugEnabled) {
+        this.debugEnabled = debugEnabled;
     }
 
     public void log(String message) {
-        if (mailboxes.isDebugEnabled()) {
+        if (debugEnabled.getAsBoolean()) {
             System.out.println("[Mailboxes] " + message);
         }
     }

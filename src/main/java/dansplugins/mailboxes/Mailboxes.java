@@ -24,7 +24,7 @@ public final class Mailboxes extends JavaPlugin {
     private final String pluginVersion = "v" + getDescription().getVersion();
 
     private final ConfigService configService = new ConfigService(this);
-    private final Logger logger = new Logger(this);
+    private final Logger logger = new Logger(this::isDebugEnabled);
     private final PersistentData persistentData = new PersistentData(logger);
     private final StorageService storageService = new StorageService(configService, this, persistentData, logger);
     private final MailboxFactory mailboxFactory = new MailboxFactory(configService, persistentData, logger);
