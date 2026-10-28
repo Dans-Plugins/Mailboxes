@@ -101,6 +101,16 @@ public class CommandInterpreterTest {
     }
 
     @Test
+    public void testPluginInfoLinksToTheUserGuideInThisRepository() {
+        commandInterpreter.sendPluginInfo(sender, "v1.2.3");
+
+        String output = getOutput();
+        assertTrue(output.contains("Mailboxes v1.2.3"));
+        assertTrue(output.contains("https://github.com/Dans-Plugins/Mailboxes/blob/main/USER_GUIDE.md"));
+        assertFalse(output.contains("dmccoystephenson/Mailboxes"));
+    }
+
+    @Test
     public void testUnrelatedLabelIsIgnored() {
         assertFalse(commandInterpreter.interpretCommand(sender, "other", new String[]{"help"}));
 

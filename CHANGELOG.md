@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - With `debugMode` enabled, the autosave log lines printed doubled prefixes: `[Mailboxes] [Currencies] Scheduling hourly autosave.` and `[Mailboxes] [Mailboxes] Saving. This will happen hourly.` They now carry only the `[Mailboxes]` prefix
 
 - `/m list` (and the archived/unread lists) marked messages that have attachments, and its legend, with a 📎 emoji that the Minecraft chat font cannot render, so players saw garbled characters. The marker is now `[A]`, and the legend reads `D: date, S: sender, [A]: has attachments`
+- `/m` with no arguments ended with a `Wiki:` link to the wiki of the old `dmccoystephenson/Mailboxes` repository, which the README stopped linking to in 1.5.2. It now ends with `Guide:` and a link to `USER_GUIDE.md` in this repository
 - `src/test/java/README.md` described only the pagination tests and named a `MailboxPaginationTest` class that does not exist; it now gives a per-package overview of the whole test suite
 - `CHANGELOG.md` had no `[1.5.2]` section although 1.5.2 was published; its entries sat under Unreleased. Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.5.1`, which predates the `null`-returning API lookups those docs describe; they now pin `1.5.2`
 
