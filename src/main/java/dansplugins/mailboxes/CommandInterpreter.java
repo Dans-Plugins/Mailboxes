@@ -13,6 +13,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class CommandInterpreter {
+    static final String USER_GUIDE_URL = "https://github.com/Dans-Plugins/Mailboxes/blob/main/USER_GUIDE.md";
+
     private final Mailboxes mailboxes;
     private final ArgumentParser argumentParser;
     private final PermissionChecker permissionChecker;
@@ -39,9 +41,7 @@ public class CommandInterpreter {
         if (label.equalsIgnoreCase("mailboxes") || label.equalsIgnoreCase("m")) {
 
             if (args.length == 0) {
-                sender.sendMessage(ChatColor.AQUA + "Mailboxes " + mailboxes.getVersion());
-                sender.sendMessage(ChatColor.AQUA + "Developer: DanTheTechMan");
-                sender.sendMessage(ChatColor.AQUA + "Wiki: https://github.com/dmccoystephenson/Mailboxes/wiki");
+                sendPluginInfo(sender, mailboxes.getVersion());
                 return false;
             }
 
@@ -99,6 +99,17 @@ public class CommandInterpreter {
             sender.sendMessage(ChatColor.RED + "Mailboxes doesn't recognize that command.");
         }
         return false;
+    }
+
+    /**
+     * Sends the banner shown for {@code /m} with no arguments. Takes the version rather than
+     * reading it from the plugin so that tests can exercise it: Mailboxes is final and cannot
+     * be mocked.
+     */
+    void sendPluginInfo(CommandSender sender, String version) {
+        sender.sendMessage(ChatColor.AQUA + "Mailboxes " + version);
+        sender.sendMessage(ChatColor.AQUA + "Developer: DanTheTechMan");
+        sender.sendMessage(ChatColor.AQUA + "Guide: " + USER_GUIDE_URL);
     }
 
 }
