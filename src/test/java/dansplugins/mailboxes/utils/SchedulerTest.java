@@ -2,7 +2,6 @@ package dansplugins.mailboxes.utils;
 
 import dansplugins.mailboxes.services.StorageService;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.junit.After;
 import org.junit.Before;
@@ -21,7 +20,7 @@ import static org.mockito.Mockito.*;
 
 public class SchedulerTest {
 
-    private static final BukkitScheduler bukkitScheduler = mock(BukkitScheduler.class);
+    private static final BukkitScheduler bukkitScheduler = MockServer.SCHEDULER;
 
     @Mock
     private StorageService storageService;
@@ -32,13 +31,7 @@ public class SchedulerTest {
 
     @BeforeClass
     public static void installServer() {
-        // Bukkit.setServer can only be called once per JVM, so the mock server is shared.
-        if (Bukkit.getServer() == null) {
-            Server server = mock(Server.class);
-            when(server.getLogger()).thenReturn(java.util.logging.Logger.getLogger("SchedulerTest"));
-            when(server.getScheduler()).thenReturn(bukkitScheduler);
-            Bukkit.setServer(server);
-        }
+        MockServer.install();
     }
 
     @Before
