@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Usage reporting now counts a `command` event only when a player runs the command; console, command-block and plugin-dispatched commands are no longer reported.
+
 ### Fixed
 
 - With `debugMode` enabled, the autosave log lines printed doubled prefixes: `[Mailboxes] [Currencies] Scheduling hourly autosave.` and `[Mailboxes] [Mailboxes] Saving. This will happen hourly.` They now carry only the `[Mailboxes]` prefix
