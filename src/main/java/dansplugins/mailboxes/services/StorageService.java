@@ -76,7 +76,7 @@ public class StorageService {
                 messages = mailbox.getArchivedMessages();
             }
             else {
-                logger.log("Error: " + fileName + " + not recognized.");
+                logger.log("Error: " + fileName + " not recognized.");
                 return;
             }
             for (Message message : messages){
@@ -127,39 +127,8 @@ public class StorageService {
         ArrayList<HashMap<String, String>> archivedMessagesData = loadDataFromFilename(FILE_PATH + ARCHIVED_MESSAGES_FILE_NAME);
 
         // load in messages
-        ArrayList<Message> activeMessages = new ArrayList<>();
-        ArrayList<Message> archivedMessages = new ArrayList<>();
-        for (Map<String, String> messageData : activeMessagesData){
-            Message message = new Message(messageData, logger, configService);
-            if (message.getType().equalsIgnoreCase("Default Message")) {
-                activeMessages.add(message);
-            }
-            else if (message.getType().equalsIgnoreCase("Player Message")) {
-                PlayerMessage playerMessage = new PlayerMessage(messageData, logger, configService);
-                activeMessages.add(playerMessage);
-            }
-            else if (message.getType().equalsIgnoreCase("Plugin Message")) {
-                PluginMessage pluginMessage = new PluginMessage(messageData, logger, configService);
-                activeMessages.add(pluginMessage);
-            }
-        }
-        for (Map<String, String> messageData : archivedMessagesData){
-            Message message = new Message(messageData, logger, configService);
-            if (message.getType().equalsIgnoreCase("Default Message")) {
-                archivedMessages.add(message);
-            }
-            else if (message.getType().equalsIgnoreCase("Player Message")) {
-                PlayerMessage playerMessage = new PlayerMessage(messageData, logger, configService);
-                archivedMessages.add(playerMessage);
-            }
-            else if (message.getType().equalsIgnoreCase("Plugin Message")) {
-                PluginMessage pluginMessage = new PluginMessage(messageData, logger, configService);
-                archivedMessages.add(pluginMessage);
-            }
-            else {
-                logger.log("Unsupported message type encountered: " + message.getType());
-            }
-        }
+        ArrayList<Message> activeMessages = parseMessages(activeMessagesData, logger, configService);
+        ArrayList<Message> archivedMessages = parseMessages(archivedMessagesData, logger, configService);
 
         // add messages to the correct mailboxes
         for (Mailbox mailbox : persistentData.getMailboxes()) {
@@ -176,6 +145,26 @@ public class StorageService {
                 }
             }
         }
+    }
+
+    static ArrayList<Message> parseMessages(List<? extends Map<String, String>> messagesData, Logger logger, ConfigService configService) {
+        ArrayList<Message> messages = new ArrayList<>();
+        for (Map<String, String> messageData : messagesData) {
+            Message message = new Message(messageData, logger, configService);
+            if (message.getType().equalsIgnoreCase("Default Message")) {
+                messages.add(message);
+            }
+            else if (message.getType().equalsIgnoreCase("Player Message")) {
+                messages.add(new PlayerMessage(messageData, logger, configService));
+            }
+            else if (message.getType().equalsIgnoreCase("Plugin Message")) {
+                messages.add(new PluginMessage(messageData, logger, configService));
+            }
+            else {
+                logger.log("Unsupported message type encountered: " + message.getType());
+            }
+        }
+        return messages;
     }
 
     private ArrayList<HashMap<String, String>> loadDataFromFilename(String filename) {
