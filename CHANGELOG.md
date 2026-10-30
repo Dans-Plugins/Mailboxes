@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - With `debugMode` enabled, the autosave log lines printed doubled prefixes: `[Mailboxes] [Currencies] Scheduling hourly autosave.` and `[Mailboxes] [Mailboxes] Saving. This will happen hourly.` They now carry only the `[Mailboxes]` prefix
+- With `debugMode` enabled, a message in `activeMessages.json` whose type is not `Default Message`, `Player Message` or `Plugin Message` now logs `Unsupported message type encountered: <type>` when it is dropped on load, as one in `archivedMessages.json` already did. It used to be dropped without a log line and then lost at the next save
 
 - `/m list` (and the archived/unread lists) marked messages that have attachments, and its legend, with a 📎 emoji that the Minecraft chat font cannot render, so players saw garbled characters. The marker is now `[A]`, and the legend reads `D: date, S: sender, [A]: has attachments`
 - `/m` with no arguments ended with a `Wiki:` link to the wiki of the old `dmccoystephenson/Mailboxes` repository, which the README stopped linking to in 1.5.2. It now ends with `Guide:` and a link to `USER_GUIDE.md` in this repository
