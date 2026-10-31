@@ -6,17 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `CHANGELOG.md` had no `[1.6.0]`, `[1.7.0]`, `[1.7.1]` or `[1.8.0]` section although all four versions were published; their entries sat under Unreleased. `[1.7.0]` also had no entry for the trace client 0.7.0 update
+
+## [1.8.0] – 2026-10-30
+
+### Fixed
+
+- With `debugMode` enabled, a message in `activeMessages.json` whose type is not `Default Message`, `Player Message` or `Plugin Message` now logs `Unsupported message type encountered: <type>` when it is dropped on load, as one in `archivedMessages.json` already did. It used to be dropped without a log line and then lost at the next save
+
+## [1.7.1] – 2026-10-29
+
 ### Changed
 
 - Usage reporting now counts a `command` event only when a player runs the command; console, command-block and plugin-dispatched commands are no longer reported.
 
+## [1.7.0] – 2026-10-28
+
+### Changed
+
+- The vendored trace client is now 0.7.0, which coalesces repeated usage events: the first is sent at once, repeats within 60 seconds are sent as one counted event, and `startup` is never held back. The API the plugin calls is unchanged
+
+### Fixed
+
+- `/m` with no arguments ended with a `Wiki:` link to the wiki of the old `dmccoystephenson/Mailboxes` repository, which the README stopped linking to in 1.5.2. It now ends with `Guide:` and a link to `USER_GUIDE.md` in this repository
+
+## [1.6.0] – 2026-10-24
+
 ### Fixed
 
 - With `debugMode` enabled, the autosave log lines printed doubled prefixes: `[Mailboxes] [Currencies] Scheduling hourly autosave.` and `[Mailboxes] [Mailboxes] Saving. This will happen hourly.` They now carry only the `[Mailboxes]` prefix
-- With `debugMode` enabled, a message in `activeMessages.json` whose type is not `Default Message`, `Player Message` or `Plugin Message` now logs `Unsupported message type encountered: <type>` when it is dropped on load, as one in `archivedMessages.json` already did. It used to be dropped without a log line and then lost at the next save
-
 - `/m list` (and the archived/unread lists) marked messages that have attachments, and its legend, with a 📎 emoji that the Minecraft chat font cannot render, so players saw garbled characters. The marker is now `[A]`, and the legend reads `D: date, S: sender, [A]: has attachments`
-- `/m` with no arguments ended with a `Wiki:` link to the wiki of the old `dmccoystephenson/Mailboxes` repository, which the README stopped linking to in 1.5.2. It now ends with `Guide:` and a link to `USER_GUIDE.md` in this repository
 - `src/test/java/README.md` described only the pagination tests and named a `MailboxPaginationTest` class that does not exist; it now gives a per-package overview of the whole test suite
 - `CHANGELOG.md` had no `[1.5.2]` section although 1.5.2 was published; its entries sat under Unreleased. Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.5.1`, which predates the `null`-returning API lookups those docs describe; they now pin `1.5.2`
 
