@@ -16,6 +16,8 @@ Example:
 /m send John "Here's that diamond sword I promised you!" -attach
 ```
 
+The item leaves your hand only once the message has been delivered. If the recipient has no mailbox yet, nothing is sent and you keep the item.
+
 ### Receiving Messages with Attachments
 When you open a message with attachments:
 

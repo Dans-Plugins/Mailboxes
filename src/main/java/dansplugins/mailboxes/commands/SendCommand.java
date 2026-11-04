@@ -94,6 +94,7 @@ public class SendCommand {
         }
 
         // Handle attachments
+        ItemStack attachment = null;
         if (shouldAttach) {
             if (!player.hasPermission("mailboxes.send.attach")) {
                 player.sendMessage(ChatColor.RED + "You don't have permission to send attachments.");
@@ -120,17 +121,27 @@ public class SendCommand {
             }
 
             // Clone the item and add as attachment
-            ItemStack attachment = itemInHand.clone();
+            attachment = itemInHand.clone();
             message.addAttachment(attachment);
+        }
 
+        // The item only leaves the sender's hand once delivery has succeeded: a recipient can be
+        // known to the server without having a mailbox, and an undelivered message is discarded
+        // along with whatever was attached to it.
+        if (!mailService.sendMessage(message)) {
+            player.sendMessage(ChatColor.RED + "Nothing was sent because " + recipientName
+                    + " doesn't have a mailbox yet. Players are given one when they join the server.");
+            return false;
+        }
+
+        if (attachment != null) {
             // Remove item from player's hand
             player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-            
-            player.sendMessage(ChatColor.GREEN + "Attached " + attachment.getAmount() + "x " + 
+
+            player.sendMessage(ChatColor.GREEN + "Attached " + attachment.getAmount() + "x " +
                              attachment.getType().toString().toLowerCase().replace("_", " "));
         }
 
-        mailService.sendMessage(message);
         player.sendMessage(ChatColor.GREEN + "Sent.");
         return true;
     }

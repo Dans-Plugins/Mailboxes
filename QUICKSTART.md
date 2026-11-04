@@ -13,9 +13,9 @@ Download the Mailboxes JAR and place it in a `libs` folder in your project, then
     <dependency>
         <groupId>dansplugins</groupId>
         <artifactId>Mailboxes</artifactId>
-        <version>1.5.2</version>
+        <version>1.8.0</version>
         <scope>system</scope>
-        <systemPath>${project.basedir}/libs/Mailboxes-1.5.2.jar</systemPath>
+        <systemPath>${project.basedir}/libs/Mailboxes-1.8.0.jar</systemPath>
     </dependency>
 </dependencies>
 ```
@@ -26,7 +26,7 @@ Place the Mailboxes JAR in a `libs` folder and add to your `build.gradle`:
 
 ```groovy
 dependencies {
-    compileOnly files('libs/Mailboxes-1.5.2.jar')
+    compileOnly files('libs/Mailboxes-1.8.0.jar')
 }
 ```
 
@@ -198,7 +198,7 @@ For complete API documentation, advanced features, and best practices, see [API.
 - **Solution:** Ensure Mailboxes is installed and listed in your `plugin.yml` dependencies
 
 **Problem:** Messages not sending
-- **Solution:** Check that the method returns `true` and verify the player/UUID is valid
+- **Solution:** Check that the method returns `true` and verify the player has joined the server since Mailboxes was installed, because mailboxes are assigned on join
 
 ## Support
 

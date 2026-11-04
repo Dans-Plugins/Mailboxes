@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `/m send` said `Sent.` when the recipient had no mailbox, as with a player who has not joined since Mailboxes was installed, and the message was discarded. With `-attach`, the item was taken from the sender's hand and lost with it. The sender is now told that nothing was sent, and the item stays in their hand
+- Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.5.2`; they now pin `1.8.0`. The `sendPluginMessageToPlayer` troubleshooting advice named empty content as a cause of failure, which it is not, and now names a missing mailbox
 - `CHANGELOG.md` had no `[1.6.0]`, `[1.7.0]`, `[1.7.1]` or `[1.8.0]` section although all four versions were published; their entries sat under Unreleased. `[1.7.0]` also had no entry for the trace client 0.7.0 update
 
 ## [1.8.0] – 2026-10-30
