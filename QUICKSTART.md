@@ -198,7 +198,7 @@ For complete API documentation, advanced features, and best practices, see [API.
 - **Solution:** Ensure Mailboxes is installed and listed in your `plugin.yml` dependencies
 
 **Problem:** Messages not sending
-- **Solution:** Check that the method returns `true` and verify the player/UUID is valid
+- **Solution:** Check that the method returns `true` and verify the player has joined the server since Mailboxes was installed, because mailboxes are assigned on join
 
 ## Support
 
