@@ -36,9 +36,9 @@ First, add the Mailboxes JAR to your local Maven repository or use a local file 
     <dependency>
         <groupId>dansplugins</groupId>
         <artifactId>Mailboxes</artifactId>
-        <version>1.5.2</version>
+        <version>1.8.0</version>
         <scope>system</scope>
-        <systemPath>${project.basedir}/libs/Mailboxes-1.5.2.jar</systemPath>
+        <systemPath>${project.basedir}/libs/Mailboxes-1.8.0.jar</systemPath>
     </dependency>
 </dependencies>
 ```
@@ -46,10 +46,10 @@ First, add the Mailboxes JAR to your local Maven repository or use a local file 
 **Or install to local Maven repository:**
 ```bash
 mvn install:install-file \
-  -Dfile=Mailboxes-1.5.2.jar \
+  -Dfile=Mailboxes-1.8.0.jar \
   -DgroupId=dansplugins \
   -DartifactId=Mailboxes \
-  -Dversion=1.5.2 \
+  -Dversion=1.8.0 \
   -Dpackaging=jar
 ```
 
@@ -59,7 +59,7 @@ Then add to your `pom.xml`:
     <dependency>
         <groupId>dansplugins</groupId>
         <artifactId>Mailboxes</artifactId>
-        <version>1.5.2</version>
+        <version>1.8.0</version>
         <scope>provided</scope>
     </dependency>
 </dependencies>
@@ -69,7 +69,7 @@ Then add to your `pom.xml`:
 
 ```groovy
 dependencies {
-    compileOnly files('libs/Mailboxes-1.5.2.jar')
+    compileOnly files('libs/Mailboxes-1.8.0.jar')
 }
 ```
 
@@ -164,7 +164,7 @@ System.out.println("Using Mailboxes API: " + apiVersion);
 ##### `getVersion()`
 Returns the Mailboxes plugin version.
 
-**Returns:** `String` - The plugin version, prefixed with `v` (e.g., "v1.5.2")
+**Returns:** `String` - The plugin version, prefixed with `v` (e.g., "v1.8.0")
 
 **Example:**
 ```java
@@ -200,7 +200,7 @@ if (player != null) {
 ```
 
 ##### `sendPluginMessageToPlayer(String pluginName, UUID playerUUID, String content)`
-Sends a message from your plugin to a player using their UUID. This is useful when the player is offline.
+Sends a message from your plugin to a player using their UUID. This is useful when the player is offline. Delivery needs the player to have a mailbox, which is assigned on join, so this returns `false` for a player who has not joined since Mailboxes was installed.
 
 **Parameters:**
 - `pluginName` (String) - The name of your plugin (used as the sender)
@@ -723,9 +723,8 @@ public void sendNotification(Player player, String message) {
 **Problem:** `sendPluginMessageToPlayer()` returns false.
 
 **Solutions:**
-- Verify the player/UUID exists
+- Verify the player has a mailbox. Mailboxes are assigned on join, so a player who has not joined since Mailboxes was installed has none, even if their UUID is valid
 - Check server logs for Mailboxes errors
-- Ensure the message content is not empty
 - Verify Mailboxes plugin is enabled
 - Check whether the server has run out of message IDs. When every ID below `maxMessageIDNumber` is held by an existing message, no further message can be created and an error is logged to the console; raising `maxMessageIDNumber` or deleting messages frees the ID space back up
 

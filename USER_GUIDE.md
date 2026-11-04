@@ -2,7 +2,7 @@
 
 ## What is Mailboxes?
 
-Mailboxes is a Spigot plugin that gives players an in-game messaging system. Players can send text messages and attach items to other players, even when they are offline. Messages are stored persistently and can be listed, opened, archived, or deleted.
+Mailboxes is a Spigot plugin that gives players an in-game messaging system. Players can send text messages and attach items to other players, even when they are offline, as long as the recipient has joined the server since Mailboxes was installed: that is when a player is given a mailbox. Messages are stored persistently and can be listed, opened, archived, or deleted.
 
 ## Installation
 
