@@ -25,6 +25,8 @@ When you open a message with attachments:
 2. Items will automatically be added to your inventory
 3. If your inventory is full, the items will remain attached to the message until you have space
 
+Deleting a message destroys any items still attached to it, and no warning is given first. Open the message and collect its items before deleting it.
+
 ### Viewing Messages with Attachments
 Messages with attachments are marked with `[A]` in the message list.
 

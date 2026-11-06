@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `CHANGELOG.md` had no `[1.8.1]` section although 1.8.1 was published; its entries sat under Unreleased. Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.8.0`; they now pin `1.8.1`
+- `README.md`, `CONFIG.md` and the `config.yml` header still said a usage event is sent each time a command is used. Since 1.7.1 that is only when a player runs the command
+- `ATTACHMENTS.md` did not say that deleting a message destroys any items still attached to it. `API.md`'s table of contents had no entries for its last four sections, and `src/test/java/README.md` did not list `StorageServiceTest`
+
+## [1.8.1] – 2026-11-04
+
+### Fixed
+
 - `/m send` said `Sent.` when the recipient had no mailbox, as with a player who has not joined since Mailboxes was installed, and the message was discarded. With `-attach`, the item was taken from the sender's hand and lost with it. The sender is now told that nothing was sent, and the item stays in their hand
 - Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.5.2`; they now pin `1.8.0`. The `sendPluginMessageToPlayer` troubleshooting advice named empty content as a cause of failure, which it is not, and now names a missing mailbox
 - `CHANGELOG.md` had no `[1.6.0]`, `[1.7.0]`, `[1.7.1]` or `[1.8.0]` section although all four versions were published; their entries sat under Unreleased. `[1.7.0]` also had no entry for the trace client 0.7.0 update
