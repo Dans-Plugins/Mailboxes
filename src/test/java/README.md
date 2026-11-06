@@ -13,7 +13,7 @@ This directory contains the plugin's JUnit test suite. Test classes mirror the p
 | `factories` | `MailboxFactoryTest`, `MessageFactoryTest` | Mailbox and message creation, including free-ID selection when random IDs collide or run out |
 | `listeners` | `JoinListenerTest` | Assigning a mailbox to a joining player before alerting them to unread messages |
 | `objects` | `MailboxTest`, `MessageTest` | Pagination of active, archived and unread message lists; message save/load round trips (including `PlayerMessage` and `PluginMessage` UUIDs), attachment accessors, and the `/m open` message display with its action buttons |
-| `services` | `ConfigServiceTest`, `MailboxServiceTest`, `MailServiceTest` | Config option validation and repair, mailbox assignment and alerts, and rejection of unsendable messages |
+| `services` | `ConfigServiceTest`, `MailboxServiceTest`, `MailServiceTest`, `StorageServiceTest` | Config option validation and repair, mailbox assignment and alerts, rejection of unsendable messages, and rebuilding stored messages by type, including skipping an unsupported one |
 | `utils` | `ArgumentParserTest`, `LoggerTest`, `PermissionCheckerTest`, `SchedulerTest`, `UUIDCheckerTest` | Argument dropping and quoted-argument parsing, debug logging gated on `debugMode` and error logging that prints regardless of it, the missing-permission reply, the hourly autosave task and its log lines, and name/UUID lookups across online and offline players |
 
 ## Running the Tests
