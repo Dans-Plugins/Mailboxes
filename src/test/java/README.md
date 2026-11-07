@@ -44,4 +44,4 @@ The tests use:
 
 - Tests use Mockito to mock Bukkit/Spigot API objects (`Player`, `CommandSender`, etc.) and the plugin's own services, so no server is needed
 - New tests should follow the `@Mock` field setup used by sibling tests in the same package
-- `Bukkit.setServer` can only be called once per JVM, so tests that read the static Bukkit server (`SchedulerTest`, `UUIDCheckerTest`) share the mock in `utils/MockServer` and stub what they need on it
+- `Bukkit.setServer` can only be called once per JVM, so tests that read the static Bukkit server (`SchedulerTest`, `UUIDCheckerTest`, `MessageTest`) share the mock in `utils/MockServer` and stub what they need on it

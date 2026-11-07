@@ -10,9 +10,9 @@ import static org.mockito.Mockito.*;
  * Bukkit.setServer can only be called once per JVM, so every test that reads
  * the static Bukkit server shares this one mock and stubs what it needs.
  */
-final class MockServer {
+public final class MockServer {
 
-    static final Server SERVER = mock(Server.class);
+    public static final Server SERVER = mock(Server.class);
     static final BukkitScheduler SCHEDULER = mock(BukkitScheduler.class);
 
     static {
@@ -28,7 +28,7 @@ final class MockServer {
      *
      * @return whether the installed Bukkit server is the shared mock
      */
-    static boolean install() {
+    public static boolean install() {
         if (Bukkit.getServer() == null) {
             Bukkit.setServer(SERVER);
         }

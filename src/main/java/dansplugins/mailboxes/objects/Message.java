@@ -11,6 +11,8 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,6 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Message implements Savable {
+    private static final String ATTACHMENT_ITEMS_KEY = "attachmentItems";
+    private static final String LEGACY_ATTACHMENTS_KEY = "attachments";
+    private static final String YAML_ITEMS_PATH = "items";
+
     private final Logger logger;
     private final ConfigService configService;
 
@@ -227,15 +233,17 @@ public class Message implements Savable {
         saveMap.put("archived", gson.toJson(archived));
         saveMap.put("unread", gson.toJson(unread));
         
-        // Serialize attachments
+        // Bukkit's YAML serialization keeps item metadata, which Gson cannot round-trip
         if (attachments != null && !attachments.isEmpty()) {
-            List<Map<String, Object>> serializedAttachments = new ArrayList<>();
+            List<ItemStack> items = new ArrayList<>();
             for (ItemStack item : attachments) {
                 if (item != null) {
-                    serializedAttachments.add(item.serialize());
+                    items.add(item);
                 }
             }
-            saveMap.put("attachments", gson.toJson(serializedAttachments));
+            YamlConfiguration yaml = new YamlConfiguration();
+            yaml.set(YAML_ITEMS_PATH, items);
+            saveMap.put(ATTACHMENT_ITEMS_KEY, gson.toJson(yaml.saveToString()));
         }
 
         return saveMap;
@@ -254,36 +262,55 @@ public class Message implements Savable {
         archived = Boolean.parseBoolean(gson.fromJson(data.get("archived"), String.class));
         unread = Boolean.parseBoolean(gson.fromJson(data.get("unread"), String.class));
         
-        // Deserialize attachments
-        if (data.containsKey("attachments")) {
-            try {
-                Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
-                List<Map<String, Object>> serializedAttachments = gson.fromJson(data.get("attachments"), listType);
-                if (serializedAttachments != null) {
-                    attachments = new ArrayList<>();
-                    for (Map<String, Object> serializedItem : serializedAttachments) {
-                        // Convert numeric values to proper types for ItemStack deserialization
-                        // Gson may deserialize numbers as Double, but ItemStack expects Integer for certain fields
-                        Map<String, Object> convertedMap = new HashMap<>();
-                        for (Map.Entry<String, Object> entry : serializedItem.entrySet()) {
-                            Object value = entry.getValue();
-                            String key = entry.getKey();
-                            // Convert known integer fields from Number to Integer
-                            if (value instanceof Number && 
-                                (key.equals("amount") || key.equals("damage") || key.equals("Data") || 
-                                 key.equals("Damage") || key.equals("RepairCost"))) {
-                                convertedMap.put(key, ((Number) value).intValue());
-                            } else {
-                                convertedMap.put(key, value);
-                            }
-                        }
-                        ItemStack item = ItemStack.deserialize(convertedMap);
-                        attachments.add(item);
+        try {
+            if (data.containsKey(ATTACHMENT_ITEMS_KEY)) {
+                loadAttachments(gson.fromJson(data.get(ATTACHMENT_ITEMS_KEY), String.class));
+            }
+            else if (data.containsKey(LEGACY_ATTACHMENTS_KEY)) {
+                loadLegacyAttachments(gson, data.get(LEGACY_ATTACHMENTS_KEY));
+            }
+        } catch (Exception e) {
+            logger.logError("Error loading attachments of message " + ID + ": " + e.getMessage());
+            attachments = new ArrayList<>();
+        }
+    }
+
+    private void loadAttachments(String serializedItems) throws InvalidConfigurationException {
+        YamlConfiguration yaml = new YamlConfiguration();
+        yaml.loadFromString(serializedItems);
+        List<ItemStack> items = new ArrayList<>();
+        for (Object item : yaml.getList(YAML_ITEMS_PATH)) {
+            items.add((ItemStack) item);
+        }
+        attachments = items;
+    }
+
+    /**
+     * Reads the JSON format written by earlier versions, which cannot restore item metadata.
+     */
+    private void loadLegacyAttachments(Gson gson, String serializedAttachmentsJson) {
+        Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
+        List<Map<String, Object>> serializedAttachments = gson.fromJson(serializedAttachmentsJson, listType);
+        if (serializedAttachments != null) {
+            attachments = new ArrayList<>();
+            for (Map<String, Object> serializedItem : serializedAttachments) {
+                // Convert numeric values to proper types for ItemStack deserialization
+                // Gson may deserialize numbers as Double, but ItemStack expects Integer for certain fields
+                Map<String, Object> convertedMap = new HashMap<>();
+                for (Map.Entry<String, Object> entry : serializedItem.entrySet()) {
+                    Object value = entry.getValue();
+                    String key = entry.getKey();
+                    // Convert known integer fields from Number to Integer
+                    if (value instanceof Number &&
+                        (key.equals("amount") || key.equals("damage") || key.equals("Data") ||
+                         key.equals("Damage") || key.equals("RepairCost"))) {
+                        convertedMap.put(key, ((Number) value).intValue());
+                    } else {
+                        convertedMap.put(key, value);
                     }
                 }
-            } catch (Exception e) {
-                logger.log("Error loading attachments: " + e.getMessage());
-                attachments = new ArrayList<>();
+                ItemStack item = ItemStack.deserialize(convertedMap);
+                attachments.add(item);
             }
         }
     }
