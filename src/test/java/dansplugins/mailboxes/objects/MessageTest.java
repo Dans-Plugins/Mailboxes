@@ -1,22 +1,32 @@
 package dansplugins.mailboxes.objects;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import dansplugins.mailboxes.services.ConfigService;
 import dansplugins.mailboxes.utils.Logger;
+import dansplugins.mailboxes.utils.MockServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Material;
+import org.bukkit.UnsafeValues;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.Invocation;
 
+import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.*;
 
 public class MessageTest {
@@ -37,6 +47,35 @@ public class MessageTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(player.spigot()).thenReturn(spigot);
+    }
+
+    /**
+     * The real {@code ItemMeta} implementation only exists on a server, so these stubs stand in
+     * for it the way a server does: as a {@code ConfigurationSerializable} the item carries.
+     */
+    private ItemStack itemWithDisplayName(String displayName) {
+        assumeTrue(MockServer.install());
+        ItemFactory itemFactory = mock(ItemFactory.class);
+        when(itemFactory.isApplicable(any(ItemMeta.class), any(Material.class))).thenReturn(true);
+        when(itemFactory.asMetaFor(any(ItemMeta.class), any(Material.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(itemFactory.updateMaterial(any(ItemMeta.class), any(Material.class)))
+                .thenAnswer(invocation -> invocation.getArgument(1));
+        UnsafeValues unsafe = mock(UnsafeValues.class);
+        when(unsafe.getDataVersion()).thenReturn(1631);
+        when(MockServer.SERVER.getItemFactory()).thenReturn(itemFactory);
+        when(MockServer.SERVER.getUnsafe()).thenReturn(unsafe);
+        ConfigurationSerialization.registerClass(StubItemMeta.class);
+
+        ItemStack item = new ItemStack(Material.DIAMOND_SWORD, 3);
+        assertTrue(item.setItemMeta(new StubItemMeta(displayName)));
+        return item;
+    }
+
+    /** Passes save data through the same JSON encoding {@code StorageService} writes and reads. */
+    private Map<String, String> throughStorageFileJson(Map<String, String> data) {
+        Type type = new TypeToken<HashMap<String, String>>(){}.getType();
+        return new Gson().fromJson(new Gson().toJson(data), type);
     }
 
     @Test
@@ -91,7 +130,52 @@ public class MessageTest {
     public void testSaveOmitsAttachmentsKeyWhenThereAreNone() {
         Message message = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
 
-        assertFalse(message.save().containsKey("attachments"));
+        Map<String, String> data = message.save();
+
+        assertFalse(data.containsKey("attachments"));
+        assertFalse(data.containsKey("attachmentItems"));
+    }
+
+    @Test
+    public void testAttachmentMetadataSurvivesTheStorageFileRoundTrip() {
+        ItemStack item = itemWithDisplayName("Excalibur");
+        Message original = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi", 7);
+        original.addAttachment(item);
+
+        Message loaded = new Message(throughStorageFileJson(original.save()), logger, configService);
+
+        assertEquals(1, loaded.getAttachments().size());
+        ItemStack loadedItem = loaded.getAttachments().get(0);
+        assertEquals(Material.DIAMOND_SWORD, loadedItem.getType());
+        assertEquals(3, loadedItem.getAmount());
+        assertTrue(loadedItem.hasItemMeta());
+        assertEquals("Excalibur", loadedItem.getItemMeta().getDisplayName());
+        verify(logger, never()).logError(anyString());
+    }
+
+    @Test
+    public void testSaveNoLongerWritesTheLegacyAttachmentsKey() {
+        Message message = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
+        message.addAttachment(itemWithDisplayName("Excalibur"));
+
+        Map<String, String> data = message.save();
+
+        assertTrue(data.containsKey("attachmentItems"));
+        assertFalse(data.containsKey("attachments"));
+    }
+
+    @Test
+    public void testLoadStillReadsTheLegacyAttachmentsKey() {
+        itemWithDisplayName("installs the stubbed server");
+        Message original = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
+        Map<String, String> data = original.save();
+        data.put("attachments", "[{\"v\":1631.0,\"type\":\"DIAMOND_SWORD\",\"amount\":2.0}]");
+
+        Message loaded = new Message(data, logger, configService);
+
+        assertEquals(1, loaded.getAttachments().size());
+        assertEquals(Material.DIAMOND_SWORD, loaded.getAttachments().get(0).getType());
+        assertEquals(2, loaded.getAttachments().get(0).getAmount());
     }
 
     @Test
@@ -116,7 +200,31 @@ public class MessageTest {
         Message loaded = new Message(data, logger, configService);
 
         assertFalse(loaded.hasAttachments());
-        verify(logger).log(startsWith("Error loading attachments: "));
+        verify(logger).logError(startsWith("Error loading attachments of message 1: "));
+    }
+
+    @Test
+    public void testLoadWithMalformedAttachmentItemsLogsAndFallsBackToNoAttachments() {
+        Message original = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
+        Map<String, String> data = original.save();
+        data.put("attachmentItems", new Gson().toJson("items: [unclosed"));
+
+        Message loaded = new Message(data, logger, configService);
+
+        assertFalse(loaded.hasAttachments());
+        verify(logger).logError(startsWith("Error loading attachments of message 1: "));
+    }
+
+    @Test
+    public void testLoadWithAttachmentItemsThatAreNotItemsLogsAndFallsBackToNoAttachments() {
+        Message original = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
+        Map<String, String> data = original.save();
+        data.put("attachmentItems", new Gson().toJson("items:\n- not an item\n"));
+
+        Message loaded = new Message(data, logger, configService);
+
+        assertFalse(loaded.hasAttachments());
+        verify(logger).logError(startsWith("Error loading attachments of message 1: "));
     }
 
     @Test
