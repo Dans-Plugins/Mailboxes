@@ -40,9 +40,9 @@ First, add the Mailboxes JAR to your local Maven repository or use a local file 
     <dependency>
         <groupId>dansplugins</groupId>
         <artifactId>Mailboxes</artifactId>
-        <version>1.8.1</version>
+        <version>1.8.2</version>
         <scope>system</scope>
-        <systemPath>${project.basedir}/libs/Mailboxes-1.8.1.jar</systemPath>
+        <systemPath>${project.basedir}/libs/Mailboxes-1.8.2.jar</systemPath>
     </dependency>
 </dependencies>
 ```
@@ -50,10 +50,10 @@ First, add the Mailboxes JAR to your local Maven repository or use a local file 
 **Or install to local Maven repository:**
 ```bash
 mvn install:install-file \
-  -Dfile=Mailboxes-1.8.1.jar \
+  -Dfile=Mailboxes-1.8.2.jar \
   -DgroupId=dansplugins \
   -DartifactId=Mailboxes \
-  -Dversion=1.8.1 \
+  -Dversion=1.8.2 \
   -Dpackaging=jar
 ```
 
@@ -63,7 +63,7 @@ Then add to your `pom.xml`:
     <dependency>
         <groupId>dansplugins</groupId>
         <artifactId>Mailboxes</artifactId>
-        <version>1.8.1</version>
+        <version>1.8.2</version>
         <scope>provided</scope>
     </dependency>
 </dependencies>
@@ -73,7 +73,7 @@ Then add to your `pom.xml`:
 
 ```groovy
 dependencies {
-    compileOnly files('libs/Mailboxes-1.8.1.jar')
+    compileOnly files('libs/Mailboxes-1.8.2.jar')
 }
 ```
 
@@ -168,7 +168,7 @@ System.out.println("Using Mailboxes API: " + apiVersion);
 ##### `getVersion()`
 Returns the Mailboxes plugin version.
 
-**Returns:** `String` - The plugin version, prefixed with `v` (e.g., "v1.8.1")
+**Returns:** `String` - The plugin version, prefixed with `v` (e.g., "v1.8.2")
 
 **Example:**
 ```java
