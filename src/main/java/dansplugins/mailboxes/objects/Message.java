@@ -42,6 +42,10 @@ public class Message implements Savable {
     protected boolean unread = true;
     protected List<ItemStack> attachments = new ArrayList<>();
 
+    // Stored attachment data that could not be read at load, kept so save() can write it back unchanged
+    private String unreadableAttachmentsKey;
+    private String unreadableAttachmentsData;
+
     public Message(Logger logger, ConfigService configService, int ID, String type, String sender, String recipient, String content) {
         this.logger = logger;
         this.configService = configService;
@@ -245,6 +249,9 @@ public class Message implements Savable {
             yaml.set(YAML_ITEMS_PATH, items);
             saveMap.put(ATTACHMENT_ITEMS_KEY, gson.toJson(yaml.saveToString()));
         }
+        else if (unreadableAttachmentsData != null) {
+            saveMap.put(unreadableAttachmentsKey, unreadableAttachmentsData);
+        }
 
         return saveMap;
     }
@@ -262,6 +269,8 @@ public class Message implements Savable {
         archived = Boolean.parseBoolean(gson.fromJson(data.get("archived"), String.class));
         unread = Boolean.parseBoolean(gson.fromJson(data.get("unread"), String.class));
         
+        unreadableAttachmentsKey = null;
+        unreadableAttachmentsData = null;
         try {
             if (data.containsKey(ATTACHMENT_ITEMS_KEY)) {
                 loadAttachments(gson.fromJson(data.get(ATTACHMENT_ITEMS_KEY), String.class));
@@ -270,8 +279,11 @@ public class Message implements Savable {
                 loadLegacyAttachments(gson, data.get(LEGACY_ATTACHMENTS_KEY));
             }
         } catch (Exception e) {
-            logger.logError("Error loading attachments of message " + ID + ": " + e.getMessage());
+            logger.logError("Error loading attachments of message " + ID + ": " + e.getMessage()
+                    + ". The stored attachment data is kept unchanged at the next save.");
             attachments = new ArrayList<>();
+            unreadableAttachmentsKey = data.containsKey(ATTACHMENT_ITEMS_KEY) ? ATTACHMENT_ITEMS_KEY : LEGACY_ATTACHMENTS_KEY;
+            unreadableAttachmentsData = data.get(unreadableAttachmentsKey);
         }
     }
 

@@ -9,7 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - Attachments lost their name, enchantments, damage and other metadata after a restart, although `ATTACHMENTS.md` said they persist. Attachments are now saved through Bukkit's own YAML serialization under a new `attachmentItems` key in `activeMessages.json` and `archivedMessages.json`. Stored messages keep loading from the old `attachments` key, but metadata already lost is not restored. Downgrading to an earlier version loses the attachments of any message saved by this version
-- A failure to load a message's attachments was only logged with `debugMode` enabled, although the attachments are lost at the next save. It is now always logged to the console
+- A failure to load a message's attachments was only logged with `debugMode` enabled. It is now always logged to the console
+- A message whose attachments could not be loaded at startup lost them at the next save, because `activeMessages.json` and `archivedMessages.json` are rewritten in full. The stored attachment data is now written back unchanged, so it stays in the file until it can be read, for example after the server or plugin that caused the failure is restored. The message still shows no attachments while the data cannot be read
+- `CHANGELOG.md` had no `[1.8.2]` section although 1.8.2 was published; its entries sat under Unreleased. Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.8.1`; they now pin `1.8.2`
+
+## [1.8.2] – 2026-11-07
+
+### Fixed
+
 - `CHANGELOG.md` had no `[1.8.1]` section although 1.8.1 was published; its entries sat under Unreleased. Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.8.0`; they now pin `1.8.1`
 - `README.md`, `CONFIG.md` and the `config.yml` header still said a usage event is sent each time a command is used. Since 1.7.1 that is only when a player runs the command
 - `ATTACHMENTS.md` did not say that deleting a message destroys any items still attached to it. `API.md`'s table of contents had no entries for its last four sections, and `src/test/java/README.md` did not list `StorageServiceTest`

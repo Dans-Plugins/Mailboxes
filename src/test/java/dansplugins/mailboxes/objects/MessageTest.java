@@ -228,6 +228,58 @@ public class MessageTest {
     }
 
     @Test
+    public void testSaveWritesBackUnreadableAttachmentItemsUnchanged() {
+        Message original = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
+        Map<String, String> data = original.save();
+        String unreadable = new Gson().toJson("items:\n- not an item\n");
+        data.put("attachmentItems", unreadable);
+
+        Message loaded = new Message(throughStorageFileJson(data), logger, configService);
+        Map<String, String> resaved = loaded.save();
+
+        assertEquals(unreadable, resaved.get("attachmentItems"));
+        assertFalse(resaved.containsKey("attachments"));
+    }
+
+    @Test
+    public void testSaveWritesBackMalformedAttachmentItemsUnchanged() {
+        Message original = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
+        Map<String, String> data = original.save();
+        String malformed = new Gson().toJson("items: [unclosed");
+        data.put("attachmentItems", malformed);
+
+        Map<String, String> resaved = new Message(data, logger, configService).save();
+
+        assertEquals(malformed, resaved.get("attachmentItems"));
+    }
+
+    @Test
+    public void testSaveWritesBackUnreadableLegacyAttachmentsUnderTheLegacyKey() {
+        Message original = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
+        Map<String, String> data = original.save();
+        data.put("attachments", "not a list");
+
+        Map<String, String> resaved = new Message(data, logger, configService).save();
+
+        assertEquals("not a list", resaved.get("attachments"));
+        assertFalse(resaved.containsKey("attachmentItems"));
+    }
+
+    @Test
+    public void testUnreadableAttachmentDataSurvivesRepeatedSaveAndLoad() {
+        Message original = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
+        Map<String, String> data = original.save();
+        String unreadable = new Gson().toJson("items:\n- not an item\n");
+        data.put("attachmentItems", unreadable);
+
+        Message first = new Message(throughStorageFileJson(data), logger, configService);
+        Message second = new Message(throughStorageFileJson(first.save()), logger, configService);
+
+        assertEquals(unreadable, second.save().get("attachmentItems"));
+        verify(logger, times(2)).logError(startsWith("Error loading attachments of message 1: "));
+    }
+
+    @Test
     public void testGetAttachmentsReturnsDefensiveCopy() {
         Message message = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
         message.addAttachment(mock(ItemStack.class));
