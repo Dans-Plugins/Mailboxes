@@ -60,7 +60,7 @@ maxAttachmentStackSize: 64
 ## Technical Details
 
 - Attachments are serialized using Bukkit's ItemStack serialization, written as YAML, so an item keeps its name, enchantments, damage and other metadata
-- If a message's attachments cannot be read at startup, the error is logged to the console and the message shows no attachments. The stored attachment data is written back unchanged at each save, so the items can be read again once the cause is fixed. Deleting the message still destroys them
+- If a message's attachments cannot be read at startup, the error is logged to the console and the message shows no attachments. Opening the message tells the player that it has attachments that could not be loaded. The stored attachment data is written back unchanged at each save, so the items can be read again once the cause is fixed. Deleting the message still destroys them
 - Items are stored as part of the message data
 - Attachments are cleared from messages after successful delivery
 - If inventory is full, items remain attached until the player has space

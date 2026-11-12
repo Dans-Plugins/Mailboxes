@@ -156,6 +156,11 @@ public class Message implements Savable {
                 }
             }
         }
+        else if (hasUnreadableAttachments()) {
+            player.sendMessage("\n");
+            player.sendMessage(ChatColor.RED + "This message has attachments that could not be loaded.");
+            player.sendMessage(ChatColor.RED + "They are kept, but cannot be collected until a server admin fixes the cause logged in the server console.");
+        }
 
         player.sendMessage(ChatColor.AQUA + "=============================");
         
@@ -221,6 +226,13 @@ public class Message implements Savable {
 
     public boolean hasAttachments() {
         return attachments != null && !attachments.isEmpty();
+    }
+
+    /**
+     * Whether stored attachment data could not be read at load and is being kept unchanged for the next save.
+     */
+    public boolean hasUnreadableAttachments() {
+        return !hasAttachments() && unreadableAttachmentsData != null;
     }
 
     public Map<String, String> save() {
