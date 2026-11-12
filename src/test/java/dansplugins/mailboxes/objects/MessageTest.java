@@ -337,6 +337,42 @@ public class MessageTest {
     }
 
     @Test
+    public void testSendContentToPlayerWarnsAboutUnreadableAttachments() {
+        Message original = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
+        Map<String, String> data = original.save();
+        data.put("attachmentItems", new Gson().toJson("items:\n- not an item\n"));
+        Message loaded = new Message(throughStorageFileJson(data), logger, configService);
+
+        loaded.sendContentToPlayer(player);
+
+        verify(player).sendMessage(contains("attachments that could not be loaded"));
+        verify(player, never()).sendMessage(contains("Attachments ("));
+    }
+
+    @Test
+    public void testSendContentToPlayerDoesNotWarnWhenAttachmentsLoad() {
+        ItemStack item = mock(ItemStack.class);
+        when(item.getType()).thenReturn(Material.DIAMOND_SWORD);
+        when(item.getAmount()).thenReturn(1);
+        Message message = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
+        message.addAttachment(item);
+
+        message.sendContentToPlayer(player);
+
+        verify(player, never()).sendMessage(contains("could not be loaded"));
+    }
+
+    @Test
+    public void testHasUnreadableAttachmentsOnlyWhenStoredDataCouldNotBeRead() {
+        Message message = new Message(logger, configService, 1, "Player Message", "Alice", "Bob", "Hi");
+        Map<String, String> data = message.save();
+        assertFalse(new Message(data, logger, configService).hasUnreadableAttachments());
+
+        data.put("attachments", "not a list");
+        assertTrue(new Message(data, logger, configService).hasUnreadableAttachments());
+    }
+
+    @Test
     public void testSendContentToPlayerShowsArchiveAndDeleteButtonsForActiveMessage() {
         Message message = new Message(logger, configService, 55, "Player Message", "Alice", "Bob", "Hi");
 
