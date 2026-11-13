@@ -276,19 +276,19 @@ A wrapper class representing a player's mailbox.
 **Returns:** `UUID` - The UUID of the mailbox owner
 
 ##### `getMessage(int ID)`
-**Returns:** `Message` - A specific message by ID (searches both active and archived messages)
+**Returns:** `Message` - A specific message by ID (searches both active and archived messages), or `null` if this mailbox holds no message with that ID
 
 ##### `getActiveMessages()`
-**Returns:** `ArrayList<Message>` - List of unarchived messages
+**Returns:** `ArrayList<Message>` - List of unarchived messages. This is the mailbox's own list, not a copy, so changes made to it change the mailbox
 
 ##### `getActiveMessage(int ID)`
-**Returns:** `Message` - A specific active message by ID
+**Returns:** `Message` - A specific active message by ID, or `null` if no active message has that ID
 
 ##### `getArchivedMessages()`
-**Returns:** `ArrayList<Message>` - List of archived messages
+**Returns:** `ArrayList<Message>` - List of archived messages. This is the mailbox's own list, not a copy, so changes made to it change the mailbox
 
 ##### `getArchivedMessage(int ID)`
-**Returns:** `Message` - A specific archived message by ID
+**Returns:** `Message` - A specific archived message by ID, or `null` if no archived message has that ID
 
 ##### `sendListOfActiveMessagesToPlayer(Player player)`
 Sends a formatted list of active messages to the player. Only the first page (10 messages) is sent; the paginated form is not exposed through the API.
@@ -356,13 +356,13 @@ A wrapper class representing a message.
 **Returns:** `boolean` - Whether the message is archived
 
 ##### `hasAttachments()`
-**Returns:** `boolean` - Whether the message has item attachments
+**Returns:** `boolean` - Whether the message has item attachments. Returns `false` for a message whose stored attachments could not be loaded at startup (see [ATTACHMENTS.md](ATTACHMENTS.md))
 
 ##### `getAttachments()`
-**Returns:** `List<ItemStack>` - List of attached items (empty list if none)
+**Returns:** `List<ItemStack>` - List of attached items (empty list if none). The list is a copy, so adding or removing items in it does not change the message
 
 ##### `sendContentToPlayer(Player player)`
-Sends a formatted display of the message content to the player.
+Sends a formatted display of the message to the player: its type, date, sender and content, followed by its attachments. If the message's attachments could not be loaded, a notice saying so is shown instead of the attachment list. The display ends with clickable `[Archive]` (only for a message that is not archived) and `[Delete]` buttons. Clicking one runs `/m archive <ID>` or `/m delete <ID>` as the player who clicks it, so it only works for that player's own messages and needs the matching permission.
 
 **Parameters:**
 - `player` (Player) - The player to send the message to
