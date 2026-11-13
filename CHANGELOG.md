@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - A message whose attachments could not be loaded at startup lost them at the next save, because `activeMessages.json` and `archivedMessages.json` are rewritten in full. The stored attachment data is now written back unchanged, so it stays in the file until it can be read, for example after the server or plugin that caused the failure is restored. The message still shows no attachments while the data cannot be read
 - A message whose attachments could not be loaded opened as if it had none, so the recipient had no sign that items were waiting. `/m open` now says the message has attachments that could not be loaded and that they are kept until a server admin fixes the cause logged in the console
 - `CHANGELOG.md` had no `[1.8.2]` section although 1.8.2 was published; its entries sat under Unreleased. Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.8.1`; they now pin `1.8.2`
+- `API.md` did not say that the `M_Mailbox` message lookups return `null` when no message matches, that `getActiveMessages()` and `getArchivedMessages()` return the mailbox's own list rather than a copy, that `M_Message.getAttachments()` returns a copy, or that `hasAttachments()` is `false` for attachments that could not be loaded. It also did not describe what `M_Message.sendContentToPlayer` shows, including the unreadable-attachments notice and the clickable `[Archive]` and `[Delete]` buttons. These are now documented
 
 ## [1.8.2] – 2026-11-07
 
