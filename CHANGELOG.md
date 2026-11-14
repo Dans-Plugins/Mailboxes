@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - A message whose attachments could not be loaded opened as if it had none, so the recipient had no sign that items were waiting. `/m open` now says the message has attachments that could not be loaded and that they are kept until a server admin fixes the cause logged in the console
 - `CHANGELOG.md` had no `[1.8.2]` section although 1.8.2 was published; its entries sat under Unreleased. Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.8.1`; they now pin `1.8.2`
 - `API.md` did not say that the `M_Mailbox` message lookups return `null` when no message matches, that `getActiveMessages()` and `getArchivedMessages()` return the mailbox's own list rather than a copy, that `M_Message.getAttachments()` returns a copy, or that `hasAttachments()` is `false` for attachments that could not be loaded. It also did not describe what `M_Message.sendContentToPlayer` shows, including the unreadable-attachments notice and the clickable `[Archive]` and `[Delete]` buttons. These are now documented
+- `CONFIG.md` described `preventSendingMessagesToSelf` as whether players can send messages to themselves, the opposite of what `true` does. It also did not say that `maxMailboxIDNumber` caps how many mailboxes can exist, so a player who joins once every ID is taken gets no mailbox, or that `/m send -attach` refuses a stack larger than `maxAttachmentStackSize`. These rows now describe the actual behavior
 
 ## [1.8.2] – 2026-11-07
 

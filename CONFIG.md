@@ -11,9 +11,9 @@ Values in `config.yml` are checked each time the plugin is enabled. An integer o
 | `version` | String | *(plugin version)* | Plugin version. Do not edit manually. |
 | `debugMode` | Boolean | `false` | Enables verbose debug logging to the console. |
 | `maxMessageIDNumber` | Integer | `10000` | Maximum ID number assigned to messages. This also caps how many messages can exist at once: once every ID below it is in use, no further message can be created until messages are deleted or the limit is raised. |
-| `maxMailboxIDNumber` | Integer | `10000` | Maximum ID number assigned to mailboxes. |
-| `maxAttachmentStackSize` | Integer | `64` | Maximum stack size allowed for item attachments. |
-| `preventSendingMessagesToSelf` | Boolean | `true` | Whether players can send messages to themselves. |
+| `maxMailboxIDNumber` | Integer | `10000` | Maximum ID number assigned to mailboxes. This also caps how many mailboxes can exist at once: once every ID below it is in use, a player who joins without a mailbox is told that one couldn't be assigned to them and is given none until the limit is raised. |
+| `maxAttachmentStackSize` | Integer | `64` | Maximum stack size allowed for item attachments. `/m send ... -attach` with a larger stack in hand is refused: nothing is sent and the item stays in the sender's hand. |
+| `preventSendingMessagesToSelf` | Boolean | `true` | Whether players are stopped from sending messages to themselves. When `true`, `/m send` naming yourself is refused with "You can't send a message to yourself." |
 | `assignmentAlertEnabled` | Boolean | `false` | Whether a player is told "You have been assigned a mailbox" the first time a mailbox is created for them. |
 | `unreadMessagesAlertEnabled` | Boolean | `true` | Whether players are reminded of unread messages on join. |
 | `welcomeMessageEnabled` | Boolean | `true` | Whether a welcome message is delivered to a player's mailbox the first time one is created for them. |
