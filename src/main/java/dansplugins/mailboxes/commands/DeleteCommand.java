@@ -22,7 +22,7 @@ public class DeleteCommand {
 
     public boolean execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            // TODO: add message
+            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
             return false;
         }
 

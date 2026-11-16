@@ -46,9 +46,9 @@ public class ListCommandTest {
         // When a non-player tries to execute the command
         boolean result = listCommand.execute(nonPlayerSender, new String[]{});
 
-        // Then it should fail and log a message
+        // Then it should fail and tell the sender why, whatever the debug mode
         assertFalse(result);
-        verify(logger).log("Only players can use this command");
+        verify(nonPlayerSender).sendMessage(contains("Only players can use this command."));
     }
 
     @Test

@@ -8,6 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `/m list`, `/m open`, `/m send`, `/m stats`, `/m archive` and `/m delete` run from the console (or a command block) did nothing visible. They are player-only, but the reason was only logged with `debugMode` enabled, or not at all for `archive` and `delete`. The sender is now told "Only players can use this command."
+- `CHANGELOG.md` had no `[1.9.0]` section although 1.9.0 was published; its entries sat under Unreleased. Dependency examples in `API.md` and `QUICKSTART.md` still pinned to `1.8.2`; they now pin `1.9.0`
+
+## [1.9.0] – 2026-11-16
+
+### Fixed
+
 - Attachments lost their name, enchantments, damage and other metadata after a restart, although `ATTACHMENTS.md` said they persist. Attachments are now saved through Bukkit's own YAML serialization under a new `attachmentItems` key in `activeMessages.json` and `archivedMessages.json`. Stored messages keep loading from the old `attachments` key, but metadata already lost is not restored. Downgrading to an earlier version loses the attachments of any message saved by this version
 - A failure to load a message's attachments was only logged with `debugMode` enabled. It is now always logged to the console
 - A message whose attachments could not be loaded at startup lost them at the next save, because `activeMessages.json` and `archivedMessages.json` are rewritten in full. The stored attachment data is now written back unchanged, so it stays in the file until it can be read, for example after the server or plugin that caused the failure is restored. The message still shows no attachments while the data cannot be read

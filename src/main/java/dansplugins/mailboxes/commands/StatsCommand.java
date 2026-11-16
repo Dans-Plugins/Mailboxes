@@ -18,7 +18,7 @@ public class StatsCommand {
 
     public boolean execute(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            logger.log("Only players can use this command.");
+            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
             return false;
         }
 

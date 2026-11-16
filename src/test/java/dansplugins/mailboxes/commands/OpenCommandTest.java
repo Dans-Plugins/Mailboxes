@@ -70,7 +70,7 @@ public class OpenCommandTest {
         boolean result = openCommand.execute(nonPlayerSender, new String[]{"1"});
 
         assertFalse(result);
-        verify(logger).log("Only players can use this command.");
+        verify(nonPlayerSender).sendMessage(contains("Only players can use this command."));
     }
 
     @Test
