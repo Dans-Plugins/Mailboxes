@@ -27,7 +27,7 @@ public class OpenCommand {
 
     public boolean execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            logger.log("Only players can use this command.");
+            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
             return false;
         }
 

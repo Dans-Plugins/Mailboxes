@@ -44,6 +44,7 @@ public class ArchiveCommandTest {
         boolean result = archiveCommand.execute(nonPlayerSender, new String[]{});
 
         assertFalse(result);
+        verify(nonPlayerSender).sendMessage(contains("Only players can use this command."));
     }
 
     @Test

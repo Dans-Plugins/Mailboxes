@@ -44,6 +44,7 @@ public class DeleteCommandTest {
         boolean result = deleteCommand.execute(nonPlayerSender, new String[]{});
 
         assertFalse(result);
+        verify(nonPlayerSender).sendMessage(contains("Only players can use this command."));
     }
 
     @Test

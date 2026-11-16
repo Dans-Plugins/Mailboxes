@@ -75,6 +75,7 @@ public class SendCommandTest {
         boolean result = sendCommand.execute(nonPlayerSender, new String[]{"Notch", "\"hello\""});
 
         assertFalse(result);
+        verify(nonPlayerSender).sendMessage(contains("Only players can use this command."));
     }
 
     @Test
