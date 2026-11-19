@@ -19,7 +19,7 @@ Values in `config.yml` are checked each time the plugin is enabled. An integer o
 | `welcomeMessageEnabled` | Boolean | `true` | Whether a welcome message is delivered to a player's mailbox the first time one is created for them. |
 | `quotesEnabled` | Boolean | `false` | Whether message content is wrapped in double quotes when a message is opened. |
 | `attachmentsEnabled` | Boolean | `true` | Whether item attachments are enabled for messages. |
-| `usage-reporting.enabled` | Boolean | `true` | Whether the plugin reports usage events (see below). Set to `false` to turn it off. |
+| `usage-reporting.enabled` | Boolean | `true` | Whether the plugin reports usage events (see below). Set to `false` to turn it off. Other spellings of the block or the switch (`usage_reporting:`, `usageReporting:`, `enable: false`, `disabled: true`), or `usage-reporting: false`, also count as off. |
 | `usage-reporting.endpoint` | String | `https://trace.danielstephenson.dev` | The trace server events are sent to. |
 | `usage-reporting.key` | String | the plugin's key | Identifies this plugin to the trace server so reports are attributed to it. Not a secret: it ships in the default config and can only report as Mailboxes. Empty means reporting is off regardless of `enabled`. |
 
