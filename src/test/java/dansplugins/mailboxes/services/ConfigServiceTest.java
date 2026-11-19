@@ -3,10 +3,16 @@ package dansplugins.mailboxes.services;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,9 +32,15 @@ public class ConfigServiceTest {
     private final List<String> warnings = new ArrayList<>();
     private int saveCount = 0;
 
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    private File configFile;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        configFile = new File(temporaryFolder.getRoot(), "config.yml");
         // Mailboxes is final and so cannot be mocked; the members ConfigService reads from it
         // are overridden here so that a config change can be exercised without a live plugin.
         configService = new ConfigService(null) {
@@ -45,6 +57,11 @@ public class ConfigServiceTest {
             @Override
             void logWarning(String message) {
                 warnings.add(message);
+            }
+
+            @Override
+            File configFile() {
+                return configFile;
             }
         };
     }
@@ -357,12 +374,28 @@ public class ConfigServiceTest {
 
     @Test
     public void testUsageReportingEnabledIsReadWithTheOneArgumentGetter() {
-        when(config.getBoolean("usage-reporting.enabled")).thenReturn(true);
+        when(config.get("usage-reporting.enabled")).thenReturn(true);
 
         assertTrue(configService.isUsageReportingEnabled());
 
-        verify(config).getBoolean("usage-reporting.enabled");
-        verify(config, never()).getBoolean(eq("usage-reporting.enabled"), anyBoolean());
+        verify(config).get("usage-reporting.enabled");
+        verify(config, never()).get(eq("usage-reporting.enabled"), any());
+    }
+
+    @Test
+    public void testUsageReportingQuotedFalseIsOff() {
+        // getBoolean() would read the string "false" as the bundled default, true.
+        when(config.get("usage-reporting.enabled")).thenReturn("false");
+
+        assertFalse(configService.isUsageReportingEnabled());
+    }
+
+    @Test
+    public void testUsageReportingOptOutWrittenToTheFileWins() throws IOException {
+        when(config.get("usage-reporting.enabled")).thenReturn(true);
+        Files.write(configFile.toPath(), "usage-reporting:\n  enabled: false\n".getBytes(StandardCharsets.UTF_8));
+
+        assertFalse(configService.isUsageReportingEnabled());
     }
 
     @Test

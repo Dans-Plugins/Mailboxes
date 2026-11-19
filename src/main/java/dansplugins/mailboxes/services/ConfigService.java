@@ -1,9 +1,12 @@
 package dansplugins.mailboxes.services;
 
 import dansplugins.mailboxes.Mailboxes;
+import dansplugins.mailboxes.trace.UsageReportingSetting;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import java.io.File;
 
 /*
     To add a new config option, the following methods must be altered:
@@ -33,7 +36,6 @@ public class ConfigService {
     private static final boolean DEFAULT_ATTACHMENTS_ENABLED = true;
     private static final int DEFAULT_MAX_ATTACHMENT_STACK_SIZE = 64;
 
-    private static final String USAGE_REPORTING_ENABLED_KEY = "usage-reporting.enabled";
     private static final String USAGE_REPORTING_ENDPOINT_KEY = "usage-reporting.endpoint";
     private static final String USAGE_REPORTING_KEY_KEY = "usage-reporting.key";
     private static final String DEFAULT_USAGE_REPORTING_ENDPOINT = "https://trace.danielstephenson.dev";
@@ -316,8 +318,16 @@ public class ConfigService {
     // the file has the keys; the fall-through only matters if that write
     // failed. Verified against YamlConfiguration, not assumed.
 
+    // Not getBoolean(): it returns the bundled true for a quoted "false" or any other value
+    // that is not a YAML boolean. Only a value that clearly means "on" turns reporting on, and
+    // an opt-out in the file on disk (or a file that cannot be parsed) always wins.
     public boolean isUsageReportingEnabled() {
-        return getConfig().getBoolean(USAGE_REPORTING_ENABLED_KEY);
+        return UsageReportingSetting.isEnabled(getConfig(), configFile());
+    }
+
+    /** config.yml on disk; a seam, like {@link #getConfig()}, so tests need no live plugin. */
+    File configFile() {
+        return new File(mailboxes.getDataFolder(), "config.yml");
     }
 
     public String getUsageReportingEndpoint() {

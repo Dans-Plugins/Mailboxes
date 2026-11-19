@@ -8,6 +8,7 @@ import dansplugins.mailboxes.factories.MailboxFactory;
 import dansplugins.mailboxes.factories.MessageFactory;
 import dansplugins.mailboxes.services.*;
 import dansplugins.mailboxes.trace.TraceClient;
+import dansplugins.mailboxes.trace.UsageReportingSetting;
 import dansplugins.mailboxes.utils.*;
 
 import org.bukkit.command.Command;
@@ -98,6 +99,25 @@ public final class Mailboxes extends JavaPlugin {
             getLogger().info("Usage reporting is off (" + trace.disabledReason() + ").");
         }
         trace.report("startup");
+    }
+
+    /**
+     * Every save of config.yml goes through here. A config.yml Bukkit could not parse was loaded
+     * as empty, so saving it would replace the operator's whole file, opt-out included, with the
+     * defaults: it is left alone instead. Otherwise an {@code enabled: false} found on disk is
+     * carried into the loaded config first, so a copy loaded before the operator edited the file
+     * cannot turn reporting back on.
+     */
+    @Override
+    public void saveConfig() {
+        File configFile = new File(getDataFolder(), "config.yml");
+        if (UsageReportingSetting.isUnparseable(configFile)) {
+            getLogger().severe("config.yml could not be read, so it was not overwritten. Fix the YAML error in it"
+                    + " and restart; until then the defaults are used, and usage reporting is off.");
+            return;
+        }
+        UsageReportingSetting.keepOptOutFromDisk(getConfig(), configFile);
+        super.saveConfig();
     }
 
     @Override

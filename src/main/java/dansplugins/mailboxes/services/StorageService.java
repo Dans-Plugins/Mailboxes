@@ -46,9 +46,9 @@ public class StorageService {
         saveMailboxes();
         saveMessages(ACTIVE_MESSAGES_FILE_NAME);
         saveMessages(ARCHIVED_MESSAGES_FILE_NAME);
-        if (configService.hasBeenAltered()) {
-            mailboxes.saveConfig();
-        }
+        // config.yml is not saved here: /m config set saves each change as it is made, and
+        // saving the loaded config again on autosave or shutdown could write a stale copy over
+        // edits the operator made by hand since, usage-reporting opt-out included.
     }
 
     public void load() {
