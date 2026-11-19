@@ -45,4 +45,11 @@ To turn it off, in order of precedence:
   is never turned back on by a plugin;
 - `usage-reporting.enabled: false` in this plugin's `config.yml` turns it off for Mailboxes alone.
 
+Only a value that clearly means on (`true`, or the string `true`, `on`, `yes` or `1`) turns reporting on: a quoted
+`"false"`, a typo or an empty value turns it off. The plugin never writes over a `config.yml` it cannot
+parse; it logs the error, and reporting stays off until the file is fixed. An `enabled: false` written by
+hand while the server runs is kept by every later save of the config. The environment variables fail
+closed too: `TRACE_USAGE_REPORTING` set to anything but blank or `true`/`on`/`yes`/`1` turns reporting
+off, as does `DO_NOT_TRACK` set to anything but blank or `0`/`false`/`off`/`no`.
+
 Details: https://danielstephenson.dev/usage-reporting
