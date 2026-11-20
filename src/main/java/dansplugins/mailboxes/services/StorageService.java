@@ -113,6 +113,13 @@ public class StorageService {
         }
         assignMessages(activeMessages, archivedMessages);
         loadFailed = false;
+        // One "<n> <label> loaded" line per stored type: the release gates' save-compatibility
+        // check compares these counts between the stable release and the candidate.
+        java.util.logging.Logger info = mailboxes != null
+                ? mailboxes.getLogger() : java.util.logging.Logger.getLogger(StorageService.class.getName());
+        info.info(loadedMailboxes.size() + " mailboxes loaded");
+        info.info(activeMessages.size() + " active messages loaded");
+        info.info(archivedMessages.size() + " archived messages loaded");
         return true;
     }
 
