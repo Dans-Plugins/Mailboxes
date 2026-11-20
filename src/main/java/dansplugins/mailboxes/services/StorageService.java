@@ -3,7 +3,6 @@ package dansplugins.mailboxes.services;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import dansplugins.mailboxes.Mailboxes;
 import dansplugins.mailboxes.data.PersistentData;
 import dansplugins.mailboxes.objects.Mailbox;
@@ -12,9 +11,16 @@ import dansplugins.mailboxes.objects.PlayerMessage;
 import dansplugins.mailboxes.objects.PluginMessage;
 import dansplugins.mailboxes.utils.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,37 +41,99 @@ public class StorageService {
 
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();;
 
+    private final String filePath;
+
+    // Cleared only by a successful load(). Until then save() refuses to run: the in-memory
+    // mailboxes are empty (or incomplete), and writing them would replace the very files that
+    // could not be read. The autosave and onDisable() both call save(), and Bukkit still runs
+    // onDisable() for a plugin whose onEnable() threw.
+    private boolean loadFailed = true;
+
     public StorageService(ConfigService configService, Mailboxes mailboxes, PersistentData persistentData, Logger logger) {
+        this(configService, mailboxes, persistentData, logger, FILE_PATH);
+    }
+
+    StorageService(ConfigService configService, Mailboxes mailboxes, PersistentData persistentData, Logger logger, String filePath) {
         this.configService = configService;
         this.mailboxes = mailboxes;
         this.persistentData = persistentData;
         this.logger = logger;
+        this.filePath = filePath;
     }
 
-    public void save() {
-        saveMailboxes();
-        saveMessages(ACTIVE_MESSAGES_FILE_NAME);
-        saveMessages(ARCHIVED_MESSAGES_FILE_NAME);
+    /**
+     * Writes every mailbox and message to the data folder. Refused, with the files left as they
+     * were, until {@link #load()} has succeeded.
+     * @return Whether all three files were written.
+     */
+    public boolean save() {
+        if (loadFailed) {
+            logger.logError("Mailboxes and messages were not saved because they were not loaded when the plugin "
+                    + "was enabled. The files in " + filePath + " have been left as they were.");
+            return false;
+        }
+        boolean saved = saveMailboxes();
+        saved &= saveMessages(ACTIVE_MESSAGES_FILE_NAME);
+        saved &= saveMessages(ARCHIVED_MESSAGES_FILE_NAME);
         // config.yml is not saved here: /m config set saves each change as it is made, and
         // saving the loaded config again on autosave or shutdown could write a stale copy over
         // edits the operator made by hand since, usage-reporting opt-out included.
+        return saved;
     }
 
-    public void load() {
-        loadMailboxes();
-        loadMessages();
+    /**
+     * Reads every mailbox and message. All three files are read and parsed before anything in
+     * {@link PersistentData} changes, so a file that cannot be read, or one malformed mailbox or
+     * message, leaves it exactly as it was.
+     * @return Whether the data was loaded. On failure the cause has been logged and
+     *         {@link #save()} is refused until a later load succeeds.
+     */
+    public boolean load() {
+        List<Mailbox> loadedMailboxes = new ArrayList<>();
+        ArrayList<Message> activeMessages;
+        ArrayList<Message> archivedMessages;
+        try {
+            for (Map<String, String> mailboxData : loadDataFromFilename(filePath + MAILBOXES_FILE_NAME)) {
+                loadedMailboxes.add(new Mailbox(mailboxData, logger));
+            }
+            activeMessages = parseMessages(loadDataFromFilename(filePath + ACTIVE_MESSAGES_FILE_NAME), logger, configService);
+            archivedMessages = parseMessages(loadDataFromFilename(filePath + ARCHIVED_MESSAGES_FILE_NAME), logger, configService);
+        } catch (IOException | RuntimeException e) {
+            // RuntimeException covers Gson's syntax errors and a mailbox or message with a
+            // missing or malformed field (a UUID or a number that does not parse).
+            loadFailed = true;
+            logger.logError("Mailboxes and messages could not be loaded from " + filePath + " (" + e + "). The files "
+                    + "have been left untouched and will not be overwritten; fix or restore them and restart the server.");
+            return false;
+        }
+
+        persistentData.getMailboxes().clear();
+        for (Mailbox mailbox : loadedMailboxes) {
+            persistentData.addMailbox(mailbox);
+        }
+        assignMessages(activeMessages, archivedMessages);
+        loadFailed = false;
+        return true;
     }
 
-    private void saveMailboxes() {
+    /**
+     * Whether the last {@link #load()} failed (or none has run yet), in which case
+     * {@link #save()} is refused.
+     */
+    public boolean isLoadFailed() {
+        return loadFailed;
+    }
+
+    private boolean saveMailboxes() {
         List<Map<String, String>> Mailboxes = new ArrayList<>();
         for (Mailbox mailbox : persistentData.getMailboxes()){
             Mailboxes.add(mailbox.save());
         }
 
-        writeOutFiles(Mailboxes, MAILBOXES_FILE_NAME);
+        return writeOutFiles(Mailboxes, MAILBOXES_FILE_NAME);
     }
 
-    private void saveMessages(String fileName) {
+    private boolean saveMessages(String fileName) {
         List<Map<String, String>> messagesData = new ArrayList<>();
         for (Mailbox mailbox : persistentData.getMailboxes()) {
             ArrayList<Message> messages;
@@ -77,7 +145,7 @@ public class StorageService {
             }
             else {
                 logger.log("Error: " + fileName + " not recognized.");
-                return;
+                return false;
             }
             for (Message message : messages){
                 if (message instanceof PlayerMessage) {
@@ -94,43 +162,36 @@ public class StorageService {
             }
         }
 
-        writeOutFiles(messagesData, fileName);
+        return writeOutFiles(messagesData, fileName);
     }
 
-    private void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
+    // Written to a sibling temp file and moved into place, so a server killed or a disk filled
+    // mid-write leaves the previous file intact instead of a truncated one.
+    private boolean writeOutFiles(List<Map<String, String>> saveData, String fileName) {
         try {
-            File parentFolder = new File(FILE_PATH);
-            parentFolder.mkdir();
-            File file = new File(FILE_PATH, fileName);
-            file.createNewFile();
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-            outputStreamWriter.write(gson.toJson(saveData));
-            outputStreamWriter.close();
-        } catch(IOException e) {
-            System.out.println("ERROR: " + e.toString());
+            File parentFolder = new File(filePath);
+            if (!parentFolder.isDirectory() && !parentFolder.mkdirs()) {
+                throw new IOException(parentFolder + " could not be created");
+            }
+            Path target = new File(filePath, fileName).toPath();
+            Path temp = target.resolveSibling(fileName + ".tmp");
+            try (Writer writer = Files.newBufferedWriter(temp, StandardCharsets.UTF_8)) {
+                gson.toJson(saveData, writer);
+            }
+            try {
+                Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING);
+            }
+            return true;
+        } catch (IOException | RuntimeException e) {
+            logger.logError("Could not save " + filePath + fileName + ": " + e);
+            return false;
         }
     }
 
-    private void loadMailboxes() {
-        persistentData.getMailboxes().clear();
-
-        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + MAILBOXES_FILE_NAME);
-
-        for (Map<String, String> mailboxData : data){
-            Mailbox mailbox = new Mailbox(mailboxData, logger);
-            persistentData.addMailbox(mailbox);
-        }
-    }
-
-    private void loadMessages() {
-        ArrayList<HashMap<String, String>> activeMessagesData = loadDataFromFilename(FILE_PATH + ACTIVE_MESSAGES_FILE_NAME);
-        ArrayList<HashMap<String, String>> archivedMessagesData = loadDataFromFilename(FILE_PATH + ARCHIVED_MESSAGES_FILE_NAME);
-
-        // load in messages
-        ArrayList<Message> activeMessages = parseMessages(activeMessagesData, logger, configService);
-        ArrayList<Message> archivedMessages = parseMessages(archivedMessagesData, logger, configService);
-
-        // add messages to the correct mailboxes
+    // add messages to the correct mailboxes
+    private void assignMessages(List<Message> activeMessages, List<Message> archivedMessages) {
         for (Mailbox mailbox : persistentData.getMailboxes()) {
             mailbox.getActiveMessages().clear();
             mailbox.getArchivedMessages().clear();
@@ -167,15 +228,18 @@ public class StorageService {
         return messages;
     }
 
-    private ArrayList<HashMap<String, String>> loadDataFromFilename(String filename) {
-        try{
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
-            return gson.fromJson(reader, LIST_MAP_TYPE);
-        } catch (FileNotFoundException e) {
-            // Fail silently because this can actually happen in normal use
+    // A file that does not exist yet holds no data. Nor does an empty one: it can only be left by
+    // a write cut off before this class wrote through a temp file, and there is nothing in it
+    // to keep.
+    private List<HashMap<String, String>> loadDataFromFilename(String filename) throws IOException {
+        File file = new File(filename);
+        if (!file.exists()) {
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
+        try (Reader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
+            List<HashMap<String, String>> data = gson.fromJson(reader, LIST_MAP_TYPE);
+            return data == null ? new ArrayList<>() : data;
+        }
     }
 
 }
