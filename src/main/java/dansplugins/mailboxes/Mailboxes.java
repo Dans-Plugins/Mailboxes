@@ -75,7 +75,14 @@ public final class Mailboxes extends JavaPlugin {
         // first /m send.
         configService.replaceUnusableConfigValues();
 
-        storageService.load();
+        if (!storageService.load()) {
+            // The mailbox files could not be read. Running on would let players send mail that
+            // could never be saved (save() is refused, so the unreadable files are not
+            // overwritten), so the plugin is disabled until the files are repaired.
+            getLogger().severe("Mailboxes is being disabled because its mailboxes and messages could not be loaded.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         eventRegistry.registerEvents();
 
